@@ -19,7 +19,15 @@ export class CalendarManager {
   }
 
   async initialize() {
+    CalendarDebug.feature("calendar", "Initializing CalendarManager");
     this.data = await CalendarData.load();
+
+    CalendarDebug.feature("data", "Calendar data loaded", {
+      activeCalendar: this.data.activeCalendarId,
+      dayCount: this.data.dayCount,
+      time: this.data.time
+    });
+
     this.moonManager.initialize(this.data.moon);
     this.weatherManager.initialize(this.data.weather);
     this.seasonManager.initialize(this.data.season);
@@ -27,8 +35,11 @@ export class CalendarManager {
     this.holidayManager.initialize();
 
     const settings = await CalendarData.loadSettings();
+    CalendarDebug.feature("calendar", "Settings loaded", settings);
+
     if (settings.timeFlowEnabled) {
       this.startTimeFlow(settings.realSecondsPerGameHour);
+      CalendarDebug.feature("time", "Time flow started", { interval: settings.realSecondsPerGameHour });
     }
 
     console.log("DnD5e Calendar | CalendarManager initialized");
@@ -65,10 +76,14 @@ export class CalendarManager {
     const oldTime = { ...this.data.time };
     this.data.time = newTime;
 
+    CalendarDebug.feature("time", "Time advanced", { oldTime, newTime, minutes });
+
     let dayChanged = false;
 
     if (newTime.hour < oldTime.hour || (newTime.hour === 0 && oldTime.hour !== 0)) {
       const newDate = CalendarUtils.advanceDay(this.getDate(), this.getActiveCalendar());
+      CalendarDebug.feature("time", "Day changed", { oldDate: this.getDate(), newDate });
+
       this.data.calendars[this.data.activeCalendarId].currentDay = newDate.day;
       this.data.calendars[this.data.activeCalendarId].currentMonth = newDate.month;
       this.data.calendars[this.data.activeCalendarId].currentYear = newDate.year;
@@ -91,6 +106,9 @@ export class CalendarManager {
   }
 
   async setDate(day, month, year) {
+    CalendarDebug.feature("calendar", "Setting date", { day, month, year });
+
+    const oldDate = this.getDate();
     this.data.calendars[this.data.activeCalendarId].currentDay = day;
     this.data.calendars[this.data.activeCalendarId].currentMonth = month;
     this.data.calendars[this.data.activeCalendarId].currentYear = year;
@@ -101,6 +119,8 @@ export class CalendarManager {
     );
 
     await CalendarData.save(this.data);
+    CalendarDebug.feature("calendar", "Date saved", { oldDate, newDate: { day, month, year }, dayCount: this.data.dayCount });
+
     Hooks.callAll("dnd5e-calendar:dateChange", { day, month, year });
 
     return this.getDate();
@@ -109,6 +129,8 @@ export class CalendarManager {
   async setTime(hour, minute) {
     const oldTime = { ...this.data.time };
     this.data.time = { hour, minute, second: 0 };
+
+    CalendarDebug.feature("time", "Setting time", { oldTime, newTime: this.data.time });
 
     await CalendarData.save(this.data);
     this.dayNightManager.update(this.data.time);
@@ -129,22 +151,27 @@ export class CalendarManager {
     this.timeInterval = setInterval(() => {
       this.advanceTime(gameMinutesPerInterval);
     }, realMsPerInterval);
+
+    CalendarDebug.feature("time", "Time flow interval started", { realMsPerInterval });
   }
 
   stopTimeFlow() {
     if (this.timeInterval) {
       clearInterval(this.timeInterval);
       this.timeInterval = null;
+      CalendarDebug.feature("time", "Time flow stopped");
     }
   }
 
   handleSocketUpdate(data) {
+    CalendarDebug.feature("sockets", "Socket update received", data);
     this.data = data;
     Hooks.callAll("dnd5e-calendar:sync", data);
   }
 
   broadcastUpdate() {
     if (game.socket) {
+      CalendarDebug.feature("sockets", "Broadcasting update");
       game.socket.emit("dnd5e-calendar:update", this.data);
     }
   }

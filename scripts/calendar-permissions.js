@@ -7,24 +7,49 @@ export class CalendarPermissions {
   };
 
   static canView() {
-    return true;
+    const result = true;
+    CalendarDebug.feature("permissions", `canView: ALLOWED`);
+    return result;
   }
 
   static canEdit() {
-    if (!game.user) return false;
-    return game.user.role >= this.GM_ROLES.ASSISTANT;
+    if (!game.user) {
+      CalendarDebug.feature("permissions", `canEdit: DENIED (no game.user)`);
+      return false;
+    }
+    const result = game.user.role >= this.GM_ROLES.ASSISTANT;
+    CalendarDebug.feature("permissions", `canEdit: ${result ? "ALLOWED" : "DENIED"} (role: ${game.user.role}, required: ${this.GM_ROLES.ASSISTANT})`, {
+      user: game.user.name,
+      role: game.user.role
+    });
+    return result;
   }
 
   static canSubmitHolidays(settings) {
-    if (!game.user) return false;
-    if (!settings?.playersCanSubmitHolidays) return false;
+    if (!game.user) {
+      CalendarDebug.feature("permissions", `canSubmitHolidays: DENIED (no game.user)`);
+      return false;
+    }
+    if (!settings?.playersCanSubmitHolidays) {
+      CalendarDebug.feature("permissions", `canSubmitHolidays: DENIED (setting disabled)`);
+      return false;
+    }
+    CalendarDebug.feature("permissions", `canSubmitHolidays: ALLOWED`);
     return true;
   }
 
   static canViewPendingHolidays(settings) {
-    if (!game.user) return false;
-    if (!settings?.playersCanViewPendingHolidays) return false;
-    return game.user.role >= this.GM_ROLES.TRUSTED;
+    if (!game.user) {
+      CalendarDebug.feature("permissions", `canViewPendingHolidays: DENIED (no game.user)`);
+      return false;
+    }
+    if (!settings?.playersCanViewPendingHolidays) {
+      CalendarDebug.feature("permissions", `canViewPendingHolidays: DENIED (setting disabled)`);
+      return false;
+    }
+    const result = game.user.role >= this.GM_ROLES.TRUSTED;
+    CalendarDebug.feature("permissions", `canViewPendingHolidays: ${result ? "ALLOWED" : "DENIED"} (role: ${game.user.role})`);
+    return result;
   }
 
   static canApproveHolidays() {
@@ -32,23 +57,36 @@ export class CalendarPermissions {
   }
 
   static isGM() {
-    return game.user?.role >= this.GM_ROLES.GAMEMASTER;
+    const result = game.user?.role >= this.GM_ROLES.GAMEMASTER;
+    CalendarDebug.feature("permissions", `isGM: ${result ? "TRUE" : "FALSE"}`);
+    return result;
   }
 
   static checkPermission(action = "view") {
+    CalendarDebug.feature("permissions", `checkPermission: ${action}`);
+
+    let result;
     switch (action) {
       case "view":
-        return this.canView();
+        result = this.canView();
+        break;
       case "edit":
-        return this.canEdit();
+        result = this.canEdit();
+        break;
       case "submitHoliday":
-        return this.canSubmitHolidays();
+        result = this.canSubmitHolidays();
+        break;
       case "viewPendingHolidays":
-        return this.canViewPendingHolidays();
+        result = this.canViewPendingHolidays();
+        break;
       case "approveHolidays":
-        return this.canApproveHolidays();
+        result = this.canApproveHolidays();
+        break;
       default:
-        return false;
+        result = false;
     }
+
+    CalendarDebug.feature("permissions", `checkPermission [${action}]: ${result ? "GRANTED" : "DENIED"}`);
+    return result;
   }
 }

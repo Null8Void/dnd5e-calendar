@@ -4,14 +4,19 @@ import { CalendarConfig } from "./calendar-config.js";
 import { CalendarAPI } from "./calendar-api.js";
 import { CalendarData } from "./calendar-data.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
+import { CalendarDebug } from "./calendar-debug.js";
 
 export const DnD5eCalendar = {
   manager: null,
   hud: null,
   config: null,
   api: null,
+  debug: CalendarDebug,
 
   init() {
+    CalendarDebug.init();
+    CalendarDebug.info("Module initialization starting");
+
     DnD5eCalendar.manager = new CalendarManager();
     DnD5eCalendar.api = new CalendarAPI();
     DnD5eCalendar.hud = new CalendarHUD();
@@ -21,6 +26,7 @@ export const DnD5eCalendar = {
     this.registerHooks();
     this.registerKeyboardShortcuts();
 
+    CalendarDebug.info("Module initialization complete");
     console.log("DnD5e Calendar | Module initialized");
   },
 

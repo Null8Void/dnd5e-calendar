@@ -37,6 +37,7 @@
     "scripts/calendar-api.js",
     "scripts/calendar-utils.js",
     "scripts/calendar-permissions.js",
+    "scripts/calendar-debug.js",
     "scripts/moon-phase-manager.js",
     "scripts/weather-manager.js",
     "scripts/season-manager.js",
