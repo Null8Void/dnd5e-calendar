@@ -1,0 +1,30 @@
+<div class="dnd5e-holiday-submit-dialog">
+  <h2>Submit a Holiday</h2>
+
+  <p class="info-text">Submit a holiday for GM approval. Holidays will appear on the calendar once approved.</p>
+
+  <div class="form-group">
+    <label>Holiday Name *</label>
+    <input type="text" name="holidayName" placeholder="e.g., Festival of the Moon" required>
+  </div>
+
+  <div class="form-group">
+    <label>Date *</label>
+    <div class="date-inputs">
+      <input type="number" name="day" value="{{day}}" min="1" max="31" placeholder="Day" required>
+      <input type="number" name="month" value="{{month}}" min="0" max="11" placeholder="Month" required>
+      <input type="number" name="year" value="{{year}}" placeholder="Year" required>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Description (Optional)</label>
+    <textarea class="description-input" rows="4" maxlength="400" placeholder="Brief description of the holiday..."></textarea>
+    <span class="char-count">{{maxChars}} characters remaining</span>
+  </div>
+
+  <div class="form-actions">
+    <button type="button" class="cancel-btn">Cancel</button>
+    <button type="button" class="submit-btn">Submit for Approval</button>
+  </div>
+</div>

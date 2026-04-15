@@ -1,0 +1,618 @@
+/* DnD5e Calendar - Main Styles */
+
+/* HUD Overlay */
+.dnd5e-calendar-hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background: linear-gradient(180deg, rgba(30, 30, 40, 0.95) 0%, rgba(30, 30, 40, 0.85) 100%);
+  border-bottom: 2px solid #c9a227;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  z-index: 100;
+  font-family: 'Signika', 'Modesto', 'Trebuchet MS', sans-serif;
+  font-size: 13px;
+  color: #e8e6e3;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.dnd5e-calendar-hud * {
+  box-sizing: border-box;
+}
+
+/* HUD Sections */
+.hud-left,
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.hud-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* Calendar Selector */
+.dnd5e-calendar-selector {
+  background: rgba(60, 60, 70, 0.8);
+  border: 1px solid #c9a227;
+  border-radius: 4px;
+  color: #e8e6e3;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.dnd5e-calendar-selector:hover {
+  background: rgba(80, 80, 90, 0.9);
+}
+
+/* Season Display */
+.season-display {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  background: rgba(60, 60, 70, 0.6);
+  border-radius: 4px;
+}
+
+.season-display .fas {
+  color: #c9a227;
+}
+
+.season-name {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Date Display */
+.date-display {
+  cursor: pointer;
+  padding: 4px 10px;
+  background: rgba(60, 60, 70, 0.6);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.date-display:hover {
+  background: rgba(80, 80, 90, 0.8);
+}
+
+.day-of-week {
+  color: #c9a227;
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.full-date {
+  font-weight: 500;
+}
+
+/* Day/Night Gradient */
+.day-night-gradient {
+  width: 200px;
+  height: 20px;
+  position: relative;
+}
+
+.gradient-track {
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, #1a1a2e 0%, #1a1a2e 50%, #4a4a6a 50%, #4a4a6a 100%);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-indicator {
+  position: absolute;
+  top: -2px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 2px solid #c9a227;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  transition: left 0.5s ease;
+  box-shadow: 0 0 6px rgba(201, 162, 39, 0.8);
+}
+
+.gradient-indicator.day {
+  background: #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+.gradient-indicator.night {
+  background: #a0a0c0;
+  box-shadow: 0 0 10px rgba(160, 160, 192, 0.8);
+}
+
+/* Period Icon */
+.period-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.period-icon .fas {
+  font-size: 18px;
+}
+
+/* Time Display */
+.time-display {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(60, 60, 70, 0.6);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.time-display:hover {
+  background: rgba(80, 80, 90, 0.8);
+}
+
+.time-display .fas {
+  color: #c9a227;
+}
+
+.time {
+  font-weight: 600;
+  font-family: 'Roboto Mono', 'Consolas', monospace;
+}
+
+/* Moon Display */
+.moon-display {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  background: rgba(60, 60, 70, 0.6);
+  border-radius: 4px;
+}
+
+.moon-display .fas {
+  color: #b0b0c0;
+}
+
+.phase-name {
+  font-size: 11px;
+}
+
+/* Weather Display */
+.weather-display {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  background: rgba(60, 60, 70, 0.6);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.weather-display:hover {
+  background: rgba(80, 80, 90, 0.8);
+}
+
+.weather-display .fas {
+  color: #7a9ec9;
+}
+
+.weather-name {
+  font-size: 11px;
+}
+
+/* Config Dialog */
+.dnd5e-calendar-config {
+  font-family: 'Signika', 'Modesto', 'Trebuchet MS', sans-serif;
+}
+
+.dnd5e-calendar-config .tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #4a4a4a;
+  padding-bottom: 10px;
+}
+
+.dnd5e-calendar-config .tabs .item {
+  padding: 8px 15px;
+  background: #3a3a3a;
+  border: 1px solid #5a5a5a;
+  border-radius: 4px;
+  color: #e8e6e3;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dnd5e-calendar-config .tabs .item:hover,
+.dnd5e-calendar-config .tabs .item.active {
+  background: #c9a227;
+  border-color: #c9a227;
+  color: #1a1a1a;
+}
+
+.dnd5e-calendar-config .tab {
+  display: none;
+}
+
+.dnd5e-calendar-config .tab.active {
+  display: block;
+}
+
+.dnd5e-calendar-config .tab h2 {
+  color: #c9a227;
+  font-size: 18px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #4a4a4a;
+  padding-bottom: 10px;
+}
+
+.dnd5e-calendar-config .tab h3 {
+  color: #e8e6e3;
+  font-size: 14px;
+  margin: 15px 0 10px;
+}
+
+.dnd5e-calendar-config .form-group {
+  margin-bottom: 12px;
+}
+
+.dnd5e-calendar-config .form-group label {
+  display: block;
+  color: #b0b0b0;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.dnd5e-calendar-config input[type="text"],
+.dnd5e-calendar-config input[type="number"],
+.dnd5e-calendar-config select,
+.dnd5e-calendar-config textarea {
+  width: 100%;
+  padding: 8px;
+  background: #2a2a2a;
+  border: 1px solid #4a4a4a;
+  border-radius: 4px;
+  color: #e8e6e3;
+  font-size: 13px;
+}
+
+.dnd5e-calendar-config input:focus,
+.dnd5e-calendar-config select:focus,
+.dnd5e-calendar-config textarea:focus {
+  border-color: #c9a227;
+  outline: none;
+}
+
+.dnd5e-calendar-config .form-group input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+}
+
+.dnd5e-calendar-config .month-row,
+.dnd5e-calendar-config .weekday-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.dnd5e-calendar-config button {
+  padding: 8px 15px;
+  background: #3a3a3a;
+  border: 1px solid #5a5a5a;
+  border-radius: 4px;
+  color: #e8e6e3;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dnd5e-calendar-config button:hover {
+  background: #c9a227;
+  border-color: #c9a227;
+  color: #1a1a1a;
+}
+
+.dnd5e-calendar-config button i {
+  margin-right: 5px;
+}
+
+.dnd5e-calendar-config .time-control {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.dnd5e-calendar-config .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #4a4a4a;
+}
+
+.dnd5e-calendar-config .save-btn {
+  background: #c9a227;
+  border-color: #c9a227;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.dnd5e-calendar-config .cancel-btn {
+  background: #4a4a4a;
+  border-color: #4a4a4a;
+}
+
+/* Holiday Submit Dialog */
+.dnd5e-holiday-submit-dialog {
+  padding: 15px;
+}
+
+.dnd5e-holiday-submit-dialog h2 {
+  color: #c9a227;
+  margin-bottom: 15px;
+}
+
+.dnd5e-holiday-submit-dialog .info-text {
+  color: #b0b0b0;
+  font-size: 12px;
+  margin-bottom: 15px;
+}
+
+.dnd5e-holiday-submit-dialog .date-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.dnd5e-holiday-submit-dialog .date-inputs input {
+  flex: 1;
+}
+
+.dnd5e-holiday-submit-dialog .char-count {
+  display: block;
+  font-size: 11px;
+  color: #7a7a7a;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.dnd5e-holiday-submit-dialog .char-count.over-limit {
+  color: #d94040;
+}
+
+.dnd5e-holiday-submit-dialog .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* Holiday Approval Panel */
+.dnd5e-holiday-approval-panel .tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.dnd5e-holiday-approval-panel .tabs .item {
+  padding: 8px 15px;
+  background: #3a3a3a;
+  border: 1px solid #5a5a5a;
+  border-radius: 4px;
+  color: #e8e6e3;
+  cursor: pointer;
+}
+
+.dnd5e-holiday-approval-panel .tabs .item.active {
+  background: #c9a227;
+  border-color: #c9a227;
+  color: #1a1a1a;
+}
+
+.dnd5e-holiday-approval-panel .tab {
+  display: none;
+}
+
+.dnd5e-holiday-approval-panel .tab.active {
+  display: block;
+}
+
+.dnd5e-holiday-approval-panel .holiday-card {
+  background: #2a2a2a;
+  border: 1px solid #4a4a4a;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.dnd5e-holiday-approval-panel .holiday-card.pending {
+  border-left: 3px solid #c9a227;
+}
+
+.dnd5e-holiday-approval-panel .holiday-card.approved {
+  border-left: 3px solid #4a9a4a;
+}
+
+.dnd5e-holiday-approval-panel .holiday-card.rejected {
+  border-left: 3px solid #9a4a4a;
+  opacity: 0.7;
+}
+
+.dnd5e-holiday-approval-panel .holiday-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.dnd5e-holiday-approval-panel .holiday-header h3 {
+  color: #e8e6e3;
+  margin: 0;
+}
+
+.dnd5e-holiday-approval-panel .holiday-date {
+  color: #c9a227;
+  font-weight: 600;
+}
+
+.dnd5e-holiday-approval-panel .holiday-meta {
+  font-size: 11px;
+  color: #7a7a7a;
+  margin-bottom: 8px;
+}
+
+.dnd5e-holiday-approval-panel .holiday-meta span {
+  margin-right: 15px;
+}
+
+.dnd5e-holiday-approval-panel .holiday-description {
+  color: #b0b0b0;
+  font-size: 12px;
+  margin: 8px 0;
+}
+
+.dnd5e-holiday-approval-panel .holiday-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.dnd5e-holiday-approval-panel .approve-btn,
+.dnd5e-holiday-approval-panel .reject-btn,
+.dnd5e-holiday-approval-panel .delete-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.dnd5e-holiday-approval-panel .approve-btn {
+  background: #4a9a4a;
+  color: white;
+}
+
+.dnd5e-holiday-approval-panel .reject-btn {
+  background: #9a4a4a;
+  color: white;
+}
+
+.dnd5e-holiday-approval-panel .delete-btn {
+  background: #5a5a5a;
+  color: #e8e6e3;
+}
+
+.dnd5e-holiday-approval-panel .no-holidays {
+  text-align: center;
+  color: #7a7a7a;
+  padding: 30px;
+}
+
+/* Dialog overrides */
+.dialog .dnd5e-calendar-time-editor,
+.dialog .dnd5e-calendar-season-selector,
+.dialog .dnd5e-calendar-weather-selector {
+  padding: 15px;
+}
+
+.dialog .dnd5e-calendar-time-editor h3,
+.dialog .dnd5e-calendar-season-selector h3,
+.dialog .dnd5e-calendar-weather-selector h3 {
+  color: #c9a227;
+  margin-bottom: 15px;
+}
+
+.dialog .form-group {
+  margin-bottom: 12px;
+}
+
+.dialog .form-group label {
+  display: block;
+  color: #b0b0b0;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.dialog input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  background: #2a2a2a;
+  border: 1px solid #4a4a4a;
+  border-radius: 4px;
+  color: #e8e6e3;
+}
+
+.dialog select {
+  width: 100%;
+  padding: 8px;
+  background: #2a2a2a;
+  border: 1px solid #4a4a4a;
+  border-radius: 4px;
+  color: #e8e6e3;
+}
+
+.dialog button {
+  padding: 8px 15px;
+  background: #3a3a3a;
+  border: 1px solid #5a5a5a;
+  border-radius: 4px;
+  color: #e8e6e3;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.dialog button:hover {
+  background: #c9a227;
+  border-color: #c9a227;
+  color: #1a1a1a;
+}
+
+.season-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.season-btn {
+  flex: 1;
+  padding: 15px;
+  background: #3a3a3a;
+  border: 2px solid #5a5a5a;
+  border-radius: 6px;
+  color: #e8e6e3;
+  cursor: pointer;
+  text-align: center;
+}
+
+.season-btn:hover {
+  border-color: #c9a227;
+}
+
+.season-btn.active {
+  background: #c9a227;
+  border-color: #c9a227;
+  color: #1a1a1a;
+}
+
+.season-btn i {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 8px;
+}

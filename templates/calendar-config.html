@@ -1,0 +1,259 @@
+<form>
+  <div class="tabs">
+    <button type="button" class="item" data-tab="calendar" {{#if (eq activeTab "calendar")}}class="active"{{/if}}>
+      <i class="fas fa-calendar"></i> Calendar
+    </button>
+    <button type="button" class="item" data-tab="time" {{#if (eq activeTab "time")}}class="active"{{/if}}>
+      <i class="fas fa-clock"></i> Time
+    </button>
+    <button type="button" class="item" data-tab="season" {{#if (eq activeTab "season")}}class="active"{{/if}}>
+      <i class="fas fa-leaf"></i> Season
+    </button>
+    <button type="button" class="item" data-tab="weather" {{#if (eq activeTab "weather")}}class="active"{{/if}}>
+      <i class="fas fa-cloud"></i> Weather
+    </button>
+    <button type="button" class="item" data-tab="holidays" {{#if (eq activeTab "holidays")}}class="active"{{/if}}>
+      <i class="fas fa-star"></i> Holidays
+    </button>
+    <button type="button" class="item" data-tab="settings" {{#if (eq activeTab "settings")}}class="active"{{/if}}>
+      <i class="fas fa-cog"></i> Settings
+    </button>
+  </div>
+
+  <div class="tab-content">
+    <div class="tab" data-tab="calendar">
+      <h2>Calendar Configuration</h2>
+
+      <div class="form-group">
+        <label>Active Calendar</label>
+        <select name="activeCalendar">
+          {{#each data.calendars}}
+          <option value="{{@key}}" {{#if (eq @key ../data.activeCalendarId}}selected{{/if}}>{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <div class="calendar-name-section">
+        {{#each data.calendars}}
+        <div class="calendar-config" data-calendar="{{@key}}">
+          <h3>{{name}}</h3>
+          <div class="form-group">
+            <label>Calendar Name</label>
+            <input type="text" name="calendarName" value="{{name}}">
+          </div>
+          <div class="form-group">
+            <label>Short Name</label>
+            <input type="text" name="calendarShortName" value="{{shortName}}">
+          </div>
+          <div class="form-group">
+            <label>Epoch</label>
+            <input type="text" name="epoch" value="{{epoch}}">
+          </div>
+          <div class="form-group">
+            <label>Year Zero</label>
+            <input type="number" name="yearZero" value="{{yearZero}}">
+          </div>
+        </div>
+        {{/each}}
+      </div>
+
+      <h3>Months</h3>
+      <div class="months-list">
+        {{#each data.calendars}}
+        {{#if (eq @key ../data.activeCalendarId)}}
+        {{#each this.months}}
+        <div class="month-row">
+          <input type="text" name="monthName" value="{{name}}" placeholder="Month Name">
+          <input type="text" name="monthAbbr" value="{{abbr}}" placeholder="Abbr" style="width: 50px;">
+          <input type="number" name="monthDays" value="{{days}}" min="1" max="366" style="width: 60px;">
+          <button type="button" class="remove-month-btn" data-index="{{@index}}"><i class="fas fa-trash"></i></button>
+        </div>
+        {{/each}}
+        {{/if}}
+        {{/each}}
+      </div>
+      <button type="button" class="add-month-btn"><i class="fas fa-plus"></i> Add Month</button>
+
+      <h3>Weekdays</h3>
+      <div class="weekdays-list">
+        {{#each data.calendars}}
+        {{#if (eq @key ../data.activeCalendarId)}}
+        {{#each this.weekdays}}
+        <div class="weekday-row">
+          <input type="text" name="weekdayName" value="{{name}}" placeholder="Day Name">
+          <input type="text" name="weekdayAbbr" value="{{abbr}}" placeholder="Abbr" style="width: 50px;">
+          <button type="button" class="remove-weekday-btn" data-index="{{@index}}"><i class="fas fa-trash"></i></button>
+        </div>
+        {{/each}}
+        {{/if}}
+        {{/each}}
+      </div>
+      <button type="button" class="add-weekday-btn"><i class="fas fa-plus"></i> Add Weekday</button>
+    </div>
+
+    <div class="tab" data-tab="time">
+      <h2>Time Management</h2>
+
+      <div class="current-time-display">
+        <h3>Current Time: {{data.time.hour}}:{{data.time.minute}}</h3>
+      </div>
+
+      <div class="time-control">
+        <h4>Quick Adjust</h4>
+        <button type="button" class="time-control" data-action="addMinute" data-amount="1">+1 Min</button>
+        <button type="button" class="time-control" data-action="addMinute" data-amount="15">+15 Min</button>
+        <button type="button" class="time-control" data-action="addMinute" data-amount="30">+30 Min</button>
+        <button type="button" class="time-control" data-action="addHour" data-amount="1">+1 Hour</button>
+        <button type="button" class="time-control" data-action="addDay" data-amount="1">+1 Day</button>
+      </div>
+
+      <h3>Time Settings</h3>
+      <div class="form-group">
+        <label>Minutes per Hour</label>
+        <input type="number" name="minutesPerHour" value="{{constants.TIME.MINUTES_PER_HOUR}}" min="1" max="120">
+      </div>
+      <div class="form-group">
+        <label>Hours per Day</label>
+        <input type="number" name="hoursPerDay" value="{{constants.TIME.HOURS_PER_DAY}}" min="1" max="48">
+      </div>
+    </div>
+
+    <div class="tab" data-tab="season">
+      <h2>Season Configuration</h2>
+
+      <div class="current-season">
+        <h3>Current Season: {{data.season.current}}</h3>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="autoTrackSeasons" {{#if data.season.autoTrack}}checked{{/if}}>
+          Auto-track seasons based on month
+        </label>
+      </div>
+
+      <h3>Season Month Ranges</h3>
+      <div class="season-ranges">
+        <div class="form-group">
+          <label>Spring Months</label>
+          <input type="text" name="springMonths" value="{{data.season.monthRanges.spring}}">
+        </div>
+        <div class="form-group">
+          <label>Summer Months</label>
+          <input type="text" name="summerMonths" value="{{data.season.monthRanges.summer}}">
+        </div>
+        <div class="form-group">
+          <label>Fall Months</label>
+          <input type="text" name="fallMonths" value="{{data.season.monthRanges.fall}}">
+        </div>
+        <div class="form-group">
+          <label>Winter Months</label>
+          <input type="text" name="winterMonths" value="{{data.season.monthRanges.winter}}">
+        </div>
+      </div>
+    </div>
+
+    <div class="tab" data-tab="weather">
+      <h2>Weather Settings</h2>
+
+      <div class="current-weather">
+        <h3>Current Weather: {{data.weather.current}}</h3>
+      </div>
+
+      <div class="form-group">
+        <label>Set Weather</label>
+        <select name="weather" onchange="this.value && (document.getElementById('weatherPreview').textContent = this.value)">
+          {{#each constants.WEATHER.TYPES}}
+          <option value="{{this}}">{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <h3>GM Notes</h3>
+      <div class="form-group">
+        <textarea name="weatherGmNotes" rows="4" placeholder="Private notes about weather effects...">{{data.weather.gmNotes}}</textarea>
+      </div>
+    </div>
+
+    <div class="tab" data-tab="holidays">
+      <h2>Holiday Management</h2>
+
+      <div class="holiday-actions">
+        <button type="button" class="view-holidays-btn"><i class="fas fa-list"></i> View/Approve Holidays</button>
+        <button type="button" class="submit-holiday-btn"><i class="fas fa-plus"></i> Submit Holiday</button>
+      </div>
+
+      <h3>Approved Holidays</h3>
+      <div class="holidays-list">
+        {{#each data.holidays.approved}}
+        <div class="holiday-item">
+          <strong>{{name}}</strong> - {{month}}/{{day}}/{{year}}
+          <p>{{description}}</p>
+        </div>
+        {{else}}
+        <p class="no-holidays">No approved holidays yet.</p>
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="tab" data-tab="settings">
+      <h2>Module Settings</h2>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="enableGradient" {{#if settings.enableGradientBar}}checked{{/if}}>
+          Enable Day/Night Gradient Bar
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="enableIconToggle" {{#if settings.enableIconToggle}}checked{{/if}}>
+          Enable Sun/Moon Icon Toggle
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="playersCanSubmit" {{#if settings.playersCanSubmitHolidays}}checked{{/if}}>
+          Players Can Submit Holidays
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="playersCanViewPending" {{#if settings.playersCanViewPendingHolidays}}checked{{/if}}>
+          Players Can View Pending Holidays
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="showSeconds" {{#if settings.showSeconds}}checked{{/if}}>
+          Show Seconds in Time Display
+        </label>
+      </div>
+
+      <h3>Moon Settings</h3>
+      <div class="form-group">
+        <label>Lunar Cycle (Days)</label>
+        <input type="number" name="moonCycleDays" value="{{data.moon.cycleDays}}" min="1" max="60">
+      </div>
+
+      <h3>Day/Night Settings</h3>
+      <div class="form-group">
+        <label>Day Starts At Hour</label>
+        <input type="number" name="dayStartHour" value="{{data.dayNight.dayStartHour}}" min="0" max="23">
+      </div>
+      <div class="form-group">
+        <label>Night Starts At Hour</label>
+        <input type="number" name="nightStartHour" value="{{data.dayNight.nightStartHour}}" min="0" max="23">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button type="button" class="cancel-btn">Cancel</button>
+    <button type="button" class="save-btn">Save Settings</button>
+  </div>
+</form>

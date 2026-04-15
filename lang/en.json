@@ -1,0 +1,164 @@
+{
+  "DNDCAL": {
+    "ModuleName": "DnD5e Calendar & Time Tracker",
+    "ModuleDescription": "A fully editable in-game calendar with time tracking, seasons, weather, moon phases, day/night cycles, and holiday management.",
+
+    "Settings": {
+      "Enabled": "Enable Calendar",
+      "EnabledHint": "Show the calendar HUD overlay at the top of the screen.",
+      "HudPosition": "HUD Position",
+      "OpenConfig": "Calendar Configuration",
+      "OpenConfigLabel": "Open Calendar Settings",
+      "OpenConfigHint": "Configure the calendar, time, seasons, weather, and holidays."
+    },
+
+    "Keybinds": {
+      "OpenConfig": "Open Calendar Configuration",
+      "OpenConfigHint": "Press Alt+C to open the calendar configuration panel (GM only)."
+    },
+
+    "HUD": {
+      "Loading": "Loading...",
+      "Day": "Day",
+      "Night": "Night"
+    },
+
+    "Config": {
+      "Title": "DnD5e Calendar Configuration",
+      "CalendarTab": "Calendar",
+      "TimeTab": "Time",
+      "SeasonTab": "Season",
+      "WeatherTab": "Weather",
+      "HolidaysTab": "Holidays",
+      "SettingsTab": "Settings",
+      "Save": "Save Settings",
+      "Cancel": "Cancel"
+    },
+
+    "Calendar": {
+      "Months": "Months",
+      "Weekdays": "Weekdays",
+      "AddMonth": "Add Month",
+      "RemoveMonth": "Remove Month",
+      "AddWeekday": "Add Weekday",
+      "RemoveWeekday": "Remove Weekday",
+      "Epoch": "Epoch",
+      "YearZero": "Year Zero"
+    },
+
+    "Time": {
+      "CurrentTime": "Current Time",
+      "AdvanceTime": "Advance Time",
+      "AddMinute": "+1 Minute",
+      "Add15Minutes": "+15 Minutes",
+      "AddHour": "+1 Hour",
+      "AddDay": "+1 Day",
+      "MinutesPerHour": "Minutes per Hour",
+      "HoursPerDay": "Hours per Day"
+    },
+
+    "Season": {
+      "CurrentSeason": "Current Season",
+      "AutoTrack": "Auto-track seasons based on month",
+      "Spring": "Spring",
+      "Summer": "Summer",
+      "Fall": "Fall",
+      "Winter": "Winter",
+      "MonthRanges": "Season Month Ranges"
+    },
+
+    "Weather": {
+      "CurrentWeather": "Current Weather",
+      "SetWeather": "Set Weather",
+      "GmNotes": "GM Notes",
+      "GmNotesPlaceholder": "Private notes about weather effects..."
+    },
+
+    "Moon": {
+      "Phase": "Moon Phase",
+      "CycleDays": "Lunar Cycle (Days)",
+      "Phases": {
+        "New Moon": "New Moon",
+        "Waxing Crescent": "Waxing Crescent",
+        "First Quarter": "First Quarter",
+        "Waxing Gibbous": "Waxing Gibbous",
+        "Full Moon": "Full Moon",
+        "Waning Gibbous": "Waning Gibbous",
+        "Last Quarter": "Last Quarter",
+        "Waning Crescent": "Waning Crescent"
+      }
+    },
+
+    "Holidays": {
+      "Title": "Holiday Management",
+      "SubmitHoliday": "Submit Holiday",
+      "ViewHolidays": "View/Approve Holidays",
+      "Pending": "Pending",
+      "Approved": "Approved",
+      "Rejected": "Rejected",
+      "Approve": "Approve",
+      "Reject": "Reject",
+      "Delete": "Delete",
+      "NoHolidays": "No holidays to display.",
+      "SubmitTitle": "Submit a Holiday",
+      "SubmitInfo": "Submit a holiday for GM approval. Holidays will appear on the calendar once approved.",
+      "HolidayName": "Holiday Name",
+      "HolidayNamePlaceholder": "e.g., Festival of the Moon",
+      "Date": "Date",
+      "Description": "Description (Optional)",
+      "DescriptionPlaceholder": "Brief description of the holiday...",
+      "CharactersRemaining": "characters remaining",
+      "SubmitForApproval": "Submit for Approval",
+      "SubmittedBy": "Submitted by",
+      "ApprovedBy": "Approved by",
+      "RejectedBy": "Rejected by",
+      "RejectionReason": "Reason"
+    },
+
+    "DayNight": {
+      "DayStartsAt": "Day Starts At Hour",
+      "NightStartsAt": "Night Starts At Hour",
+      "EnableGradient": "Enable Day/Night Gradient Bar",
+      "EnableIcon": "Enable Sun/Moon Icon Toggle"
+    },
+
+    "Notifications": {
+      "SettingsSaved": "Calendar settings saved.",
+      "HolidaySubmitted": "Holiday submitted for GM approval.",
+      "HolidayApproved": "Holiday approved.",
+      "HolidayRejected": "Holiday rejected.",
+      "HolidayDeleted": "Holiday deleted.",
+      "PermissionDenied": "You do not have permission to perform this action.",
+      "InvalidDescription": "Description exceeds 400 character limit."
+    },
+
+    "Permissions": {
+      "GMOnly": "Only GMs can access this feature.",
+      "AssistantOrGM": "Only GMs and Assistants can access this feature."
+    },
+
+    "Seasons": {
+      "spring": "Spring",
+      "summer": "Summer",
+      "fall": "Fall",
+      "winter": "Winter"
+    },
+
+    "WeatherTypes": {
+      "Clear skies": "Clear skies",
+      "Partly cloudy": "Partly cloudy",
+      "Overcast": "Overcast",
+      "Light rain": "Light rain",
+      "Heavy rain": "Heavy rain",
+      "Thunderstorm": "Thunderstorm",
+      "Light snow": "Light snow",
+      "Heavy snow": "Heavy snow",
+      "Foggy": "Foggy",
+      "Windy": "Windy",
+      "Hot": "Hot",
+      "Cold": "Cold",
+      "Blizzard": "Blizzard",
+      "Hail": "Hail"
+    }
+  }
+}

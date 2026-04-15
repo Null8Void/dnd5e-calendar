@@ -1,0 +1,52 @@
+<div class="dnd5e-calendar-hud" data-appid="{{appId}}">
+  <div class="hud-left">
+    <select class="dnd5e-calendar-selector" title="Switch Calendar">
+      {{#each calendars}}
+      <option value="{{id}}" {{#if isActive}}selected{{/if}}>{{shortName}}</option>
+      {{/each}}
+    </select>
+
+    <div class="season-display">
+      <i class="fas {{seasonIcon}}"></i>
+      <span class="season-name">{{seasonName}}</span>
+    </div>
+
+    <div class="date-display dnd5e-calendar-hud-date">
+      <span class="day-of-week">{{dayOfWeek}}</span>
+      <span class="full-date">{{formattedDate}}</span>
+    </div>
+  </div>
+
+  <div class="hud-center">
+    {{#if showGradient}}
+    <div class="day-night-gradient">
+      <div class="gradient-track">
+        <div class="gradient-indicator {{#if isDay}}day{{else}}night{{/if}}" style="left: {{progress.progress}};"></div>
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if showIcon}}
+    <div class="period-icon">
+      <i class="fas {{periodIcon}}"></i>
+    </div>
+    {{/if}}
+  </div>
+
+  <div class="hud-right">
+    <div class="time-display dnd5e-calendar-hud-time">
+      <i class="fas {{periodIcon}}"></i>
+      <span class="time">{{formattedTime}}</span>
+    </div>
+
+    <div class="moon-display" title="Moon Phase: {{moonPhase}}">
+      <i class="fas {{moonIcon}}"></i>
+      <span class="phase-name">{{moonPhase}}</span>
+    </div>
+
+    <div class="weather-display dnd5e-calendar-hud-weather" title="Weather: {{weather}}">
+      <i class="fas {{weatherIcon}}"></i>
+      <span class="weather-name">{{weather}}</span>
+    </div>
+  </div>
+</div>

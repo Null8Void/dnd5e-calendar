@@ -1,0 +1,59 @@
+{
+  "id": "dnd5e-calendar",
+  "title": "DnD5e Calendar & Time Tracker",
+  "description": "A fully editable in-game calendar with time tracking, seasons, weather, moon phases, day/night cycles, and holiday management for DnD5e.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "10.0.0",
+    "verified": "11.315",
+    "maximum": "11.999"
+  },
+  "authors": [
+    {
+      "name": "Module Developer",
+      "flags": {}
+    }
+  ],
+  "urls": [],
+  "licenses": [
+    {
+      "title": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  ],
+  "readme": "README.md",
+  "bugs": "",
+  "changelog": "",
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json",
+      "flags": {}
+    }
+  ],
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/calendar.css"
+  ],
+  "packs": [],
+  "relationships": {
+    "requires": [],
+    "recommends": [],
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system",
+        "manifest": "",
+        "compatibility": {
+          "minimum": "2.0.0",
+          "verified": "2.5.0"
+        }
+      }
+    ]
+  },
+  "flags": {},
+  "manifestPlusVersion": "1.0.0"
+}

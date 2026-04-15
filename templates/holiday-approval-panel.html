@@ -1,0 +1,91 @@
+<div class="dnd5e-holiday-approval-panel">
+  <div class="tabs">
+    <button type="button" class="item active" data-tab="pending">
+      <i class="fas fa-clock"></i> Pending ({{pending.length}})
+    </button>
+    <button type="button" class="item" data-tab="approved">
+      <i class="fas fa-check"></i> Approved ({{approved.length}})
+    </button>
+    <button type="button" class="item" data-tab="rejected">
+      <i class="fas fa-times"></i> Rejected ({{rejected.length}})
+    </button>
+  </div>
+
+  <div class="tab-content">
+    <div class="tab active" data-tab="pending">
+      {{#if pending.length}}
+      {{#each pending}}
+      <div class="holiday-card pending" data-id="{{id}}">
+        <div class="holiday-header">
+          <h3>{{name}}</h3>
+          <span class="holiday-date">{{formattedDate}}</span>
+        </div>
+        <div class="holiday-meta">
+          <span>Submitted by {{submittedBy}}</span>
+          <span>{{submittedAt}}</span>
+        </div>
+        {{#if description}}
+        <p class="holiday-description">{{truncatedDescription}}</p>
+        {{/if}}
+        <div class="holiday-actions">
+          <button type="button" class="approve-btn" data-id="{{id}}"><i class="fas fa-check"></i> Approve</button>
+          <button type="button" class="reject-btn" data-id="{{id}}"><i class="fas fa-times"></i> Reject</button>
+        </div>
+      </div>
+      {{/each}}
+      {{else}}
+      <p class="no-holidays">No pending holiday submissions.</p>
+      {{/if}}
+    </div>
+
+    <div class="tab" data-tab="approved">
+      {{#if approved.length}}
+      {{#each approved}}
+      <div class="holiday-card approved" data-id="{{id}}">
+        <div class="holiday-header">
+          <h3>{{name}}</h3>
+          <span class="holiday-date">{{formattedDate}}</span>
+        </div>
+        <div class="holiday-meta">
+          <span>Submitted by {{submittedBy}}</span>
+          <span>Approved by {{approvedBy}}</span>
+        </div>
+        {{#if description}}
+        <p class="holiday-description">{{description}}</p>
+        {{/if}}
+        <div class="holiday-actions">
+          <button type="button" class="delete-btn" data-id="{{id}}"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+      </div>
+      {{/each}}
+      {{else}}
+      <p class="no-holidays">No approved holidays.</p>
+      {{/if}}
+    </div>
+
+    <div class="tab" data-tab="rejected">
+      {{#if rejected.length}}
+      {{#each rejected}}
+      <div class="holiday-card rejected" data-id="{{id}}">
+        <div class="holiday-header">
+          <h3>{{name}}</h3>
+          <span class="holiday-date">{{formattedDate}}</span>
+        </div>
+        <div class="holiday-meta">
+          <span>Submitted by {{submittedBy}}</span>
+          <span>Rejected by {{rejectedBy}}</span>
+        </div>
+        {{#if rejectionReason}}
+        <p class="rejection-reason"><strong>Reason:</strong> {{rejectionReason}}</p>
+        {{/if}}
+        <div class="holiday-actions">
+          <button type="button" class="delete-btn" data-id="{{id}}"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+      </div>
+      {{/each}}
+      {{else}}
+      <p class="no-holidays">No rejected holidays.</p>
+      {{/if}}
+    </div>
+  </div>
+</div>
