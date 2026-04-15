@@ -2,29 +2,16 @@
   "id": "dnd5e-calendar",
   "title": "DnD5e Calendar & Time Tracker",
   "description": "A fully editable in-game calendar with time tracking, seasons, weather, moon phases, day/night cycles, and holiday management for DnD5e.",
+  "author": "Null8Void",
   "version": "1.0.0",
   "compatibility": {
-    "minimum": "10.0.0",
-    "verified": "11.315",
-    "maximum": "11.999"
+    "minimum": "13",
+    "verified": "14",
+    "maximum": "14"
   },
-  "authors": [
-    {
-      "name": "Null8Void",
-      "email": "",
-      "url": "https://github.com/Null8Void"
-    }
-  ],
-  "urls": {
-    "repository": "https://github.com/Null8Void/dnd5e-calendar",
-    "bugs": "https://github.com/Null8Void/dnd5e-calendar/issues"
-  },
-  "licenses": [
-    {
-      "title": "MIT License",
-      "url": "https://opensource.org/licenses/MIT"
-    }
-  ],
+  "url": "https://github.com/Null8Void/dnd5e-calendar",
+  "manifest": "https://raw.githubusercontent.com/Null8Void/dnd5e-calendar/master/module.json",
+  "download": "https://github.com/Null8Void/dnd5e-calendar/archive/master.zip",
   "readme": "README.md",
   "bugs": "https://github.com/Null8Void/dnd5e-calendar/issues",
   "changelog": "https://github.com/Null8Void/dnd5e-calendar/releases",
@@ -61,22 +48,17 @@
     "styles/calendar.css"
   ],
   "packs": [],
-  "relationships": {
-    "requires": [],
-    "recommends": [],
-    "systems": [
-      {
-        "id": "dnd5e",
-        "type": "system",
-        "manifest": "",
-        "compatibility": {
-          "minimum": "2.0.0",
-          "verified": "2.5.0",
-          "maximum": "3.0.0"
-        }
+  "systems": [
+    {
+      "id": "dnd5e",
+      "type": "system",
+      "compatibility": {
+        "minimum": "5.0.0",
+        "verified": "5.3.0",
+        "maximum": "5.3.0"
       }
-    ]
-  },
-  "flags": {},
-  "manifestPlusVersion": "1.0.0"
+    }
+  ],
+  "dependencies": [],
+  "flags": {}
 }
