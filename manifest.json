@@ -1,63 +1,38 @@
 {
   "name": "dnd5e-calendar",
-  "title": "DnD5e Calendar & Time Tracker",
-  "description": "A fully editable in-game calendar with time tracking, seasons, weather, moon phases, day/night cycles, and holiday management for DnD5e.",
   "version": "1.0.0",
-  "author": "Module Developer",
+  "description": "A fully editable in-game calendar with time tracking, seasons, weather, moon phases, day/night cycles, and holiday management for DnD5e in FoundryVTT.",
+  "main": "scripts/main.js",
+  "type": "module",
+  "author": {
+    "name": "Null8Void",
+    "url": "https://github.com/Null8Void"
+  },
   "license": "MIT",
   "readme": "README.md",
-  "bugs": "",
-  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Null8Void/dnd5e-calendar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Null8Void/dnd5e-calendar/issues"
+  },
   "keywords": [
     "foundryvtt",
+    "foundry-vtt",
     "dnd5e",
+    "dnd5e-system",
     "calendar",
-    "time",
-    "tracker",
-    "fantasy"
+    "time-tracker",
+    "fantasy-calendar",
+    "rpg",
+    "tabletop"
   ],
-  "systems": ["dnd5e"],
-  "languages": [
-    {
-      "lang": "en",
-      "name": "English",
-      "path": "lang/en.json"
-    }
-  ],
-  "styles": [
-    "styles/calendar.css"
-  ],
-  "scripts": [
-    "scripts/main.js",
-    "scripts/calendar-data.js",
-    "scripts/calendar-constants.js",
-    "scripts/calendar-manager.js",
-    "scripts/calendar-hud.js",
-    "scripts/calendar-config.js",
-    "scripts/calendar-api.js",
-    "scripts/calendar-utils.js",
-    "scripts/calendar-permissions.js",
-    "scripts/calendar-debug.js",
-    "scripts/moon-phase-manager.js",
-    "scripts/weather-manager.js",
-    "scripts/season-manager.js",
-    "scripts/day-night-manager.js",
-    "scripts/holiday-manager.js",
-    "scripts/holiday-submit-dialog.js",
-    "scripts/holiday-approval-panel.js"
-  ],
-  "packs": [],
-  "relationships": {
-    "systems": [
-      {
-        "id": "dnd5e",
-        "type": "system",
-        "compatibility": {
-          "minimum": "2.0.0"
-        }
-      }
-    ]
+  "foundry": {
+    "manifest": "https://raw.githubusercontent.com/Null8Void/dnd5e-calendar/master/module.json",
+    "download": "https://github.com/Null8Void/dnd5e-calendar/archive/master.zip"
   },
-  "manifest": "module.json",
-  "download": ""
+  "engines": {
+    "foundryvtt": ">=10.0.0"
+  }
 }

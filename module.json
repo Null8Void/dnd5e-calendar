@@ -10,11 +10,15 @@
   },
   "authors": [
     {
-      "name": "Module Developer",
-      "flags": {}
+      "name": "Null8Void",
+      "email": "",
+      "url": "https://github.com/Null8Void"
     }
   ],
-  "urls": [],
+  "urls": {
+    "repository": "https://github.com/Null8Void/dnd5e-calendar",
+    "bugs": "https://github.com/Null8Void/dnd5e-calendar/issues"
+  },
   "licenses": [
     {
       "title": "MIT License",
@@ -22,18 +26,36 @@
     }
   ],
   "readme": "README.md",
-  "bugs": "",
-  "changelog": "",
+  "bugs": "https://github.com/Null8Void/dnd5e-calendar/issues",
+  "changelog": "https://github.com/Null8Void/dnd5e-calendar/releases",
   "languages": [
     {
       "lang": "en",
       "name": "English",
-      "path": "lang/en.json",
-      "flags": {}
+      "path": "lang/en.json"
     }
   ],
   "esmodules": [
     "scripts/main.js"
+  ],
+  "scripts": [
+    "scripts/main.js",
+    "scripts/calendar-data.js",
+    "scripts/calendar-constants.js",
+    "scripts/calendar-manager.js",
+    "scripts/calendar-hud.js",
+    "scripts/calendar-config.js",
+    "scripts/calendar-api.js",
+    "scripts/calendar-utils.js",
+    "scripts/calendar-permissions.js",
+    "scripts/calendar-debug.js",
+    "scripts/moon-phase-manager.js",
+    "scripts/weather-manager.js",
+    "scripts/season-manager.js",
+    "scripts/day-night-manager.js",
+    "scripts/holiday-manager.js",
+    "scripts/holiday-submit-dialog.js",
+    "scripts/holiday-approval-panel.js"
   ],
   "styles": [
     "styles/calendar.css"
@@ -49,7 +71,8 @@
         "manifest": "",
         "compatibility": {
           "minimum": "2.0.0",
-          "verified": "2.5.0"
+          "verified": "2.5.0",
+          "maximum": "3.0.0"
         }
       }
     ]

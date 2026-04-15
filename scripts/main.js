@@ -48,6 +48,15 @@ export const DnD5eCalendar = {
       default: "top"
     });
 
+    game.settings.register("dnd5e-calendar", "debugMode", {
+      name: game.i18n.localize("DNDCAL.Settings.DebugMode"),
+      hint: game.i18n.localize("DNDCAL.Settings.DebugModeHint"),
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false
+    });
+
     game.settings.registerMenu("dnd5e-calendar", "configMenu", {
       name: game.i18n.localize("DNDCAL.Settings.OpenConfig"),
       label: game.i18n.localize("DNDCAL.Settings.OpenConfigLabel"),

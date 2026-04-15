@@ -9,7 +9,9 @@
       "HudPosition": "HUD Position",
       "OpenConfig": "Calendar Configuration",
       "OpenConfigLabel": "Open Calendar Settings",
-      "OpenConfigHint": "Configure the calendar, time, seasons, weather, and holidays."
+      "OpenConfigHint": "Configure the calendar, time, seasons, weather, and holidays.",
+      "DebugMode": "Enable Debug Mode",
+      "DebugModeHint": "Enable detailed console logging for troubleshooting. Search [DnD5e-Calendar] in console."
     },
 
     "Keybinds": {
