@@ -1,10 +1,14 @@
 import { CalendarManager } from "./calendar-manager.js";
 import { CalendarHUD } from "./calendar-hud.js";
 import { CalendarConfig } from "./calendar-config.js";
+import { CalendarApprovalPanel } from "./holiday-approval-panel.js";
+import { HolidaySubmitDialog } from "./holiday-submit-dialog.js";
 import { CalendarAPI } from "./calendar-api.js";
 import { CalendarData } from "./calendar-data.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
+import { CalendarUtils } from "./calendar-utils.js";
 import { CalendarDebug } from "./calendar-debug.js";
+import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
 console.log("[DnD5e-Calendar] DEBUG: main.js - All imports processed, DnD5eCalendar object being created");
 
