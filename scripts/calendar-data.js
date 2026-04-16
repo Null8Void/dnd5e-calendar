@@ -177,7 +177,7 @@ export class CalendarData {
   static async addHoliday(holiday, status = "pending") {
     const holidays = await this.loadHolidays();
     holiday.id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    holiday.submittedBy = game.user.name;
+    holiday.submittedBy = game.users.current?.name ?? "Unknown User";
     holiday.submittedAt = new Date().toISOString();
     holiday.status = status;
 
@@ -213,7 +213,7 @@ export class CalendarData {
 
     const holiday = holidays.pending.splice(pendingIndex, 1)[0];
     holiday.status = "approved";
-    holiday.approvedBy = game.user.name;
+    holiday.approvedBy = game.users.current?.name ?? "Unknown User";
     holiday.approvedAt = new Date().toISOString();
     holidays.approved.push(holiday);
 
@@ -229,7 +229,7 @@ export class CalendarData {
 
     const holiday = holidays.pending.splice(pendingIndex, 1)[0];
     holiday.status = "rejected";
-    holiday.rejectedBy = game.user.name;
+    holiday.rejectedBy = game.users.current?.name ?? "Unknown User";
     holiday.rejectedAt = new Date().toISOString();
     holiday.rejectionReason = reason;
     holidays.rejected.push(holiday);
