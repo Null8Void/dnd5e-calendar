@@ -109,11 +109,19 @@ export const DnD5eCalendar = {
       DnD5eCalendar.hud.render();
     });
 
+    Hooks.on("dnd5e-calendar:dayChange", () => {
+      DnD5eCalendar.hud.render();
+    });
+
     Hooks.on("dnd5e-calendar:timeChange", () => {
       DnD5eCalendar.hud.render();
     });
 
     Hooks.on("dnd5e-calendar:dayNightChange", () => {
+      DnD5eCalendar.hud.render();
+    });
+
+    Hooks.on("dnd5e-calendar:moonPhaseChange", () => {
       DnD5eCalendar.hud.render();
     });
 

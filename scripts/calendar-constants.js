@@ -17,7 +17,7 @@ export const CALENDAR_CONSTANTS = {
   },
 
   MOON: {
-    DEFAULT_CYCLE_DAYS: 15,
+    DEFAULT_CYCLE_DAYS: 10,
     PHASES: [
       "new",
       "waxingCrescent",
@@ -37,7 +37,18 @@ export const CALENDAR_CONSTANTS = {
       "Waning Gibbous",
       "Last Quarter",
       "Waning Crescent"
-    ]
+    ],
+    SPECIAL_PHASES: ["new", "full"],
+    PHASE_DAYS: {
+      "new": 1,
+      "waxingCrescent": 2,
+      "firstQuarter": 3,
+      "waxingGibbous": 4,
+      "full": 6,
+      "waningGibbous": 7,
+      "lastQuarter": 8,
+      "waningCrescent": 9
+    }
   },
 
   SEASONS: {

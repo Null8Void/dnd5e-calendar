@@ -17,7 +17,7 @@ export class HolidayManager {
   }
 
   getPendingHolidays() {
-    const settings = this.manager?.data?.settings || {};
+    const settings = this.manager?.settings || {};
     if (!CalendarPermissions.canViewPendingHolidays(settings)) {
       return [];
     }
@@ -25,7 +25,7 @@ export class HolidayManager {
   }
 
   getRejectedHolidays() {
-    const settings = this.manager?.data?.settings || {};
+    const settings = this.manager?.settings || {};
     if (!CalendarPermissions.canViewPendingHolidays(settings)) {
       return [];
     }
@@ -45,7 +45,7 @@ export class HolidayManager {
   }
 
   async submitHoliday(name, date, description = "") {
-    const settings = this.manager?.data?.settings || {};
+    const settings = this.manager?.settings || {};
     if (!CalendarPermissions.canSubmitHolidays(settings)) {
       throw new Error("User does not have permission to submit holidays");
     }
