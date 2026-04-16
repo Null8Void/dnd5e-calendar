@@ -22,7 +22,32 @@
     "HUD": {
       "Loading": "Loading...",
       "Day": "Day",
-      "Night": "Night"
+      "Night": "Night",
+      "PrimaryCalendar": "Primary Calendar",
+      "SecondaryCalendar": "Secondary Calendar"
+    },
+
+    "Weekdays": {
+      "Starday": "Starday",
+      "StardayAbbr": "St",
+      "Sunday": "Sunday",
+      "SundayAbbr": "Su",
+      "Moonday": "Moonday",
+      "MoondayAbbr": "Mo",
+      "Tiday": "Tiday",
+      "TidayAbbr": "Ti",
+      "Earthday": "Earthday",
+      "EarthdayAbbr": "Ea",
+      "Waterday": "Waterday",
+      "WaterdayAbbr": "Wa",
+      "Windday": "Windday",
+      "WinddayAbbr": "Wi",
+      "Fireday": "Fireday",
+      "FiredayAbbr": "Fi",
+      "Iceday": "Iceday",
+      "IcedayAbbr": "Ic",
+      "Treeday": "Treeday",
+      "TreedayAbbr": "Tr"
     },
 
     "Config": {
@@ -34,7 +59,9 @@
       "HolidaysTab": "Holidays",
       "SettingsTab": "Settings",
       "Save": "Save Settings",
-      "Cancel": "Cancel"
+      "Cancel": "Cancel",
+      "SelectSeason": "Select Season",
+      "SelectWeather": "Select Weather"
     },
 
     "Calendar": {
@@ -51,6 +78,9 @@
     "Time": {
       "CurrentTime": "Current Time",
       "AdvanceTime": "Advance Time",
+      "AdjustTime": "Adjust Time",
+      "Hour": "Hour",
+      "Minute": "Minute",
       "AddMinute": "+1 Minute",
       "Add15Minutes": "+15 Minutes",
       "AddHour": "+1 Hour",
@@ -73,7 +103,21 @@
       "CurrentWeather": "Current Weather",
       "SetWeather": "Set Weather",
       "GmNotes": "GM Notes",
-      "GmNotesPlaceholder": "Private notes about weather effects..."
+      "GmNotesPlaceholder": "Private notes about weather effects...",
+      "ClearSkies": "Clear skies",
+      "PartlyCloudy": "Partly cloudy",
+      "Overcast": "Overcast",
+      "LightRain": "Light rain",
+      "HeavyRain": "Heavy rain",
+      "Thunderstorm": "Thunderstorm",
+      "LightSnow": "Light snow",
+      "HeavySnow": "Heavy snow",
+      "Foggy": "Foggy",
+      "Windy": "Windy",
+      "Hot": "Hot",
+      "Cold": "Cold",
+      "Blizzard": "Blizzard",
+      "Hail": "Hail"
     },
 
     "Moon": {

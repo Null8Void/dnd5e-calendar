@@ -80,8 +80,8 @@ export class CalendarHUD extends Application {
     return {
       formattedDate,
       formattedTime,
-      dayOfWeek: dayOfWeek?.name || "Starday",
-      dayAbbr: dayOfWeek?.abbr || "St",
+      dayOfWeek: dayOfWeek?.name || game.i18n.localize("DNDCAL.Weekdays.Starday"),
+      dayAbbr: dayOfWeek?.abbr || game.i18n.localize("DNDCAL.Weekdays.StardayAbbr"),
       moonPhase: moonPhase.name,
       moonIcon: CalendarUtils.getMoonPhaseIcon(moonPhase.key),
       weather,
@@ -102,7 +102,7 @@ export class CalendarHUD extends Application {
 
   _getDefaultData() {
     return {
-      formattedDate: "Loading...",
+      formattedDate: game.i18n.localize("DNDCAL.HUD.Loading"),
       formattedTime: "--:--",
       dayOfWeek: "---",
       dayAbbr: "--",
@@ -118,7 +118,7 @@ export class CalendarHUD extends Application {
       progress: { isDay: true, progress: 0.5 },
       showGradient: true,
       showIcon: false,
-      calendars: [{ id: "primary", name: "Primary Calendar", isActive: true }],
+      calendars: [{ id: "primary", name: game.i18n.localize("DNDCAL.HUD.PrimaryCalendar"), isActive: true }],
       canEdit: false,
       calendarsCount: 1
     };
@@ -210,28 +210,28 @@ export class CalendarHUD extends Application {
     const content = `
       <form>
         <div class="dnd5e-calendar-time-editor">
-          <h3>Adjust Time</h3>
+          <h3>${game.i18n.localize("DNDCAL.Time.AdjustTime")}</h3>
           <div class="form-group">
-            <label>Hour</label>
+            <label>${game.i18n.localize("DNDCAL.Time.Hour")}</label>
             <input type="number" name="hour" min="0" max="23" value="${currentTime.hour}">
           </div>
           <div class="form-group">
-            <label>Minute</label>
+            <label>${game.i18n.localize("DNDCAL.Time.Minute")}</label>
             <input type="number" name="minute" min="0" max="59" value="${currentTime.minute}">
           </div>
           <div class="form-group">
-            <button type="button" class="time-advance" data-minutes="1">+1 Min</button>
-            <button type="button" class="time-advance" data-minutes="15">+15 Min</button>
-            <button type="button" class="time-advance" data-minutes="60">+1 Hour</button>
+            <button type="button" class="time-advance" data-minutes="1">${game.i18n.localize("DNDCAL.Time.AddMinute")}</button>
+            <button type="button" class="time-advance" data-minutes="15">${game.i18n.localize("DNDCAL.Time.Add15Minutes")}</button>
+            <button type="button" class="time-advance" data-minutes="60">${game.i18n.localize("DNDCAL.Time.AddHour")}</button>
           </div>
         </div>
       </form>
     `;
 
     await Dialog.prompt({
-      title: game.i18n.localize("DNDCAL.Time.CurrentTime") || "Adjust Time",
+      title: game.i18n.localize("DNDCAL.Time.CurrentTime"),
       content,
-      label: game.i18n.localize("DNDCAL.Config.Save") || "Save",
+      label: game.i18n.localize("DNDCAL.Config.Save"),
       callback: async (html) => {
         const hour = parseInt(html.find('input[name="hour"]').val());
         const minute = parseInt(html.find('input[name="minute"]').val());
@@ -245,13 +245,13 @@ export class CalendarHUD extends Application {
   async showSeasonSelector() {
     const currentSeason = DnD5eCalendar.manager.seasonManager.getCurrentSeason();
     const seasons = [
-      { key: "spring", name: game.i18n.localize("DNDCAL.Season.Spring") || "Spring" },
-      { key: "summer", name: game.i18n.localize("DNDCAL.Season.Summer") || "Summer" },
-      { key: "fall", name: game.i18n.localize("DNDCAL.Season.Fall") || "Fall" },
-      { key: "winter", name: game.i18n.localize("DNDCAL.Season.Winter") || "Winter" }
+      { key: "spring", name: game.i18n.localize("DNDCAL.Season.Spring") },
+      { key: "summer", name: game.i18n.localize("DNDCAL.Season.Summer") },
+      { key: "fall", name: game.i18n.localize("DNDCAL.Season.Fall") },
+      { key: "winter", name: game.i18n.localize("DNDCAL.Season.Winter") }
     ];
 
-    let content = '<form><div class="dnd5e-calendar-season-selector"><h3>Select Season</h3><div class="season-buttons">';
+    let content = `<form><div class="dnd5e-calendar-season-selector"><h3>${game.i18n.localize("DNDCAL.Config.SelectSeason")}</h3><div class="season-buttons">`;
     for (const season of seasons) {
       content += `<button type="button" class="season-btn ${season.key === currentSeason ? 'active' : ''}" data-season="${season.key}">
         <i class="fas ${CalendarUtils.getSeasonIcon(season.key)}"></i> ${season.name}
@@ -260,9 +260,9 @@ export class CalendarHUD extends Application {
     content += '</div></div></form>';
 
     await Dialog.prompt({
-      title: game.i18n.localize("DNDCAL.Season.CurrentSeason") || "Set Season",
+      title: game.i18n.localize("DNDCAL.Season.CurrentSeason"),
       content,
-      label: game.i18n.localize("DNDCAL.Config.Save") || "Save",
+      label: game.i18n.localize("DNDCAL.Config.Save"),
       callback: async (html) => {
         const season = html.find(".season-btn.active").data("season");
         if (season) {
@@ -277,32 +277,32 @@ export class CalendarHUD extends Application {
   async showWeatherSelector() {
     const currentWeather = DnD5eCalendar.manager.weatherManager.getWeather();
     const weatherTypes = [
-      "Clear skies",
-      "Partly cloudy",
-      "Overcast",
-      "Light rain",
-      "Heavy rain",
-      "Thunderstorm",
-      "Light snow",
-      "Heavy snow",
-      "Foggy",
-      "Windy",
-      "Hot",
-      "Cold",
-      "Blizzard",
-      "Hail"
+      { key: "Clear skies", label: game.i18n.localize("DNDCAL.Weather.ClearSkies") },
+      { key: "Partly cloudy", label: game.i18n.localize("DNDCAL.Weather.PartlyCloudy") },
+      { key: "Overcast", label: game.i18n.localize("DNDCAL.Weather.Overcast") },
+      { key: "Light rain", label: game.i18n.localize("DNDCAL.Weather.LightRain") },
+      { key: "Heavy rain", label: game.i18n.localize("DNDCAL.Weather.HeavyRain") },
+      { key: "Thunderstorm", label: game.i18n.localize("DNDCAL.Weather.Thunderstorm") },
+      { key: "Light snow", label: game.i18n.localize("DNDCAL.Weather.LightSnow") },
+      { key: "Heavy snow", label: game.i18n.localize("DNDCAL.Weather.HeavySnow") },
+      { key: "Foggy", label: game.i18n.localize("DNDCAL.Weather.Foggy") },
+      { key: "Windy", label: game.i18n.localize("DNDCAL.Weather.Windy") },
+      { key: "Hot", label: game.i18n.localize("DNDCAL.Weather.Hot") },
+      { key: "Cold", label: game.i18n.localize("DNDCAL.Weather.Cold") },
+      { key: "Blizzard", label: game.i18n.localize("DNDCAL.Weather.Blizzard") },
+      { key: "Hail", label: game.i18n.localize("DNDCAL.Weather.Hail") }
     ];
 
-    let content = `<form><div class="dnd5e-calendar-weather-selector"><h3>Set Weather</h3><select name="weather">`;
+    let content = `<form><div class="dnd5e-calendar-weather-selector"><h3>${game.i18n.localize("DNDCAL.Weather.SetWeather")}</h3><select name="weather">`;
     for (const weather of weatherTypes) {
-      content += `<option value="${weather}" ${weather === currentWeather ? 'selected' : ''}>${weather}</option>`;
+      content += `<option value="${weather.key}" ${weather.key === currentWeather ? 'selected' : ''}>${weather.label}</option>`;
     }
     content += '</select></div></form>';
 
     await Dialog.prompt({
-      title: game.i18n.localize("DNDCAL.Weather.SetWeather") || "Set Weather",
+      title: game.i18n.localize("DNDCAL.Weather.CurrentWeather"),
       content,
-      label: game.i18n.localize("DNDCAL.Config.Save") || "Save",
+      label: game.i18n.localize("DNDCAL.Config.Save"),
       callback: async (html) => {
         const weather = html.find('select[name="weather"]').val();
         await DnD5eCalendar.manager.weatherManager.setWeather(weather);
