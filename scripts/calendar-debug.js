@@ -18,34 +18,17 @@ export class CalendarDebug {
   static init() {
     this.enabled = game.settings.get("dnd5e-calendar", "debugMode") ?? false;
 
-    game.settings.register("dnd5e-calendar", "debugMode", {
-      name: "Enable Debug Mode",
-      hint: "Enable detailed console logging for troubleshooting",
-      scope: "world",
-      config: true,
-      type: Boolean,
-      default: false,
-      onChange: (value) => {
-        this.enabled = value;
-        if (value) {
-          this.info("Debug mode ENABLED");
-        } else {
-          this.info("Debug mode DISABLED");
-        }
-      }
-    });
-
-    game.settings.register("dnd5e-calendar", "debugFeatures", {
-      name: "Debug Features",
-      hint: "Toggle individual feature debugging",
-      scope: "world",
-      config: true,
-      type: Object,
-      default: { ...this.features }
-    });
-
     if (this.enabled) {
       this.info("CalendarDebug initialized", { features: this.features });
+    }
+  }
+
+  static setDebugMode(enabled) {
+    this.enabled = enabled;
+    if (enabled) {
+      this.info("Debug mode ENABLED");
+    } else {
+      this.info("Debug mode DISABLED");
     }
   }
 

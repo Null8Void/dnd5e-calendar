@@ -54,7 +54,10 @@ export const DnD5eCalendar = {
       scope: "world",
       config: true,
       type: Boolean,
-      default: false
+      default: false,
+      onChange: (value) => {
+        CalendarDebug.setDebugMode(value);
+      }
     });
 
     game.settings.registerMenu("dnd5e-calendar", "configMenu", {
