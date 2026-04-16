@@ -62,6 +62,11 @@ export class CalendarAPI {
     return await DnD5eCalendar.manager.seasonManager.setSeason(season);
   }
 
+  rollWeather(season = null) {
+    if (!DnD5eCalendar.manager) return null;
+    return DnD5eCalendar.manager.seasonManager.rollWeatherForDay(season);
+  }
+
   async submitHoliday(name, date, description = "") {
     if (!DnD5eCalendar.manager) return null;
     return await DnD5eCalendar.manager.holidayManager.submitHoliday(name, date, description);
@@ -69,6 +74,10 @@ export class CalendarAPI {
 
   onDateChange(callback) {
     Hooks.on("dnd5e-calendar:dateChange", callback);
+  }
+
+  onDayChange(callback) {
+    Hooks.on("dnd5e-calendar:dayChange", callback);
   }
 
   onTimeChange(callback) {
@@ -81,6 +90,10 @@ export class CalendarAPI {
 
   onWeatherChange(callback) {
     Hooks.on("dnd5e-calendar:weatherChange", callback);
+  }
+
+  onAutoWeatherRoll(callback) {
+    Hooks.on("dnd5e-calendar:autoWeatherRoll", callback);
   }
 
   onMoonPhaseChange(callback) {
