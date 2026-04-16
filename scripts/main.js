@@ -113,6 +113,10 @@ export const DnD5eCalendar = {
       DnD5eCalendar.hud.render();
     });
 
+    Hooks.on("dnd5e-calendar:dayNightChange", () => {
+      DnD5eCalendar.hud.render();
+    });
+
     Hooks.on("dnd5e-calendar:weatherChange", () => {
       DnD5eCalendar.hud.updateWeatherEffect();
     });
