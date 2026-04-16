@@ -1,9 +1,10 @@
 import { CalendarUtils } from "./calendar-utils.js";
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
-console.log("[DnD5e-Calendar] DEBUG: season-manager.js LOADED");
-
 export class SeasonManager {
+  constructor() {
+    console.log("[DnD5e-Calendar] DEBUG: SeasonManager class instantiated");
+  }
   constructor(manager) {
     this.manager = manager;
     this.data = null;

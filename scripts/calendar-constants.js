@@ -1,5 +1,3 @@
-console.log("[DnD5e-Calendar] DEBUG: calendar-constants.js LOADED");
-
 export const CALENDAR_CONSTANTS = {
   VERSION: "1.1.0",
 

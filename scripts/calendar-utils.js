@@ -1,8 +1,9 @@
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
-console.log("[DnD5e-Calendar] DEBUG: calendar-utils.js LOADED");
-
 export class CalendarUtils {
+  constructor() {
+    console.log("[DnD5e-Calendar] DEBUG: CalendarUtils class instantiated");
+  }
   static formatTime(hour, minute, second = 0, showSeconds = false) {
     const h = hour.toString().padStart(2, "0");
     const m = minute.toString().padStart(2, "0");
@@ -19,7 +20,7 @@ export class CalendarUtils {
     const month = calendar.months[monthIndex];
     if (!month) return `${day}/${monthIndex + 1}/${year}`;
 
-    const yearPrefix = useYearName ? `${calendar.epoch || game.i18n?.localize("DNDCAL.Calendar.Year") ?? "Year"} ` : "";
+    const yearPrefix = useYearName ? `${calendar.epoch || (game.i18n?.localize("DNDCAL.Calendar.Year") ?? "Year")} ` : "";
     return `${month.name} ${day}, ${yearPrefix}${year}`;
   }
 

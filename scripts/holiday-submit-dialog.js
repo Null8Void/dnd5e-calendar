@@ -2,8 +2,6 @@ import { CalendarData } from "./calendar-data.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarUtils } from "./calendar-utils.js";
 
-console.log("[DnD5e-Calendar] DEBUG: holiday-submit-dialog.js LOADED");
-
 export class HolidaySubmitDialog extends Application {
   constructor(options = {}) {
     console.log("[DnD5e-Calendar] DEBUG: HolidaySubmitDialog constructor fired");

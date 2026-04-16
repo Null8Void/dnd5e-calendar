@@ -1,6 +1,7 @@
-console.log("[DnD5e-Calendar] DEBUG: calendar-permissions.js LOADED");
-
 export class CalendarPermissions {
+  constructor() {
+    console.log("[DnD5e-Calendar] DEBUG: CalendarPermissions class instantiated");
+  }
   static canView() {
     const result = true;
     CalendarDebug.feature("permissions", `canView: ALLOWED`);

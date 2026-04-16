@@ -1,8 +1,9 @@
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
-console.log("[DnD5e-Calendar] DEBUG: calendar-data.js LOADED");
-
 export class CalendarData {
+  constructor() {
+    console.log("[DnD5e-Calendar] DEBUG: CalendarData class instantiated");
+  }
   static getDefaultCalendar() {
     const cal = JSON.parse(JSON.stringify(CALENDAR_CONSTANTS.DEFAULT_CALENDARS.primary));
     cal.months = JSON.parse(JSON.stringify(CALENDAR_CONSTANTS.DEFAULT_MONTHS));

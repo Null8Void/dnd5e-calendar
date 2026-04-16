@@ -2,8 +2,6 @@ import { CalendarData } from "./calendar-data.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarUtils } from "./calendar-utils.js";
 
-console.log("[DnD5e-Calendar] DEBUG: holiday-approval-panel.js LOADED");
-
 export class CalendarApprovalPanel extends Application {
   constructor(options = {}) {
     console.log("[DnD5e-Calendar] DEBUG: CalendarApprovalPanel constructor fired");

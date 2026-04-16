@@ -1,9 +1,10 @@
 import { CalendarUtils } from "./calendar-utils.js";
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
-console.log("[DnD5e-Calendar] DEBUG: day-night-manager.js LOADED");
-
 export class DayNightManager {
+  constructor() {
+    console.log("[DnD5e-Calendar] DEBUG: DayNightManager class instantiated");
+  }
   constructor(manager) {
     this.manager = manager;
     this.data = null;

@@ -5,8 +5,6 @@ import { CalendarApprovalPanel } from "./holiday-approval-panel.js";
 import { HolidaySubmitDialog } from "./holiday-submit-dialog.js";
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
-console.log("[DnD5e-Calendar] DEBUG: calendar-config.js LOADED");
-
 export class CalendarConfig extends Application {
   constructor(options = {}) {
     console.log("[DnD5e-Calendar] DEBUG: CalendarConfig constructor fired");

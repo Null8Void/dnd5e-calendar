@@ -1,6 +1,7 @@
-console.log("[DnD5e-Calendar] DEBUG: calendar-api.js LOADED");
-
 export class CalendarAPI {
+  constructor() {
+    console.log("[DnD5e-Calendar] DEBUG: CalendarAPI class instantiated");
+  }
   getCalendar() {
     if (!DnD5eCalendar.manager) return null;
     return DnD5eCalendar.manager.getActiveCalendar();

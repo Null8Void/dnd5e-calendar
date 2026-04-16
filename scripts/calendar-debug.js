@@ -1,6 +1,7 @@
-console.log("[DnD5e-Calendar] DEBUG: calendar-debug.js LOADED");
-
 export class CalendarDebug {
+  constructor() {
+    console.log("[DnD5e-Calendar] DEBUG: CalendarDebug class instantiated");
+  }
   static PREFIX = "[DnD5e-Calendar]";
   static enabled = false;
   static features = {

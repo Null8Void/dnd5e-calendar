@@ -6,7 +6,7 @@ import { CalendarData } from "./calendar-data.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarDebug } from "./calendar-debug.js";
 
-console.log("[DnD5e-Calendar] DEBUG: main.js LOADED - All imports processed");
+console.log("[DnD5e-Calendar] DEBUG: main.js - All imports processed, DnD5eCalendar object being created");
 
 export const DnD5eCalendar = {
   manager: null,
