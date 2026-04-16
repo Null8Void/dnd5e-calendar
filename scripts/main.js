@@ -1,193 +1,184 @@
-import { CalendarManager } from "./calendar-manager.js";
+import { DnD5eCalendar } from "./calendar-integration.js";
+import { CalendarDebug } from "./calendar-debug.js";
 import { CalendarHUD } from "./calendar-hud.js";
 import { CalendarConfig } from "./calendar-config.js";
-import { CalendarApprovalPanel } from "./holiday-approval-panel.js";
-import { HolidaySubmitDialog } from "./holiday-submit-dialog.js";
-import { CalendarAPI } from "./calendar-api.js";
-import { CalendarData } from "./calendar-data.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
-import { CalendarUtils } from "./calendar-utils.js";
-import { CalendarDebug } from "./calendar-debug.js";
-import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
-console.log("[DnD5e-Calendar] DEBUG: main.js TOP - imports loaded, defining DnD5eCalendar");
-console.log("[DnD5e-Calendar] DEBUG: CALENDAR_CONSTANTS:", CALENDAR_CONSTANTS.VERSION);
-window.alert("[DnD5e-Calendar] main.js is executing! If you see this, the module loads.");
+console.log("[DnD5e-Calendar] v14 Integration - main.js loaded");
 
-export const DnD5eCalendar = {
-  manager: null,
-  hud: null,
-  config: null,
-  api: null,
-  debug: CalendarDebug,
+let hud = null;
+let config = null;
 
-  init() {
-    console.log("[DnD5e-Calendar] DEBUG: DnD5eCalendar.init() STARTED");
-    CalendarDebug.init();
-    CalendarDebug.info("Module initialization starting");
+function init() {
+  console.log("[DnD5e-Calendar] DEBUG: init() STARTED");
+  CalendarDebug.init();
+  CalendarDebug.info("Module initialization starting");
 
-    DnD5eCalendar.manager = new CalendarManager();
-    DnD5eCalendar.api = new CalendarAPI();
-    DnD5eCalendar.hud = new CalendarHUD();
-    DnD5eCalendar.config = new CalendarConfig();
+  hud = new CalendarHUD();
+  config = new CalendarConfig();
 
-    this.registerSettings();
-    console.log("[DnD5e-Calendar] DEBUG: registerSettings() completed");
+  registerSettings();
+  console.log("[DnD5e-Calendar] DEBUG: registerSettings() completed");
 
-    this.registerHooks();
-    console.log("[DnD5e-Calendar] DEBUG: registerHooks() completed");
+  registerHooks();
+  console.log("[DnD5e-Calendar] DEBUG: registerHooks() completed");
 
-    this.registerKeyboardShortcuts();
-    console.log("[DnD5e-Calendar] DEBUG: registerKeyboardShortcuts() completed");
+  registerKeyboardShortcuts();
+  console.log("[DnD5e-Calendar] DEBUG: registerKeyboardShortcuts() completed");
 
-    CalendarDebug.info("Module initialization complete");
-    console.log("DnD5e Calendar | Module initialized");
-  },
+  CalendarDebug.info("Module initialization complete");
+  console.log("DnD5e Calendar | Module initialized (v14 Integration)");
+}
 
-  registerSettings() {
-    game.settings.register("dnd5e-calendar", "enabled", {
-      name: game.i18n.localize("DNDCAL.Settings.Enabled"),
-      hint: game.i18n.localize("DNDCAL.Settings.EnabledHint"),
-      scope: "world",
-      config: false,
-      type: Boolean,
-      default: true
-    });
+function registerSettings() {
+  game.settings.register("dnd5e-calendar", "enabled", {
+    name: game.i18n.localize("DNDCAL.Settings.Enabled"),
+    hint: game.i18n.localize("DNDCAL.Settings.EnabledHint"),
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: true
+  });
 
-    game.settings.register("dnd5e-calendar", "hudPosition", {
-      name: game.i18n.localize("DNDCAL.Settings.HudPosition"),
-      scope: "world",
-      config: false,
-      type: String,
-      default: "top"
-    });
+  game.settings.register("dnd5e-calendar", "hudPosition", {
+    name: game.i18n.localize("DNDCAL.Settings.HudPosition"),
+    scope: "world",
+    config: false,
+    type: String,
+    default: "top"
+  });
 
-    game.settings.register("dnd5e-calendar", "debugMode", {
-      name: game.i18n.localize("DNDCAL.Settings.DebugMode"),
-      hint: game.i18n.localize("DNDCAL.Settings.DebugModeHint"),
-      scope: "world",
-      config: true,
-      type: Boolean,
-      default: false,
-      onChange: (value) => {
-        CalendarDebug.setDebugMode(value);
+  game.settings.register("dnd5e-calendar", "debugMode", {
+    name: game.i18n.localize("DNDCAL.Settings.DebugMode"),
+    hint: game.i18n.localize("DNDCAL.Settings.DebugModeHint"),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: false,
+    onChange: (value) => {
+      CalendarDebug.setDebugMode(value);
+    }
+  });
+
+  game.settings.register("dnd5e-calendar", "autoWeatherRoll", {
+    name: game.i18n.localize("DNDCAL.Settings.AutoWeatherRoll"),
+    hint: game.i18n.localize("DNDCAL.Settings.AutoWeatherRollHint"),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: false,
+    onChange: (value) => {
+      if (DnD5eCalendar.seasonManager) {
+        DnD5eCalendar.seasonManager.enableAutoWeatherRoll(value);
       }
-    });
+    }
+  });
 
-    game.settings.register("dnd5e-calendar", "autoWeatherRoll", {
-      name: game.i18n.localize("DNDCAL.Settings.AutoWeatherRoll"),
-      hint: game.i18n.localize("DNDCAL.Settings.AutoWeatherRollHint"),
-      scope: "world",
-      config: true,
-      type: Boolean,
-      default: false,
-      onChange: (value) => {
-        if (DnD5eCalendar.manager?.seasonManager) {
-          DnD5eCalendar.manager.seasonManager.enableAutoWeatherRoll(value);
-        }
-      }
-    });
+  game.settings.registerMenu("dnd5e-calendar", "configMenu", {
+    name: game.i18n.localize("DNDCAL.Settings.OpenConfig"),
+    label: game.i18n.localize("DNDCAL.Settings.OpenConfigLabel"),
+    hint: game.i18n.localize("DNDCAL.Settings.OpenConfigHint"),
+    icon: "fas fa-cog",
+    type: CalendarConfig,
+    restricted: true
+  });
+}
 
-    game.settings.registerMenu("dnd5e-calendar", "configMenu", {
-      name: game.i18n.localize("DNDCAL.Settings.OpenConfig"),
-      label: game.i18n.localize("DNDCAL.Settings.OpenConfigLabel"),
-      hint: game.i18n.localize("DNDCAL.Settings.OpenConfigHint"),
-      icon: "fas fa-cog",
-      type: CalendarConfig,
-      restricted: true
-    });
-  },
+function registerHooks() {
+  console.log("[DnD5e-Calendar] DEBUG: registerHooks() - Setting up hooks");
 
-  registerHooks() {
-    console.log("[DnD5e-Calendar] DEBUG: registerHooks() - Setting up hooks");
+  Hooks.on("dnd5e.setupCalendar", (calendar) => {
+    console.log("[DnD5e-Calendar] DEBUG: dnd5e.setupCalendar hook fired!");
+    DnD5eCalendar.setupCalendar(calendar);
+  });
 
-    Hooks.on("ready", () => {
-      console.log("[DnD5e-Calendar] DEBUG: Hooks.on('ready') fired!");
-      console.log("[DnD5e-Calendar] DEBUG: Calling manager.initialize()...");
-      DnD5eCalendar.manager.initialize().then(() => {
-        console.log("[DnD5e-Calendar] DEBUG: manager.initialize() COMPLETED");
-      }).catch(err => {
-        console.error("[DnD5e-Calendar] DEBUG: manager.initialize() FAILED:", err);
-      });
-      console.log("[DnD5e-Calendar] DEBUG: Calling hud.render(true)...");
-      DnD5eCalendar.hud.render(true).then(() => {
-        console.log("[DnD5e-Calendar] DEBUG: hud.render() COMPLETED");
-      }).catch(err => {
+  Hooks.on("ready", () => {
+    console.log("[DnD5e-Calendar] DEBUG: Hooks.on('ready') fired!");
+
+    if (hud) {
+      hud.render(true).catch(err => {
         console.error("[DnD5e-Calendar] DEBUG: hud.render() FAILED:", err);
       });
-      console.log("[DnD5e-Calendar] DEBUG: Ready hook setup complete, waiting for init...");
+    }
 
-      if (game.users.current?.role >= CONST.USER_ROLES.ASSISTANT) {
-        game.socket.on("dnd5e-calendar:update", (data) => {
-          DnD5eCalendar.manager.handleSocketUpdate(data);
-        });
+    if (game.users.current?.role >= CONST.USER_ROLES.ASSISTANT) {
+      game.socket.on("dnd5e-calendar:update", (data) => {
+        console.log("[DnD5e-Calendar] Socket update received:", data);
+      });
+    }
+  });
+
+  Hooks.on("renderSettingsConfig", (app, html) => {
+    if (!CalendarPermissions.canEdit()) return;
+  });
+
+  Hooks.on("closeCalendarConfig", () => {
+    if (hud) hud.render();
+  });
+
+  Hooks.on("dnd5e-calendar:dateChange", () => {
+    if (hud) hud.render();
+  });
+
+  Hooks.on("dnd5e-calendar:dayChange", () => {
+    if (hud) hud.render();
+  });
+
+  Hooks.on("dnd5e-calendar:timeChange", () => {
+    if (hud) hud.render();
+  });
+
+  Hooks.on("dnd5e-calendar:dayNightChange", () => {
+    if (hud) hud.render();
+  });
+
+  Hooks.on("dnd5e-calendar:moonPhaseChange", () => {
+    if (hud) hud.render();
+  });
+
+  Hooks.on("dnd5e-calendar:weatherChange", () => {
+    if (hud) hud.updateWeatherEffect();
+  });
+
+  Hooks.on("dnd5e-calendar:seasonChange", () => {
+    if (hud) hud.render();
+  });
+
+  Hooks.on("dnd5e-calendar:autoWeatherRoll", () => {
+    if (hud) {
+      hud.render();
+      hud.updateWeatherEffect();
+    }
+  });
+
+  Hooks.on("dnd5e-calendar:render", () => {
+    if (hud) hud.render();
+  });
+}
+
+function registerKeyboardShortcuts() {
+  game.keybindings.register("dnd5e-calendar", "openConfig", {
+    name: game.i18n.localize("DNDCAL.Keybinds.OpenConfig"),
+    hint: game.i18n.localize("DNDCAL.Keybinds.OpenConfigHint"),
+    editable: [
+      {
+        key: "KeyC",
+        modifiers: [KeyboardManager.MODIFIER_KEYS.ALT]
       }
-    });
-
-    Hooks.on("renderSettingsConfig", (app, html) => {
-      if (!CalendarPermissions.canEdit()) return;
-    });
-
-    Hooks.on("closeCalendarConfig", () => {
-      DnD5eCalendar.hud.render();
-    });
-
-    Hooks.on("dnd5e-calendar:dateChange", () => {
-      DnD5eCalendar.hud.render();
-    });
-
-    Hooks.on("dnd5e-calendar:dayChange", () => {
-      DnD5eCalendar.hud.render();
-    });
-
-    Hooks.on("dnd5e-calendar:timeChange", () => {
-      DnD5eCalendar.hud.render();
-    });
-
-    Hooks.on("dnd5e-calendar:dayNightChange", () => {
-      DnD5eCalendar.hud.render();
-    });
-
-    Hooks.on("dnd5e-calendar:moonPhaseChange", () => {
-      DnD5eCalendar.hud.render();
-    });
-
-    Hooks.on("dnd5e-calendar:weatherChange", () => {
-      DnD5eCalendar.hud.updateWeatherEffect();
-    });
-
-    Hooks.on("dnd5e-calendar:seasonChange", () => {
-      DnD5eCalendar.hud.render();
-    });
-
-    Hooks.on("dnd5e-calendar:autoWeatherRoll", () => {
-      DnD5eCalendar.hud.render();
-      DnD5eCalendar.hud.updateWeatherEffect();
-    });
-  },
-
-  registerKeyboardShortcuts() {
-    game.keybindings.register("dnd5e-calendar", "openConfig", {
-      name: game.i18n.localize("DNDCAL.Keybinds.OpenConfig"),
-      hint: game.i18n.localize("DNDCAL.Keybinds.OpenConfigHint"),
-      editable: [
-        {
-          key: "KeyC",
-          modifiers: [KeyboardManager.MODIFIER_KEYS.ALT]
-        }
-      ],
-      onDown: () => {
-        if (CalendarPermissions.canEdit()) {
-          DnD5eCalendar.config.render(true);
-        }
+    ],
+    onDown: () => {
+      if (CalendarPermissions.canEdit() && config) {
+        config.render(true);
       }
-    });
-  }
-};
+    }
+  });
+}
 
-console.log("[DnD5e-Calendar] DEBUG: DnD5eCalendar object defined, registering Hooks.once('init')");
+console.log("[DnD5e-Calendar] DEBUG: main.js - registering Hooks.once('init')");
 
 Hooks.once("init", () => {
-  console.log("[DnD5e-Calendar] DEBUG: Hooks.once('init') fired - calling DnD5eCalendar.init()");
-  DnD5eCalendar.init();
+  console.log("[DnD5e-Calendar] DEBUG: Hooks.once('init') fired - calling init()");
+  init();
 });
+
+export { DnD5eCalendar };
