@@ -1,6 +1,8 @@
 import { CalendarUtils } from "./calendar-utils.js";
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
+console.log("[DnD5e-Calendar] DEBUG: moon-phase-manager.js LOADED");
+
 export class MoonPhaseManager {
   constructor(manager) {
     this.manager = manager;

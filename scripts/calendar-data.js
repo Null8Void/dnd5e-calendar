@@ -1,5 +1,7 @@
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
+console.log("[DnD5e-Calendar] DEBUG: calendar-data.js LOADED");
+
 export class CalendarData {
   static getDefaultCalendar() {
     const cal = JSON.parse(JSON.stringify(CALENDAR_CONSTANTS.DEFAULT_CALENDARS.primary));

@@ -1,5 +1,7 @@
+console.log("[DnD5e-Calendar] DEBUG: calendar-constants.js LOADED");
+
 export const CALENDAR_CONSTANTS = {
-  VERSION: "1.0.0",
+  VERSION: "1.1.0",
 
   TIME: {
     MINUTES_PER_HOUR: 60,

@@ -2,8 +2,11 @@ import { CalendarData } from "./calendar-data.js";
 import { CalendarUtils } from "./calendar-utils.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 
+console.log("[DnD5e-Calendar] DEBUG: calendar-hud.js LOADED");
+
 export class CalendarHUD extends Application {
   constructor(options = {}) {
+    console.log("[DnD5e-Calendar] DEBUG: CalendarHUD constructor fired");
     super(options);
     this.data = null;
     this.settings = null;

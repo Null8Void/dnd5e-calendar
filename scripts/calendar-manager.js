@@ -7,8 +7,11 @@ import { DayNightManager } from "./day-night-manager.js";
 import { HolidayManager } from "./holiday-manager.js";
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
+console.log("[DnD5e-Calendar] DEBUG: calendar-manager.js LOADED");
+
 export class CalendarManager {
   constructor() {
+    console.log("[DnD5e-Calendar] DEBUG: CalendarManager constructor fired");
     this.data = null;
     this.settings = null;
     this.moonManager = new MoonPhaseManager(this);

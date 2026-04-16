@@ -1,3 +1,5 @@
+console.log("[DnD5e-Calendar] DEBUG: calendar-debug.js LOADED");
+
 export class CalendarDebug {
   static PREFIX = "[DnD5e-Calendar]";
   static enabled = false;

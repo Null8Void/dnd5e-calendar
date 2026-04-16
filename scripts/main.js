@@ -6,6 +6,8 @@ import { CalendarData } from "./calendar-data.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarDebug } from "./calendar-debug.js";
 
+console.log("[DnD5e-Calendar] DEBUG: main.js LOADED - All imports processed");
+
 export const DnD5eCalendar = {
   manager: null,
   hud: null,
@@ -14,6 +16,7 @@ export const DnD5eCalendar = {
   debug: CalendarDebug,
 
   init() {
+    console.log("[DnD5e-Calendar] DEBUG: DnD5eCalendar.init() STARTED");
     CalendarDebug.init();
     CalendarDebug.info("Module initialization starting");
 
@@ -23,8 +26,13 @@ export const DnD5eCalendar = {
     DnD5eCalendar.config = new CalendarConfig();
 
     this.registerSettings();
+    console.log("[DnD5e-Calendar] DEBUG: registerSettings() completed");
+
     this.registerHooks();
+    console.log("[DnD5e-Calendar] DEBUG: registerHooks() completed");
+
     this.registerKeyboardShortcuts();
+    console.log("[DnD5e-Calendar] DEBUG: registerKeyboardShortcuts() completed");
 
     CalendarDebug.info("Module initialization complete");
     console.log("DnD5e Calendar | Module initialized");
@@ -85,10 +93,23 @@ export const DnD5eCalendar = {
   },
 
   registerHooks() {
+    console.log("[DnD5e-Calendar] DEBUG: registerHooks() - Setting up hooks");
+
     Hooks.on("ready", () => {
-      DnD5eCalendar.manager.initialize();
-      DnD5eCalendar.hud.render(true);
-      console.log("DnD5e Calendar | Ready hook fired, HUD rendered");
+      console.log("[DnD5e-Calendar] DEBUG: Hooks.on('ready') fired!");
+      console.log("[DnD5e-Calendar] DEBUG: Calling manager.initialize()...");
+      DnD5eCalendar.manager.initialize().then(() => {
+        console.log("[DnD5e-Calendar] DEBUG: manager.initialize() COMPLETED");
+      }).catch(err => {
+        console.error("[DnD5e-Calendar] DEBUG: manager.initialize() FAILED:", err);
+      });
+      console.log("[DnD5e-Calendar] DEBUG: Calling hud.render(true)...");
+      DnD5eCalendar.hud.render(true).then(() => {
+        console.log("[DnD5e-Calendar] DEBUG: hud.render() COMPLETED");
+      }).catch(err => {
+        console.error("[DnD5e-Calendar] DEBUG: hud.render() FAILED:", err);
+      });
+      console.log("[DnD5e-Calendar] DEBUG: Ready hook setup complete, waiting for init...");
 
       if (game.users.current?.role >= CONST.USER_ROLES.ASSISTANT) {
         game.socket.on("dnd5e-calendar:update", (data) => {

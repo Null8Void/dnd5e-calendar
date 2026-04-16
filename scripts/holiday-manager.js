@@ -2,6 +2,8 @@ import { CalendarData } from "./calendar-data.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarUtils } from "./calendar-utils.js";
 
+console.log("[DnD5e-Calendar] DEBUG: holiday-manager.js LOADED");
+
 export class HolidayManager {
   constructor(manager) {
     this.manager = manager;

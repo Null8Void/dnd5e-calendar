@@ -1,5 +1,7 @@
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
+console.log("[DnD5e-Calendar] DEBUG: calendar-utils.js LOADED");
+
 export class CalendarUtils {
   static formatTime(hour, minute, second = 0, showSeconds = false) {
     const h = hour.toString().padStart(2, "0");
