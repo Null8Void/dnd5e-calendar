@@ -1,6 +1,6 @@
 {
   "name": "dnd5e-calendar",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A fully editable in-game calendar with time tracking, seasons, weather, moon phases, day/night cycles, and holiday management for DnD5e in FoundryVTT.",
   "main": "scripts/main.js",
   "type": "module",
@@ -33,7 +33,7 @@
     "download": "https://github.com/Null8Void/dnd5e-calendar/archive/master.zip"
   },
   "engines": {
-    "foundryvtt": ">=10.0.0",
+    "foundryvtt": ">=11.0.0",
     "dnd5e": ">=5.0.0"
   }
 }
