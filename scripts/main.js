@@ -60,6 +60,20 @@ export const DnD5eCalendar = {
       }
     });
 
+    game.settings.register("dnd5e-calendar", "autoWeatherRoll", {
+      name: game.i18n.localize("DNDCAL.Settings.AutoWeatherRoll"),
+      hint: game.i18n.localize("DNDCAL.Settings.AutoWeatherRollHint"),
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false,
+      onChange: (value) => {
+        if (DnD5eCalendar.manager?.seasonManager) {
+          DnD5eCalendar.manager.seasonManager.enableAutoWeatherRoll(value);
+        }
+      }
+    });
+
     game.settings.registerMenu("dnd5e-calendar", "configMenu", {
       name: game.i18n.localize("DNDCAL.Settings.OpenConfig"),
       label: game.i18n.localize("DNDCAL.Settings.OpenConfigLabel"),
@@ -100,6 +114,15 @@ export const DnD5eCalendar = {
     });
 
     Hooks.on("dnd5e-calendar:weatherChange", () => {
+      DnD5eCalendar.hud.updateWeatherEffect();
+    });
+
+    Hooks.on("dnd5e-calendar:seasonChange", () => {
+      DnD5eCalendar.hud.render();
+    });
+
+    Hooks.on("dnd5e-calendar:autoWeatherRoll", () => {
+      DnD5eCalendar.hud.render();
       DnD5eCalendar.hud.updateWeatherEffect();
     });
   },

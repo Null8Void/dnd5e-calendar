@@ -11,7 +11,11 @@
       "OpenConfigLabel": "Open Calendar Settings",
       "OpenConfigHint": "Configure the calendar, time, seasons, weather, and holidays.",
       "DebugMode": "Enable Debug Mode",
-      "DebugModeHint": "Enable detailed console logging for troubleshooting. Search [DnD5e-Calendar] in console."
+      "DebugModeHint": "Enable detailed console logging for troubleshooting. Search [DnD5e-Calendar] in console.",
+      "AutoWeatherRoll": "Auto-Roll Daily Weather",
+      "AutoWeatherRollHint": "Automatically roll for weather at the start of each new day based on the current season.",
+      "EditSeasonNames": "Edit Season Names",
+      "EditSeasonNamesHint": "Customize the names of the seasons for your campaign."
     },
 
     "Keybinds": {
@@ -61,7 +65,12 @@
       "Save": "Save Settings",
       "Cancel": "Cancel",
       "SelectSeason": "Select Season",
-      "SelectWeather": "Select Weather"
+      "SelectWeather": "Select Weather",
+      "SeasonNames": "Season Names",
+      "SeasonNameSpring": "Spring Name",
+      "SeasonNameSummer": "Summer Name",
+      "SeasonNameFall": "Fall Name",
+      "SeasonNameWinter": "Winter Name"
     },
 
     "Calendar": {

@@ -20,11 +20,18 @@ export class CalendarData {
     return {
       current: "spring",
       autoTrack: CALENDAR_CONSTANTS.DEFAULT_SETTINGS.autoTrackSeasons,
+      autoWeatherRoll: false,
       monthRanges: {
         spring: CALENDAR_CONSTANTS.SEASONS.SPRING_MONTHS,
         summer: CALENDAR_CONSTANTS.SEASONS.SUMMER_MONTHS,
         fall: CALENDAR_CONSTANTS.SEASONS.FALL_MONTHS,
         winter: CALENDAR_CONSTANTS.SEASONS.WINTER_MONTHS
+      },
+      seasonNames: {
+        spring: "Spring",
+        summer: "Summer",
+        fall: "Fall",
+        winter: "Winter"
       }
     };
   }
