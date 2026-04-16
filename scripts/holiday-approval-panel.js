@@ -9,10 +9,10 @@ export class CalendarApprovalPanel extends Application {
   }
 
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       id: "dnd5e-holiday-approval",
       classes: ["dnd5e-holiday-approval"],
-      title: "Holiday Approval Panel",
+      title: game.i18n.localize("DNDCAL.Holidays.ViewHolidays"),
       template: "modules/dnd5e-calendar/templates/holiday-approval-panel.html",
       width: 600,
       height: 500,
@@ -70,7 +70,7 @@ export class CalendarApprovalPanel extends Application {
   async approveHoliday(id) {
     try {
       await DnD5eCalendar.manager.holidayManager.approveHoliday(id);
-      ui.notifications.info("Holiday approved.");
+      ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.HolidayApproved"));
       this.render();
     } catch (error) {
       ui.notifications.error(error.message);
@@ -79,14 +79,14 @@ export class CalendarApprovalPanel extends Application {
 
   async rejectHoliday(id) {
     const reason = await Dialog.prompt({
-      title: "Reject Holiday",
-      content: '<label>Reason (optional):</label><textarea name="reason" rows="3"></textarea>',
+      title: game.i18n.localize("DNDCAL.Holidays.Reject"),
+      content: `<label>${game.i18n.localize("DNDCAL.Holidays.RejectionReason")}:</label><textarea name="reason" rows="3"></textarea>`,
       callback: (html) => html.find('textarea[name="reason"]').val()
     });
 
     try {
       await DnD5eCalendar.manager.holidayManager.rejectHoliday(id, reason || "");
-      ui.notifications.info("Holiday rejected.");
+      ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.HolidayRejected"));
       this.render();
     } catch (error) {
       ui.notifications.error(error.message);
@@ -96,7 +96,7 @@ export class CalendarApprovalPanel extends Application {
   async deleteHoliday(id) {
     try {
       await DnD5eCalendar.manager.holidayManager.deleteHoliday(id);
-      ui.notifications.info("Holiday deleted.");
+      ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.HolidayDeleted"));
       this.render();
     } catch (error) {
       ui.notifications.error(error.message);
