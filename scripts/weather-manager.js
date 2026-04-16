@@ -40,4 +40,24 @@ export class WeatherManager {
     this.data.gmNotes = notes;
     return this.data.gmNotes;
   }
+
+  getWeatherEffect() {
+    const weatherEffects = {
+      "Light rain": "weather-rain-light",
+      "Heavy rain": "weather-rain-heavy",
+      "Thunderstorm": "weather-thunderstorm",
+      "Light snow": "weather-snow-light",
+      "Heavy snow": "weather-snow-heavy",
+      "Blizzard": "weather-blizzard",
+      "Foggy": "weather-foggy",
+      "Sandstorm": "weather-sandstorm",
+      "Hot": "weather-heat",
+      "Windy": "weather-windy"
+    };
+    return weatherEffects[this.data.current] || null;
+  }
+
+  getHasVisualEffect() {
+    return this.getWeatherEffect() !== null;
+  }
 }

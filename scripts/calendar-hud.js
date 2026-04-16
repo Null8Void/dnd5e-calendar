@@ -318,4 +318,18 @@ export class CalendarHUD extends Application {
     await this.render();
     Hooks.callAll("dnd5e-calendar:calendarChange", calendarId);
   }
+
+  updateWeatherEffect() {
+    const container = document.getElementById("dnd5e-calendar-weather-effect");
+    if (!container || !DnD5eCalendar.manager) return;
+
+    const weatherEffect = DnD5eCalendar.manager.weatherManager.getWeatherEffect();
+
+    container.className = "weather-effect-container";
+
+    if (weatherEffect) {
+      container.classList.add("active");
+      container.classList.add(weatherEffect);
+    }
+  }
 }

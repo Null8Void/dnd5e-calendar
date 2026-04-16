@@ -98,6 +98,10 @@ export const DnD5eCalendar = {
     Hooks.on("dnd5e-calendar:timeChange", () => {
       DnD5eCalendar.hud.render();
     });
+
+    Hooks.on("dnd5e-calendar:weatherChange", () => {
+      DnD5eCalendar.hud.updateWeatherEffect();
+    });
   },
 
   registerKeyboardShortcuts() {

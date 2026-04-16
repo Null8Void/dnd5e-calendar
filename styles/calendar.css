@@ -616,3 +616,353 @@
   font-size: 24px;
   margin-bottom: 8px;
 }
+
+/* ============================================
+   WEATHER VISUAL EFFECTS
+   ============================================ */
+
+/* Weather Effects Container */
+.weather-effect-container {
+  position: fixed;
+  top: 44px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 44px);
+  pointer-events: none;
+  z-index: 50;
+  overflow: hidden;
+  display: none;
+}
+
+.weather-effect-container.active {
+  display: block;
+}
+
+/* Rain Effects */
+.weather-rain-light,
+.weather-rain-heavy,
+.weather-thunderstorm {
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(150, 200, 255, 0.15) 100%
+  );
+  animation: rain-fall 0.8s linear infinite;
+}
+
+.weather-rain-heavy {
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(150, 200, 255, 0.3) 100%
+  );
+  animation: rain-fall 0.4s linear infinite;
+}
+
+.weather-rain-light::before,
+.weather-rain-heavy::before,
+.weather-thunderstorm::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(180deg, transparent 0%, rgba(200, 220, 255, 0.4) 50%, transparent 100%);
+  background-size: 2px 30px;
+  background-position: 0 0;
+  animation: rain-drops 0.5s linear infinite;
+}
+
+.weather-rain-heavy::before {
+  background-size: 3px 40px;
+  animation: rain-drops 0.3s linear infinite;
+}
+
+/* Thunderstorm Lightning Flash */
+.weather-thunderstorm {
+  animation: rain-fall 0.4s linear infinite, thunderstorm-flash 4s ease-in-out infinite;
+}
+
+.weather-thunderstorm::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0);
+  animation: lightning-flash 4s ease-in-out infinite;
+}
+
+/* Snow Effects */
+.weather-snow-light,
+.weather-snow-heavy,
+.weather-blizzard {
+  background: transparent;
+  overflow: hidden;
+}
+
+.weather-snow-light::before,
+.weather-snow-heavy::before,
+.weather-blizzard::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px);
+  background-size: 30px 30px, 50px 50px;
+  background-position: 0 0, 25px 25px;
+  animation: snow-fall 4s linear infinite;
+}
+
+.weather-snow-heavy::before {
+  background-size: 20px 20px, 35px 35px;
+  animation: snow-fall 2s linear infinite;
+}
+
+/* Blizzard Effect */
+.weather-blizzard::before {
+  background-size: 15px 15px, 25px 25px;
+  animation: blizzard-fall 1s linear infinite;
+}
+
+.weather-blizzard::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 10px,
+    rgba(200, 210, 220, 0.2) 10px,
+    rgba(200, 210, 220, 0.2) 12px
+  );
+  animation: blizzard-wind 0.5s linear infinite;
+}
+
+/* Fog Effect */
+.weather-foggy {
+  background: transparent;
+}
+
+.weather-foggy::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -20%;
+  width: 140%;
+  height: 100%;
+  background: radial-gradient(ellipse at center,
+    rgba(200, 200, 210, 0.5) 0%,
+    rgba(200, 200, 210, 0.2) 40%,
+    transparent 70%
+  );
+  animation: fog-drift 10s ease-in-out infinite;
+}
+
+.weather-foggy::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  left: -10%;
+  width: 120%;
+  height: 60%;
+  background: radial-gradient(ellipse at center,
+    rgba(180, 180, 190, 0.4) 0%,
+    transparent 60%
+  );
+  animation: fog-drift 15s ease-in-out infinite reverse;
+}
+
+/* Sandstorm Effect */
+.weather-sandstorm {
+  background: rgba(200, 180, 100, 0.2);
+}
+
+.weather-sandstorm::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    85deg,
+    transparent,
+    transparent 5px,
+    rgba(210, 190, 120, 0.4) 5px,
+    rgba(210, 190, 120, 0.4) 15px,
+    transparent 15px,
+    transparent 20px
+  );
+  animation: sandstorm-drift 0.8s linear infinite;
+}
+
+.weather-sandstorm::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 150%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    80deg,
+    transparent,
+    transparent 3px,
+    rgba(220, 200, 140, 0.3) 3px,
+    rgba(220, 200, 140, 0.3) 8px
+  );
+  animation: sandstorm-drift 0.5s linear infinite;
+}
+
+/* Heat Wave Effect */
+.weather-heat {
+  background: transparent;
+}
+
+.weather-heat::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(0deg,
+    rgba(255, 100, 50, 0.15) 0%,
+    rgba(255, 150, 50, 0.1) 50%,
+    transparent 100%
+  );
+  animation: heat-rise 3s ease-in-out infinite;
+}
+
+.weather-heat::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 20px,
+    rgba(255, 200, 150, 0.1) 20px,
+    rgba(255, 200, 150, 0.1) 40px
+  );
+  animation: heat-shimmer 2s ease-in-out infinite;
+}
+
+/* Windy Effect */
+.weather-windy {
+  background: transparent;
+}
+
+.weather-windy::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -100%;
+  width: 200%;
+  height: 20%;
+  margin-top: -10%;
+  background: repeating-linear-gradient(
+    85deg,
+    transparent,
+    transparent 10px,
+    rgba(200, 220, 255, 0.15) 10px,
+    rgba(200, 220, 255, 0.15) 15px,
+    transparent 15px,
+    transparent 30px
+  );
+  animation: wind-gust 2s ease-in-out infinite;
+}
+
+/* ============================================
+   WEATHER EFFECT ANIMATIONS
+   ============================================ */
+
+@keyframes rain-fall {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100%; }
+}
+
+@keyframes rain-drops {
+  0% { background-position: 0 -30px; }
+  100% { background-position: 0 100vh; }
+}
+
+@keyframes thunderstorm-flash {
+  0%, 85%, 100% { opacity: 1; }
+  86% { opacity: 0.8; }
+  87% { opacity: 1; }
+  88% { opacity: 0.6; }
+  89% { opacity: 1; }
+  90% { opacity: 0.3; }
+  91% { opacity: 1; }
+}
+
+@keyframes lightning-flash {
+  0%, 85%, 100% { background: rgba(255, 255, 255, 0); }
+  86%, 88%, 90% { background: rgba(255, 255, 255, 0.4); }
+}
+
+@keyframes snow-fall {
+  0% { background-position: 0 0, 25px 0; }
+  100% { background-position: 30px 100vh, 25px 100vh; }
+}
+
+@keyframes blizzard-fall {
+  0% { background-position: 0 0, 25px 0; }
+  100% { background-position: 50px 100vh, 25px 100vh; }
+}
+
+@keyframes blizzard-wind {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(100px); }
+}
+
+@keyframes fog-drift {
+  0%, 100% { transform: translateX(-5%); opacity: 0.6; }
+  50% { transform: translateX(5%); opacity: 0.8; }
+}
+
+@keyframes sandstorm-drift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50%); }
+}
+
+@keyframes heat-rise {
+  0%, 100% {
+    transform: translateY(10%);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-10%);
+    opacity: 0.8;
+  }
+}
+
+@keyframes heat-shimmer {
+  0%, 100% {
+    transform: scaleX(1);
+    filter: blur(0px);
+  }
+  50% {
+    transform: scaleX(1.02);
+    filter: blur(1px);
+  }
+}
+
+@keyframes wind-gust {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  25% { transform: translateX(30px); opacity: 0.8; }
+  50% { transform: translateX(50px); opacity: 0.6; }
+  75% { transform: translateX(30px); opacity: 0.9; }
+}
