@@ -10,7 +10,8 @@ import { CalendarUtils } from "./calendar-utils.js";
 import { CalendarDebug } from "./calendar-debug.js";
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
-console.log("[DnD5e-Calendar] DEBUG: main.js - All imports processed, DnD5eCalendar object being created");
+console.log("[DnD5e-Calendar] DEBUG: main.js TOP - imports loaded, defining DnD5eCalendar");
+console.log("[DnD5e-Calendar] DEBUG: CALENDAR_CONSTANTS:", CALENDAR_CONSTANTS.VERSION);
 
 export const DnD5eCalendar = {
   manager: null,
@@ -183,6 +184,9 @@ export const DnD5eCalendar = {
   }
 };
 
+console.log("[DnD5e-Calendar] DEBUG: DnD5eCalendar object defined, registering Hooks.once('init')");
+
 Hooks.once("init", () => {
+  console.log("[DnD5e-Calendar] DEBUG: Hooks.once('init') fired - calling DnD5eCalendar.init()");
   DnD5eCalendar.init();
 });
