@@ -72,6 +72,12 @@ export const DnD5eCalendar = {
       DnD5eCalendar.manager.initialize();
       DnD5eCalendar.hud.render(true);
       console.log("DnD5e Calendar | Ready hook fired, HUD rendered");
+
+      if (game.users.current?.role >= CONST.USER_ROLES.ASSISTANT) {
+        game.socket.on("dnd5e-calendar:update", (data) => {
+          DnD5eCalendar.manager.handleSocketUpdate(data);
+        });
+      }
     });
 
     Hooks.on("renderSettingsConfig", (app, html) => {
@@ -82,11 +88,11 @@ export const DnD5eCalendar = {
       DnD5eCalendar.hud.render();
     });
 
-    Hooks.on("dnd5e-calendar:dateChange", (data) => {
+    Hooks.on("dnd5e-calendar:dateChange", () => {
       DnD5eCalendar.hud.render();
     });
 
-    Hooks.on("dnd5e-calendar:timeChange", (data) => {
+    Hooks.on("dnd5e-calendar:timeChange", () => {
       DnD5eCalendar.hud.render();
     });
   },
@@ -98,7 +104,7 @@ export const DnD5eCalendar = {
       editable: [
         {
           key: "KeyC",
-          modifiers: [MODIFIER_KEYS.ALT]
+          modifiers: [KeyboardManager.MODIFIER_KEYS.ALT]
         }
       ],
       onDown: () => {
@@ -112,12 +118,4 @@ export const DnD5eCalendar = {
 
 Hooks.once("init", () => {
   DnD5eCalendar.init();
-});
-
-Hooks.once("ready", () => {
-  if (game.user.isGM) {
-    game.socket.on("dnd5e-calendar:update", (data) => {
-      DnD5eCalendar.manager.handleSocketUpdate(data);
-    });
-  }
 });
