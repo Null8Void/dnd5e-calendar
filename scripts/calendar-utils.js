@@ -17,7 +17,7 @@ export class CalendarUtils {
     const month = calendar.months[monthIndex];
     if (!month) return `${day}/${monthIndex + 1}/${year}`;
 
-    const yearPrefix = useYearName ? `${calendar.epoch || "Year"} ` : "";
+    const yearPrefix = useYearName ? `${calendar.epoch || game.i18n?.localize("DNDCAL.Calendar.Year") ?? "Year"} ` : "";
     return `${month.name} ${day}, ${yearPrefix}${year}`;
   }
 
