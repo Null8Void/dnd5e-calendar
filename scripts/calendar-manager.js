@@ -10,6 +10,7 @@ import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 export class CalendarManager {
   constructor() {
     this.data = null;
+    this.settings = null;
     this.moonManager = new MoonPhaseManager(this);
     this.weatherManager = new WeatherManager(this);
     this.seasonManager = new SeasonManager(this);
@@ -34,12 +35,16 @@ export class CalendarManager {
     this.dayNightManager.initialize(this.data.dayNight, this.data.time);
     this.holidayManager.initialize();
 
-    const settings = await CalendarData.loadSettings();
-    CalendarDebug.feature("calendar", "Settings loaded", settings);
+    this.settings = await CalendarData.loadSettings();
+    CalendarDebug.feature("calendar", "Settings loaded", this.settings);
 
-    if (settings.timeFlowEnabled) {
-      this.startTimeFlow(settings.realSecondsPerGameHour);
-      CalendarDebug.feature("time", "Time flow started", { interval: settings.realSecondsPerGameHour });
+    if (this.settings.timeFlowEnabled) {
+      this.startTimeFlow(this.settings.realSecondsPerGameHour);
+      CalendarDebug.feature("time", "Time flow started", { interval: this.settings.realSecondsPerGameHour });
+    }
+
+    if (this.settings.autoWeatherRoll) {
+      this.seasonManager.enableAutoWeatherRoll(true);
     }
 
     console.log("DnD5e Calendar | CalendarManager initialized");
@@ -54,11 +59,14 @@ export class CalendarManager {
   }
 
   getDate() {
-    const cal = this.getActiveCalendar();
+    const cal = this.data?.calendars?.[this.data?.activeCalendarId];
+    if (!cal) {
+      return { day: 1, month: 0, year: 0 };
+    }
     return {
-      day: this.data.calendars[this.data.activeCalendarId].currentDay || 1,
-      month: this.data.calendars[this.data.activeCalendarId].currentMonth || 0,
-      year: this.data.calendars[this.data.activeCalendarId].currentYear || 0
+      day: cal.currentDay || 1,
+      month: cal.currentMonth ?? 0,
+      year: cal.currentYear || 0
     };
   }
 
@@ -81,14 +89,19 @@ export class CalendarManager {
     let dayChanged = false;
 
     if (newTime.hour < oldTime.hour || (newTime.hour === 0 && oldTime.hour !== 0)) {
-      const newDate = CalendarUtils.advanceDay(this.getDate(), this.getActiveCalendar());
-      CalendarDebug.feature("time", "Day changed", { oldDate: this.getDate(), newDate });
+      const oldDate = this.getDate();
+      const newDate = CalendarUtils.advanceDay(oldDate, this.getActiveCalendar());
+      CalendarDebug.feature("time", "Day changed", { oldDate, newDate });
 
       this.data.calendars[this.data.activeCalendarId].currentDay = newDate.day;
       this.data.calendars[this.data.activeCalendarId].currentMonth = newDate.month;
       this.data.calendars[this.data.activeCalendarId].currentYear = newDate.year;
       this.data.dayCount++;
       dayChanged = true;
+
+      if (dayChanged) {
+        this.seasonManager.onDayChange(oldDate, newDate);
+      }
     }
 
     await CalendarData.save(this.data);
