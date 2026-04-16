@@ -1,0 +1,61 @@
+{
+  "name": "Weather Roll Tables",
+  "permission": {
+    "default": 0
+  },
+  "flags": {},
+  "folder": null,
+  "sort": 0,
+  "color": "#c9a227",
+  "icon": "fa-solid fa-cloud-sun",
+  "description": "<p>Master weather roll table compendium. Import into Foundry VTT to use with the DnD5e Calendar module.</p><p><strong>Usage:</strong> Use the roll table for the current season when generating random weather.</p>",
+  "formula": "1d4",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "_id": "spring-table",
+      "flags": {},
+      "type": 2,
+      "text": "Spring Weather",
+      "img": "icons/magic/nature/leaf-gold.webp",
+      "resultId": "",
+      "weight": 1,
+      "range": [1, 1],
+      "drawn": false
+    },
+    {
+      "_id": "summer-table",
+      "flags": {},
+      "type": 2,
+      "text": "Summer Weather",
+      "img": "icons/magic/light/orb-sun-yellow.webp",
+      "resultId": "",
+      "weight": 1,
+      "range": [2, 2],
+      "drawn": false
+    },
+    {
+      "_id": "fall-table",
+      "flags": {},
+      "type": 2,
+      "text": "Fall Weather",
+      "img": "icons/magic/nature/leaf-maple-red.webp",
+      "resultId": "",
+      "weight": 1,
+      "range": [3, 3],
+      "drawn": false
+    },
+    {
+      "_id": "winter-table",
+      "flags": {},
+      "type": 2,
+      "text": "Winter Weather",
+      "img": "icons/magic/cold/snowflake-blue.webp",
+      "resultId": "",
+      "weight": 1,
+      "range": [4, 4],
+      "drawn": false
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "name": "Fall Weather Table",
+  "permission": {
+    "default": 0
+  },
+  "flags": {},
+  "folder": null,
+  "sort": 0,
+  "color": "#c9a227",
+  "icon": "fa-solid fa-leaf-maple",
+  "description": "<p>Random weather generator for Fall season. Roll 1d100 to determine the weather.</p>",
+  "formula": "1d100",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "_id": "fall-clear-01",
+      "flags": {},
+      "type": 0,
+      "text": "Clear skies - Crisp autumn day",
+      "img": "icons/magic/light/orb-sun-orange.webp",
+      "resultId": "",
+      "weight": 22,
+      "range": [1, 22],
+      "drawn": false
+    },
+    {
+      "_id": "fall-partly-02",
+      "flags": {},
+      "type": 0,
+      "text": "Partly cloudy - Mix of sun and clouds",
+      "img": "icons/magic/light/orb-white.webp",
+      "resultId": "",
+      "weight": 20,
+      "range": [23, 42],
+      "drawn": false
+    },
+    {
+      "_id": "fall-overcast-03",
+      "flags": {},
+      "type": 0,
+      "text": "Overcast - Gray autumn skies",
+      "img": "icons/magic/light/orb-silhouette.webp",
+      "resultId": "",
+      "weight": 18,
+      "range": [43, 60],
+      "drawn": false
+    },
+    {
+      "_id": "fall-windy-04",
+      "flags": {},
+      "type": 0,
+      "text": "Windy - Falling leaves and gusts",
+      "img": "icons/magic/lightning/bolt-orange.webp",
+      "resultId": "",
+      "weight": 15,
+      "range": [61, 75],
+      "drawn": false
+    },
+    {
+      "_id": "fall-light-rain-05",
+      "flags": {},
+      "type": 0,
+      "text": "Light rain - Steady autumn drizzle",
+      "img": "icons/environment/weather/rain-light.webp",
+      "resultId": "",
+      "weight": 10,
+      "range": [76, 85],
+      "drawn": false
+    },
+    {
+      "_id": "fall-foggy-06",
+      "flags": {},
+      "type": 0,
+      "text": "Foggy - Thick morning mist",
+      "img": "icons/magic/light/orb-blue.webp",
+      "resultId": "",
+      "weight": 7,
+      "range": [86, 92],
+      "drawn": false
+    },
+    {
+      "_id": "fall-heavy-rain-07",
+      "flags": {},
+      "type": 0,
+      "text": "Heavy rain - Autumn storm",
+      "img": "icons/environment/weather/rain-heavy.webp",
+      "resultId": "",
+      "weight": 4,
+      "range": [93, 96],
+      "drawn": false
+    },
+    {
+      "_id": "fall-cold-08",
+      "flags": {},
+      "type": 0,
+      "text": "Cold - Early frost warning",
+      "img": "icons/magic/cold/snowflake-blue.webp",
+      "resultId": "",
+      "weight": 4,
+      "range": [97, 100],
+      "drawn": false
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "name": "Spring Weather Table",
+  "permission": {
+    "default": 0
+  },
+  "flags": {},
+  "folder": null,
+  "sort": 0,
+  "color": "#4a9a4a",
+  "icon": "fa-solid fa-cloud-rain",
+  "description": "<p>Random weather generator for Spring season. Roll 1d100 to determine the weather.</p>",
+  "formula": "1d100",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "_id": "spring-clear-01",
+      "flags": {},
+      "type": 0,
+      "text": "Clear skies - Sunny with mild temperatures",
+      "img": "icons/magic/light/orb-rainbow.webp",
+      "resultId": "",
+      "weight": 30,
+      "range": [1, 30],
+      "drawn": false
+    },
+    {
+      "_id": "spring-partly-02",
+      "flags": {},
+      "type": 0,
+      "text": "Partly cloudy - Mix of sun and clouds",
+      "img": "icons/magic/light/orb-blue.webp",
+      "resultId": "",
+      "weight": 25,
+      "range": [31, 55],
+      "drawn": false
+    },
+    {
+      "_id": "spring-light-rain-03",
+      "flags": {},
+      "type": 0,
+      "text": "Light rain - Gentle spring shower",
+      "img": "icons/environment/settlement/tower-clock.webp",
+      "resultId": "",
+      "weight": 15,
+      "range": [56, 70],
+      "drawn": false
+    },
+    {
+      "_id": "spring-overcast-04",
+      "flags": {},
+      "type": 0,
+      "text": "Overcast - Gray skies but dry",
+      "img": "icons/magic/light/orb-white.webp",
+      "resultId": "",
+      "weight": 12,
+      "range": [71, 82],
+      "drawn": false
+    },
+    {
+      "_id": "spring-foggy-05",
+      "flags": {},
+      "type": 0,
+      "text": "Foggy - Misty morning conditions",
+      "img": "icons/magic/light/orb-silhouette.webp",
+      "resultId": "",
+      "weight": 8,
+      "range": [83, 90],
+      "drawn": false
+    },
+    {
+      "_id": "spring-windy-06",
+      "flags": {},
+      "type": 0,
+      "text": "Windy - Gusty spring breeze",
+      "img": "icons/magic/lightning/bolt-white.webp",
+      "resultId": "",
+      "weight": 5,
+      "range": [91, 95],
+      "drawn": false
+    },
+    {
+      "_id": "spring-heavy-rain-07",
+      "flags": {},
+      "type": 0,
+      "text": "Heavy rain - Intense spring thunderstorm",
+      "img": "icons/environment/weather/rain-heavy.webp",
+      "resultId": "",
+      "weight": 3,
+      "range": [96, 98],
+      "drawn": false
+    },
+    {
+      "_id": "spring-light-snow-08",
+      "flags": {},
+      "type": 0,
+      "text": "Light snow - Rare late-season snowfall",
+      "img": "icons/magic/light/orb-blue.webp",
+      "resultId": "",
+      "weight": 2,
+      "range": [99, 100],
+      "drawn": false
+    }
+  ]
+}

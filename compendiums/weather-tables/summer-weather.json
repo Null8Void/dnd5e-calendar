@@ -1,0 +1,105 @@
+{
+  "name": "Summer Weather Table",
+  "permission": {
+    "default": 0
+  },
+  "flags": {},
+  "folder": null,
+  "sort": 0,
+  "color": "#ffd700",
+  "icon": "fa-solid fa-sun",
+  "description": "<p>Random weather generator for Summer season. Roll 1d100 to determine the weather.</p>",
+  "formula": "1d100",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "_id": "summer-clear-01",
+      "flags": {},
+      "type": 0,
+      "text": "Clear skies - Hot and sunny day",
+      "img": "icons/magic/light/orb-sun-yellow.webp",
+      "resultId": "",
+      "weight": 30,
+      "range": [1, 30],
+      "drawn": false
+    },
+    {
+      "_id": "summer-hot-02",
+      "flags": {},
+      "type": 0,
+      "text": "Heat wave - Scorching temperatures",
+      "img": "icons/magic/fire/torch-hand.webp",
+      "resultId": "",
+      "weight": 15,
+      "range": [31, 45],
+      "drawn": false
+    },
+    {
+      "_id": "summer-partly-03",
+      "flags": {},
+      "type": 0,
+      "text": "Partly cloudy - Warm with some clouds",
+      "img": "icons/magic/light/orb-white.webp",
+      "resultId": "",
+      "weight": 20,
+      "range": [46, 65],
+      "drawn": false
+    },
+    {
+      "_id": "summer-thunderstorm-04",
+      "flags": {},
+      "type": 0,
+      "text": "Thunderstorm - Afternoon rain and lightning",
+      "img": "icons/magic/lightning/bolt-blue.webp",
+      "resultId": "",
+      "weight": 12,
+      "range": [66, 77],
+      "drawn": false
+    },
+    {
+      "_id": "summer-overcast-05",
+      "flags": {},
+      "type": 0,
+      "text": "Overcast - Warm but cloudy",
+      "img": "icons/magic/light/orb-silhouette.webp",
+      "resultId": "",
+      "weight": 10,
+      "range": [78, 87],
+      "drawn": false
+    },
+    {
+      "_id": "summer-heavy-rain-06",
+      "flags": {},
+      "type": 0,
+      "text": "Heavy rain - Summer downpour",
+      "img": "icons/environment/weather/rain-heavy.webp",
+      "resultId": "",
+      "weight": 6,
+      "range": [88, 93],
+      "drawn": false
+    },
+    {
+      "_id": "summer-foggy-07",
+      "flags": {},
+      "type": 0,
+      "text": "Foggy - Rare summer morning fog",
+      "img": "icons/magic/light/orb-blue.webp",
+      "resultId": "",
+      "weight": 4,
+      "range": [94, 97],
+      "drawn": false
+    },
+    {
+      "_id": "summer-windy-08",
+      "flags": {},
+      "type": 0,
+      "text": "Windy - Strong summer gusts",
+      "img": "icons/magic/lightning/bolt-white.webp",
+      "resultId": "",
+      "weight": 3,
+      "range": [98, 100],
+      "drawn": false
+    }
+  ]
+}

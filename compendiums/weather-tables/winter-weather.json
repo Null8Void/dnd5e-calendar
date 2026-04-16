@@ -1,0 +1,116 @@
+{
+  "name": "Winter Weather Table",
+  "permission": {
+    "default": 0
+  },
+  "flags": {},
+  "folder": null,
+  "sort": 0,
+  "color": "#7a9ec9",
+  "icon": "fa-solid fa-snowflake",
+  "description": "<p>Random weather generator for Winter season. Roll 1d100 to determine the weather.</p>",
+  "formula": "1d100",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "_id": "winter-cold-01",
+      "flags": {},
+      "type": 0,
+      "text": "Cold - Freezing temperatures",
+      "img": "icons/magic/cold/snowflake-blue.webp",
+      "resultId": "",
+      "weight": 20,
+      "range": [1, 20],
+      "drawn": false
+    },
+    {
+      "_id": "winter-partly-02",
+      "flags": {},
+      "type": 0,
+      "text": "Partly cloudy - Cold but clear",
+      "img": "icons/magic/light/orb-white.webp",
+      "resultId": "",
+      "weight": 15,
+      "range": [21, 35],
+      "drawn": false
+    },
+    {
+      "_id": "winter-light-snow-03",
+      "flags": {},
+      "type": 0,
+      "text": "Light snow - Gentle snowfall",
+      "img": "icons/magic/cold/snowflake-soft.webp",
+      "resultId": "",
+      "weight": 18,
+      "range": [36, 53],
+      "drawn": false
+    },
+    {
+      "_id": "winter-overcast-04",
+      "flags": {},
+      "type": 0,
+      "text": "Overcast - Gray winter sky",
+      "img": "icons/magic/light/orb-silhouette.webp",
+      "resultId": "",
+      "weight": 12,
+      "range": [54, 65],
+      "drawn": false
+    },
+    {
+      "_id": "winter-heavy-snow-05",
+      "flags": {},
+      "type": 0,
+      "text": "Heavy snow - Deep snow accumulation",
+      "img": "icons/magic/cold/snowflake-sharp.webp",
+      "resultId": "",
+      "weight": 12,
+      "range": [66, 77],
+      "drawn": false
+    },
+    {
+      "_id": "winter-blizzard-06",
+      "flags": {},
+      "type": 0,
+      "text": "Blizzard - Dangerous whiteout conditions",
+      "img": "icons/magic/lightning/bolt-blue.webp",
+      "resultId": "",
+      "weight": 8,
+      "range": [78, 85],
+      "drawn": false
+    },
+    {
+      "_id": "winter-foggy-07",
+      "flags": {},
+      "type": 0,
+      "text": "Foggy - Freezing fog (ice fog)",
+      "img": "icons/magic/light/orb-blue.webp",
+      "resultId": "",
+      "weight": 7,
+      "range": [86, 92],
+      "drawn": false
+    },
+    {
+      "_id": "winter-clear-08",
+      "flags": {},
+      "type": 0,
+      "text": "Clear - Cold but beautiful winter day",
+      "img": "icons/magic/light/orb-moon.webp",
+      "resultId": "",
+      "weight": 5,
+      "range": [93, 97],
+      "drawn": false
+    },
+    {
+      "_id": "winter-windy-09",
+      "flags": {},
+      "type": 0,
+      "text": "Windy - Biting winter wind",
+      "img": "icons/magic/lightning/bolt-white.webp",
+      "resultId": "",
+      "weight": 3,
+      "range": [98, 100],
+      "drawn": false
+    }
+  ]
+}
