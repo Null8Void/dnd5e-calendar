@@ -9,10 +9,10 @@ export class HolidaySubmitDialog extends Application {
   }
 
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       id: "dnd5e-holiday-submit",
       classes: ["dnd5e-holiday-submit"],
-      title: "Submit Holiday",
+      title: game.i18n.localize("DNDCAL.Holidays.SubmitTitle"),
       template: "modules/dnd5e-calendar/templates/holiday-submit-dialog.html",
       width: 400,
       height: 350,
@@ -50,7 +50,8 @@ export class HolidaySubmitDialog extends Application {
     html.find(".description-input").on("input", (e) => {
       const len = $(e.target).val().length;
       const remaining = 400 - len;
-      html.find(".char-count").text(`${remaining} characters remaining`);
+      const charText = game.i18n.localize("DNDCAL.Holidays.CharactersRemaining");
+      html.find(".char-count").text(`${remaining} ${charText}`);
       if (remaining < 0) {
         html.find(".char-count").addClass("over-limit");
       } else {
@@ -67,18 +68,18 @@ export class HolidaySubmitDialog extends Application {
     const description = html.find(".description-input").val().trim();
 
     if (!name) {
-      ui.notifications.error("Please enter a holiday name.");
+      ui.notifications.error(game.i18n.localize("DNDCAL.Notifications.EnterHolidayName"));
       return;
     }
 
     if (description.length > 400) {
-      ui.notifications.error("Description exceeds 400 character limit.");
+      ui.notifications.error(game.i18n.localize("DNDCAL.Notifications.InvalidDescription"));
       return;
     }
 
     try {
       await DnD5eCalendar.manager.holidayManager.submitHoliday(name, { day, month, year }, description);
-      ui.notifications.info("Holiday submitted for GM approval.");
+      ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.HolidaySubmitted"));
       this.close();
     } catch (error) {
       ui.notifications.error(error.message);
