@@ -1,31 +1,31 @@
 <form>
   <div class="tabs">
     <button type="button" class="item" data-tab="calendar" {{#if (eq activeTab "calendar")}}class="active"{{/if}}>
-      <i class="fas fa-calendar"></i> Calendar
+      <i class="fas fa-calendar"></i> {{localize "DNDCAL.Config.CalendarTab"}}
     </button>
     <button type="button" class="item" data-tab="time" {{#if (eq activeTab "time")}}class="active"{{/if}}>
-      <i class="fas fa-clock"></i> Time
+      <i class="fas fa-clock"></i> {{localize "DNDCAL.Config.TimeTab"}}
     </button>
     <button type="button" class="item" data-tab="season" {{#if (eq activeTab "season")}}class="active"{{/if}}>
-      <i class="fas fa-leaf"></i> Season
+      <i class="fas fa-leaf"></i> {{localize "DNDCAL.Config.SeasonTab"}}
     </button>
     <button type="button" class="item" data-tab="weather" {{#if (eq activeTab "weather")}}class="active"{{/if}}>
-      <i class="fas fa-cloud"></i> Weather
+      <i class="fas fa-cloud"></i> {{localize "DNDCAL.Config.WeatherTab"}}
     </button>
     <button type="button" class="item" data-tab="holidays" {{#if (eq activeTab "holidays")}}class="active"{{/if}}>
-      <i class="fas fa-star"></i> Holidays
+      <i class="fas fa-star"></i> {{localize "DNDCAL.Config.HolidaysTab"}}
     </button>
     <button type="button" class="item" data-tab="settings" {{#if (eq activeTab "settings")}}class="active"{{/if}}>
-      <i class="fas fa-cog"></i> Settings
+      <i class="fas fa-cog"></i> {{localize "DNDCAL.Config.SettingsTab"}}
     </button>
   </div>
 
   <div class="tab-content">
     <div class="tab" data-tab="calendar">
-      <h2>Calendar Configuration</h2>
+      <h2>{{localize "DNDCAL.Config.CalendarConfig"}}</h2>
 
       <div class="form-group">
-        <label>Active Calendar</label>
+        <label>{{localize "DNDCAL.Config.ActiveCalendar"}}</label>
         <select name="activeCalendar">
           {{#each data.calendars}}
           <option value="{{@key}}" {{#if (eq @key ../data.activeCalendarId}}selected{{/if}}>{{name}}</option>
@@ -38,33 +38,33 @@
         <div class="calendar-config" data-calendar="{{@key}}">
           <h3>{{name}}</h3>
           <div class="form-group">
-            <label>Calendar Name</label>
+            <label>{{localize "DNDCAL.Config.CalendarName"}}</label>
             <input type="text" name="calendarName" value="{{name}}">
           </div>
           <div class="form-group">
-            <label>Short Name</label>
+            <label>{{localize "DNDCAL.Config.ShortName"}}</label>
             <input type="text" name="calendarShortName" value="{{shortName}}">
           </div>
           <div class="form-group">
-            <label>Epoch</label>
+            <label>{{localize "DNDCAL.Calendar.Epoch"}}</label>
             <input type="text" name="epoch" value="{{epoch}}">
           </div>
           <div class="form-group">
-            <label>Year Zero</label>
+            <label>{{localize "DNDCAL.Calendar.YearZero"}}</label>
             <input type="number" name="yearZero" value="{{yearZero}}">
           </div>
         </div>
         {{/each}}
       </div>
 
-      <h3>Months</h3>
+      <h3>{{localize "DNDCAL.Calendar.Months"}}</h3>
       <div class="months-list">
         {{#each data.calendars}}
         {{#if (eq @key ../data.activeCalendarId)}}
         {{#each this.months}}
         <div class="month-row">
-          <input type="text" name="monthName" value="{{name}}" placeholder="Month Name">
-          <input type="text" name="monthAbbr" value="{{abbr}}" placeholder="Abbr" style="width: 50px;">
+          <input type="text" name="monthName" value="{{name}}" placeholder="{{localize "DNDCAL.Calendar.MonthName"}}">
+          <input type="text" name="monthAbbr" value="{{abbr}}" placeholder="{{localize "DNDCAL.Config.Abbreviation"}}" style="width: 50px;">
           <input type="number" name="monthDays" value="{{days}}" min="1" max="366" style="width: 60px;">
           <button type="button" class="remove-month-btn" data-index="{{@index}}"><i class="fas fa-trash"></i></button>
         </div>
@@ -72,96 +72,122 @@
         {{/if}}
         {{/each}}
       </div>
-      <button type="button" class="add-month-btn"><i class="fas fa-plus"></i> Add Month</button>
+      <button type="button" class="add-month-btn"><i class="fas fa-plus"></i> {{localize "DNDCAL.Calendar.AddMonth"}}</button>
 
-      <h3>Weekdays</h3>
+      <h3>{{localize "DNDCAL.Calendar.Weekdays"}}</h3>
       <div class="weekdays-list">
         {{#each data.calendars}}
         {{#if (eq @key ../data.activeCalendarId)}}
         {{#each this.weekdays}}
         <div class="weekday-row">
-          <input type="text" name="weekdayName" value="{{name}}" placeholder="Day Name">
-          <input type="text" name="weekdayAbbr" value="{{abbr}}" placeholder="Abbr" style="width: 50px;">
+          <input type="text" name="weekdayName" value="{{name}}" placeholder="{{localize "DNDCAL.Calendar.DayName"}}">
+          <input type="text" name="weekdayAbbr" value="{{abbr}}" placeholder="{{localize "DNDCAL.Config.Abbreviation"}}" style="width: 50px;">
           <button type="button" class="remove-weekday-btn" data-index="{{@index}}"><i class="fas fa-trash"></i></button>
         </div>
         {{/each}}
         {{/if}}
         {{/each}}
       </div>
-      <button type="button" class="add-weekday-btn"><i class="fas fa-plus"></i> Add Weekday</button>
+      <button type="button" class="add-weekday-btn"><i class="fas fa-plus"></i> {{localize "DNDCAL.Calendar.AddWeekday"}}</button>
     </div>
 
     <div class="tab" data-tab="time">
-      <h2>Time Management</h2>
+      <h2>{{localize "DNDCAL.Time.TimeManagement"}}</h2>
 
       <div class="current-time-display">
-        <h3>Current Time: {{data.time.hour}}:{{data.time.minute}}</h3>
+        <h3>{{localize "DNDCAL.Time.CurrentTime"}}: {{data.time.hour}}:{{data.time.minute}}</h3>
       </div>
 
       <div class="time-control">
-        <h4>Quick Adjust</h4>
-        <button type="button" class="time-control" data-action="addMinute" data-amount="1">+1 Min</button>
-        <button type="button" class="time-control" data-action="addMinute" data-amount="15">+15 Min</button>
-        <button type="button" class="time-control" data-action="addMinute" data-amount="30">+30 Min</button>
-        <button type="button" class="time-control" data-action="addHour" data-amount="1">+1 Hour</button>
-        <button type="button" class="time-control" data-action="addDay" data-amount="1">+1 Day</button>
+        <h4>{{localize "DNDCAL.Time.QuickAdjust"}}</h4>
+        <button type="button" class="time-control" data-action="addMinute" data-amount="1">{{localize "DNDCAL.Time.AddMinute"}}</button>
+        <button type="button" class="time-control" data-action="addMinute" data-amount="15">{{localize "DNDCAL.Time.Add15Minutes"}}</button>
+        <button type="button" class="time-control" data-action="addMinute" data-amount="30">{{localize "DNDCAL.Time.Add30Minutes"}}</button>
+        <button type="button" class="time-control" data-action="addHour" data-amount="1">{{localize "DNDCAL.Time.AddHour"}}</button>
+        <button type="button" class="time-control" data-action="addDay" data-amount="1">{{localize "DNDCAL.Time.AddDay"}}</button>
       </div>
 
-      <h3>Time Settings</h3>
+      <h3>{{localize "DNDCAL.Time.TimeSettings"}}</h3>
       <div class="form-group">
-        <label>Minutes per Hour</label>
+        <label>{{localize "DNDCAL.Time.MinutesPerHour"}}</label>
         <input type="number" name="minutesPerHour" value="{{constants.TIME.MINUTES_PER_HOUR}}" min="1" max="120">
       </div>
       <div class="form-group">
-        <label>Hours per Day</label>
+        <label>{{localize "DNDCAL.Time.HoursPerDay"}}</label>
         <input type="number" name="hoursPerDay" value="{{constants.TIME.HOURS_PER_DAY}}" min="1" max="48">
       </div>
     </div>
 
     <div class="tab" data-tab="season">
-      <h2>Season Configuration</h2>
+      <h2>{{localize "DNDCAL.Season.SeasonConfiguration"}}</h2>
 
       <div class="current-season">
-        <h3>Current Season: {{data.season.current}}</h3>
+        <h3>{{localize "DNDCAL.Season.CurrentSeason"}}: {{data.season.current}}</h3>
       </div>
 
       <div class="form-group">
         <label>
           <input type="checkbox" name="autoTrackSeasons" {{#if data.season.autoTrack}}checked{{/if}}>
-          Auto-track seasons based on month
+          {{localize "DNDCAL.Season.AutoTrack"}}
         </label>
       </div>
 
-      <h3>Season Month Ranges</h3>
+      <h3>{{localize "DNDCAL.Config.SeasonNames"}}</h3>
+      <div class="season-names">
+        <div class="form-group">
+          <label>{{localize "DNDCAL.Config.SeasonNameSpring"}}</label>
+          <input type="text" name="seasonNameSpring" value="{{data.season.seasonNames.spring}}">
+        </div>
+        <div class="form-group">
+          <label>{{localize "DNDCAL.Config.SeasonNameSummer"}}</label>
+          <input type="text" name="seasonNameSummer" value="{{data.season.seasonNames.summer}}">
+        </div>
+        <div class="form-group">
+          <label>{{localize "DNDCAL.Config.SeasonNameFall"}}</label>
+          <input type="text" name="seasonNameFall" value="{{data.season.seasonNames.fall}}">
+        </div>
+        <div class="form-group">
+          <label>{{localize "DNDCAL.Config.SeasonNameWinter"}}</label>
+          <input type="text" name="seasonNameWinter" value="{{data.season.seasonNames.winter}}">
+        </div>
+      </div>
+
+      <h3>{{localize "DNDCAL.Season.MonthRanges"}}</h3>
       <div class="season-ranges">
         <div class="form-group">
-          <label>Spring Months</label>
+          <label>{{localize "DNDCAL.Season.SpringMonths"}}</label>
           <input type="text" name="springMonths" value="{{data.season.monthRanges.spring}}">
         </div>
         <div class="form-group">
-          <label>Summer Months</label>
+          <label>{{localize "DNDCAL.Season.SummerMonths"}}</label>
           <input type="text" name="summerMonths" value="{{data.season.monthRanges.summer}}">
         </div>
         <div class="form-group">
-          <label>Fall Months</label>
+          <label>{{localize "DNDCAL.Season.FallMonths"}}</label>
           <input type="text" name="fallMonths" value="{{data.season.monthRanges.fall}}">
         </div>
         <div class="form-group">
-          <label>Winter Months</label>
+          <label>{{localize "DNDCAL.Season.WinterMonths"}}</label>
           <input type="text" name="winterMonths" value="{{data.season.monthRanges.winter}}">
         </div>
       </div>
     </div>
 
     <div class="tab" data-tab="weather">
-      <h2>Weather Settings</h2>
+      <h2>{{localize "DNDCAL.Weather.WeatherSettings"}}</h2>
 
       <div class="current-weather">
-        <h3>Current Weather: {{data.weather.current}}</h3>
+        <h3>{{localize "DNDCAL.Weather.CurrentWeather"}}: {{data.weather.current}}</h3>
       </div>
 
       <div class="form-group">
-        <label>Set Weather</label>
+        <label>{{localize "DNDCAL.Settings.AutoWeatherRoll"}}</label>
+        <input type="checkbox" name="autoWeatherRoll" {{#if settings.autoWeatherRoll}}checked{{/if}}>
+        <span class="hint">{{localize "DNDCAL.Settings.AutoWeatherRollHint"}}</span>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize "DNDCAL.Weather.SetWeather"}}</label>
         <select name="weather" onchange="this.value && (document.getElementById('weatherPreview').textContent = this.value)">
           {{#each constants.WEATHER.TYPES}}
           <option value="{{this}}">{{this}}</option>
@@ -169,21 +195,21 @@
         </select>
       </div>
 
-      <h3>GM Notes</h3>
+      <h3>{{localize "DNDCAL.Weather.GmNotes"}}</h3>
       <div class="form-group">
-        <textarea name="weatherGmNotes" rows="4" placeholder="Private notes about weather effects...">{{data.weather.gmNotes}}</textarea>
+        <textarea name="weatherGmNotes" rows="4" placeholder="{{localize "DNDCAL.Weather.GmNotesPlaceholder"}}">{{data.weather.gmNotes}}</textarea>
       </div>
     </div>
 
     <div class="tab" data-tab="holidays">
-      <h2>Holiday Management</h2>
+      <h2>{{localize "DNDCAL.Holidays.Title"}}</h2>
 
       <div class="holiday-actions">
-        <button type="button" class="view-holidays-btn"><i class="fas fa-list"></i> View/Approve Holidays</button>
-        <button type="button" class="submit-holiday-btn"><i class="fas fa-plus"></i> Submit Holiday</button>
+        <button type="button" class="view-holidays-btn"><i class="fas fa-list"></i> {{localize "DNDCAL.Holidays.ViewHolidays"}}</button>
+        <button type="button" class="submit-holiday-btn"><i class="fas fa-plus"></i> {{localize "DNDCAL.Holidays.SubmitHoliday"}}</button>
       </div>
 
-      <h3>Approved Holidays</h3>
+      <h3>{{localize "DNDCAL.Holidays.ApprovedHolidays"}}</h3>
       <div class="holidays-list">
         {{#each data.holidays.approved}}
         <div class="holiday-item">
@@ -191,69 +217,69 @@
           <p>{{description}}</p>
         </div>
         {{else}}
-        <p class="no-holidays">No approved holidays yet.</p>
+        <p class="no-holidays">{{localize "DNDCAL.Holidays.NoApprovedHolidays"}}</p>
         {{/each}}
       </div>
     </div>
 
     <div class="tab" data-tab="settings">
-      <h2>Module Settings</h2>
+      <h2>{{localize "DNDCAL.Settings.ModuleSettings"}}</h2>
 
       <div class="form-group">
         <label>
           <input type="checkbox" name="enableGradient" {{#if settings.enableGradientBar}}checked{{/if}}>
-          Enable Day/Night Gradient Bar
+          {{localize "DNDCAL.DayNight.EnableGradient"}}
         </label>
       </div>
 
       <div class="form-group">
         <label>
           <input type="checkbox" name="enableIconToggle" {{#if settings.enableIconToggle}}checked{{/if}}>
-          Enable Sun/Moon Icon Toggle
+          {{localize "DNDCAL.DayNight.EnableIcon"}}
         </label>
       </div>
 
       <div class="form-group">
         <label>
           <input type="checkbox" name="playersCanSubmit" {{#if settings.playersCanSubmitHolidays}}checked{{/if}}>
-          Players Can Submit Holidays
+          {{localize "DNDCAL.Settings.PlayersCanSubmitHolidays"}}
         </label>
       </div>
 
       <div class="form-group">
         <label>
           <input type="checkbox" name="playersCanViewPending" {{#if settings.playersCanViewPendingHolidays}}checked{{/if}}>
-          Players Can View Pending Holidays
+          {{localize "DNDCAL.Settings.PlayersCanViewPendingHolidays"}}
         </label>
       </div>
 
       <div class="form-group">
         <label>
           <input type="checkbox" name="showSeconds" {{#if settings.showSeconds}}checked{{/if}}>
-          Show Seconds in Time Display
+          {{localize "DNDCAL.Settings.ShowSeconds"}}
         </label>
       </div>
 
-      <h3>Moon Settings</h3>
+      <h3>{{localize "DNDCAL.Moon.MoonSettings"}}</h3>
       <div class="form-group">
-        <label>Lunar Cycle (Days)</label>
+        <label>{{localize "DNDCAL.Moon.CycleDays"}}</label>
         <input type="number" name="moonCycleDays" value="{{data.moon.cycleDays}}" min="1" max="60">
       </div>
 
-      <h3>Day/Night Settings</h3>
+      <h3>{{localize "DNDCAL.DayNight.DayNightSettings"}}</h3>
       <div class="form-group">
-        <label>Day Starts At Hour</label>
+        <label>{{localize "DNDCAL.DayNight.DayStartsAt"}}</label>
         <input type="number" name="dayStartHour" value="{{data.dayNight.dayStartHour}}" min="0" max="23">
       </div>
       <div class="form-group">
-        <label>Night Starts At Hour</label>
+        <label>{{localize "DNDCAL.DayNight.NightStartsAt"}}</label>
         <input type="number" name="nightStartHour" value="{{data.dayNight.nightStartHour}}" min="0" max="23">
       </div>
     </div>
   </div>
 
   <div class="form-actions">
-    <button type="button" class="cancel-btn">Cancel</button>
-    <button type="button" class="save-btn">Save Settings</button>
+    <button type="button" class="cancel-btn">{{localize "DNDCAL.Config.Cancel"}}</button>
+    <button type="button" class="save-btn">{{localize "DNDCAL.Config.Save"}}</button>
   </div>
 </form>

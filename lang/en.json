@@ -16,7 +16,10 @@
       "AutoWeatherRollHint": "Automatically roll for weather at the start of each new day based on the current season.",
       "EditSeasonNames": "Edit Season Names",
       "EditSeasonNamesHint": "Customize the names of the seasons for your campaign.",
-      "ModuleSettings": "Module Settings"
+      "ModuleSettings": "Module Settings",
+      "PlayersCanSubmitHolidays": "Players Can Submit Holidays",
+      "PlayersCanViewPendingHolidays": "Players Can View Pending Holidays",
+      "ShowSeconds": "Show Seconds in Time Display"
     },
 
     "Keybinds": {
@@ -75,7 +78,10 @@
       "CalendarConfig": "Calendar Configuration",
       "ActiveCalendar": "Active Calendar",
       "CalendarName": "Calendar Name",
-      "ShortName": "Short Name"
+      "ShortName": "Short Name",
+      "Abbreviation": "Abbreviation",
+      "MonthName": "Month Name",
+      "DayName": "Day Name"
     },
 
     "Calendar": {
@@ -100,6 +106,7 @@
       "Add15Minutes": "+15 Minutes",
       "AddHour": "+1 Hour",
       "AddDay": "+1 Day",
+      "Add30Minutes": "+30 Minutes",
       "MinutesPerHour": "Minutes per Hour",
       "HoursPerDay": "Hours per Day",
       "TimeManagement": "Time Management",
@@ -185,7 +192,12 @@
       "RejectedBy": "Rejected by",
       "RejectionReason": "Reason",
       "ApprovedHolidays": "Approved Holidays",
-      "NoApprovedHolidays": "No approved holidays yet."
+      "NoApprovedHolidays": "No approved holidays yet.",
+      "NoPendingHolidays": "No pending holiday submissions.",
+      "NoRejectedHolidays": "No rejected holidays.",
+      "Day": "Day",
+      "Month": "Month",
+      "Year": "Year"
     },
 
     "DayNight": {
