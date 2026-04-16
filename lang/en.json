@@ -15,7 +15,8 @@
       "AutoWeatherRoll": "Auto-Roll Daily Weather",
       "AutoWeatherRollHint": "Automatically roll for weather at the start of each new day based on the current season.",
       "EditSeasonNames": "Edit Season Names",
-      "EditSeasonNamesHint": "Customize the names of the seasons for your campaign."
+      "EditSeasonNamesHint": "Customize the names of the seasons for your campaign.",
+      "ModuleSettings": "Module Settings"
     },
 
     "Keybinds": {
@@ -70,7 +71,11 @@
       "SeasonNameSpring": "Spring Name",
       "SeasonNameSummer": "Summer Name",
       "SeasonNameFall": "Fall Name",
-      "SeasonNameWinter": "Winter Name"
+      "SeasonNameWinter": "Winter Name",
+      "CalendarConfig": "Calendar Configuration",
+      "ActiveCalendar": "Active Calendar",
+      "CalendarName": "Calendar Name",
+      "ShortName": "Short Name"
     },
 
     "Calendar": {
@@ -81,7 +86,8 @@
       "AddWeekday": "Add Weekday",
       "RemoveWeekday": "Remove Weekday",
       "Epoch": "Epoch",
-      "YearZero": "Year Zero"
+      "YearZero": "Year Zero",
+      "Year": "Year"
     },
 
     "Time": {
@@ -95,7 +101,10 @@
       "AddHour": "+1 Hour",
       "AddDay": "+1 Day",
       "MinutesPerHour": "Minutes per Hour",
-      "HoursPerDay": "Hours per Day"
+      "HoursPerDay": "Hours per Day",
+      "TimeManagement": "Time Management",
+      "QuickAdjust": "Quick Adjust",
+      "TimeSettings": "Time Settings"
     },
 
     "Season": {
@@ -105,7 +114,12 @@
       "Summer": "Summer",
       "Fall": "Fall",
       "Winter": "Winter",
-      "MonthRanges": "Season Month Ranges"
+      "MonthRanges": "Season Month Ranges",
+      "SeasonConfiguration": "Season Configuration",
+      "SpringMonths": "Spring Months",
+      "SummerMonths": "Summer Months",
+      "FallMonths": "Fall Months",
+      "WinterMonths": "Winter Months"
     },
 
     "Weather": {
@@ -126,12 +140,14 @@
       "Hot": "Hot",
       "Cold": "Cold",
       "Blizzard": "Blizzard",
-      "Hail": "Hail"
+      "Hail": "Hail",
+      "WeatherSettings": "Weather Settings"
     },
 
     "Moon": {
       "Phase": "Moon Phase",
       "CycleDays": "Lunar Cycle (Days)",
+      "MoonSettings": "Moon Settings",
       "Phases": {
         "New Moon": "New Moon",
         "Waxing Crescent": "Waxing Crescent",
@@ -167,14 +183,17 @@
       "SubmittedBy": "Submitted by",
       "ApprovedBy": "Approved by",
       "RejectedBy": "Rejected by",
-      "RejectionReason": "Reason"
+      "RejectionReason": "Reason",
+      "ApprovedHolidays": "Approved Holidays",
+      "NoApprovedHolidays": "No approved holidays yet."
     },
 
     "DayNight": {
       "DayStartsAt": "Day Starts At Hour",
       "NightStartsAt": "Night Starts At Hour",
       "EnableGradient": "Enable Day/Night Gradient Bar",
-      "EnableIcon": "Enable Sun/Moon Icon Toggle"
+      "EnableIcon": "Enable Sun/Moon Icon Toggle",
+      "DayNightSettings": "Day/Night Settings"
     },
 
     "Notifications": {
@@ -184,7 +203,8 @@
       "HolidayRejected": "Holiday rejected.",
       "HolidayDeleted": "Holiday deleted.",
       "PermissionDenied": "You do not have permission to perform this action.",
-      "InvalidDescription": "Description exceeds 400 character limit."
+      "InvalidDescription": "Description exceeds 400 character limit.",
+      "EnterHolidayName": "Please enter a holiday name."
     },
 
     "Permissions": {
@@ -214,6 +234,64 @@
       "Cold": "Cold",
       "Blizzard": "Blizzard",
       "Hail": "Hail"
+    },
+
+    "Battle": {
+      "HeldInAwe": "Weather conditions limit creature actions",
+      "FatigueLevel": "Weather-induced fatigue",
+      "VisibilityPenalty": "Visibility reduced by weather",
+      "LightLevel": "Lighting affected by weather and time",
+      "MoonPhaseBonus": "Bonus from lunar conditions",
+      "FullyRested": "Well-rested in favorable conditions",
+      "FoggyDisadvantage": "Fog imposes disadvantage on ranged attacks beyond 60ft",
+      "RainSlippery": "Rain makes surfaces slippery - DEX saves at disadvantage",
+      "HeavyRainNoFire": "Heavy rain extinguishes flames and disadvantages fire spells",
+      "ThunderstormLoud": "Thunderstorm imposes disadvantage on concentration checks",
+      "BlizzardBlind": "Blizzard creates heavily obscured conditions beyond 60ft",
+      "SnowDifficult": "Snow/Blizzard creates difficult terrain",
+      "HotExhaustion": "Extreme heat may cause heat exhaustion",
+      "ColdHypothermia": "Extreme cold may cause hypothermia and cold damage",
+      "WindCones": "Strong wind pushes lightweight creatures and objects",
+      "FullMoonRage": "Full Moon grants barbarians +1 to damage rolls",
+      "NewMoonDark": "New Moon creates near-total darkness outdoors",
+      "ClearAdvantage": "Clear skies provide optimal visibility and conditions",
+      "OutdoorTarget": "Outdoor targets are affected by current weather",
+      "SpellcastingDisadvantage": "Spellcasting affected by weather conditions",
+      "PerceptionPenalty": "Perception checks at disadvantage due to weather",
+      "AttackRollPenalty": "Attack rolls affected by weather",
+      "SavingThrowPenalty": "Saving throws affected by weather conditions"
+    },
+
+    "Resolution": {
+      "DayPassed": "A new day has begun",
+      "SeasonChanged": "The season has changed",
+      "WeatherEffect": "Weather effect applied to target",
+      "MoonPhaseChanged": "The moon phase has changed",
+      "HolidayActive": "An active holiday affects the world",
+      "LongRestBlocked": "Weather conditions prevent a long rest",
+      "ShortRestAllowed": "Short rest allowed despite conditions",
+      "TimeAdvanced": "Time has advanced",
+      "WeatherRolled": "Weather has been randomly determined",
+      "AutoWeatherApplied": "Automatic weather has been applied"
+    },
+
+    "Target": {
+      "OutdoorTarget": "Outdoor Target",
+      "Spellcasting": "Spellcasting",
+      "PerceptionCheck": "Perception Check",
+      "AttackRoll": "Attack Roll",
+      "SavingThrow": "Saving Throw",
+      "RangedAttack": "Ranged Attack",
+      "ConcentrationCheck": "Concentration Check"
+    },
+
+    "MoonEffects": {
+      "FullMoonBeast": "Full Moon awakens lycanthropes",
+      "FullMoonBonus": "Bonus action attacks available",
+      "NewMoonShadows": "Increased shadow magic potency",
+      "EclipseDarkness": "Solar/Lunar eclipse creates supernatural darkness",
+      "HighTide": "High tide affects coastal areas",
+      "LowTide": "Low tide reveals hidden areas"
     }
   }
 }
