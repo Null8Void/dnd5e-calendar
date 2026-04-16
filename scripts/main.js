@@ -12,6 +12,7 @@ import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
 console.log("[DnD5e-Calendar] DEBUG: main.js TOP - imports loaded, defining DnD5eCalendar");
 console.log("[DnD5e-Calendar] DEBUG: CALENDAR_CONSTANTS:", CALENDAR_CONSTANTS.VERSION);
+window.alert("[DnD5e-Calendar] main.js is executing! If you see this, the module loads.");
 
 export const DnD5eCalendar = {
   manager: null,
