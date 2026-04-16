@@ -14,10 +14,10 @@ export class CalendarConfig extends Application {
   }
 
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       id: "dnd5e-calendar-config",
       classes: ["dnd5e-calendar-config"],
-      title: "DnD5e Calendar Configuration",
+      title: game.i18n.localize("DNDCAL.Config.Title"),
       template: "modules/dnd5e-calendar/templates/calendar-config.html",
       width: 700,
       height: 600,
@@ -41,7 +41,7 @@ export class CalendarConfig extends Application {
 
   async render(force = false, options = {}) {
     if (!CalendarPermissions.canEdit()) {
-      ui.notifications.warn("Only GMs can access the calendar configuration.");
+      ui.notifications.warn(game.i18n.localize("DNDCAL.Permissions.GMOnly"));
       return;
     }
     return super.render(force, options);
@@ -135,12 +135,26 @@ export class CalendarConfig extends Application {
     this.settings.playersCanSubmitHolidays = html.find('input[name="playersCanSubmit"]').prop("checked");
     this.settings.playersCanViewPendingHolidays = html.find('input[name="playersCanViewPending"]').prop("checked");
     this.settings.autoTrackSeasons = html.find('input[name="autoTrackSeasons"]').prop("checked");
+    this.settings.autoWeatherRoll = html.find('input[name="autoWeatherRoll"]').prop("checked");
     this.settings.showSeconds = html.find('input[name="showSeconds"]').prop("checked");
+
+    this.settings.seasonNames = {
+      spring: html.find('input[name="seasonNameSpring"]').val() || "Spring",
+      summer: html.find('input[name="seasonNameSummer"]').val() || "Summer",
+      fall: html.find('input[name="seasonNameFall"]').val() || "Fall",
+      winter: html.find('input[name="seasonNameWinter"]').val() || "Winter"
+    };
 
     await CalendarData.save(this.data);
     await CalendarData.saveSettings(this.settings);
 
-    ui.notifications.info("Calendar settings saved.");
+    if (DnD5eCalendar.manager) {
+      DnD5eCalendar.manager.settings = this.settings;
+      DnD5eCalendar.manager.seasonManager.setSeasonNames(this.settings.seasonNames);
+      DnD5eCalendar.manager.seasonManager.enableAutoWeatherRoll(this.settings.autoWeatherRoll);
+    }
+
+    ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.SettingsSaved"));
     this.close();
   }
 
