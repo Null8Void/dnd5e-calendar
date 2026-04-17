@@ -16,6 +16,7 @@ function init() {
 
   hud = new CalendarHUD();
   config = new CalendarConfig();
+  window.DnD5eCalendarConfig = config;
 
   registerSettings();
   console.log("[DnD5e-Calendar] DEBUG: registerSettings() completed");

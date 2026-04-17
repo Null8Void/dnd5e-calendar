@@ -146,13 +146,11 @@ export class CalendarConfig extends Application {
       winter: html.find('input[name="seasonNameWinter"]').val() || "Winter"
     };
 
-    await CalendarData.save(this.data);
     await CalendarData.saveSettings(this.settings);
 
-    if (DnD5eCalendar.manager) {
-      DnD5eCalendar.manager.settings = this.settings;
-      DnD5eCalendar.manager.seasonManager.setSeasonNames(this.settings.seasonNames);
-      DnD5eCalendar.manager.seasonManager.enableAutoWeatherRoll(this.settings.autoWeatherRoll);
+    if (DnD5eCalendar.seasonManager) {
+      DnD5eCalendar.seasonManager.setSeasonNames(this.settings.seasonNames);
+      DnD5eCalendar.seasonManager.enableAutoWeatherRoll(this.settings.autoWeatherRoll);
     }
 
     ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.SettingsSaved"));
@@ -160,22 +158,24 @@ export class CalendarConfig extends Application {
   }
 
   async adjustTime(action, amount) {
+    if (!game.dnd5e?.time) {
+      ui.notifications.warn("Time advancement requires dnd5e system");
+      return;
+    }
+
     switch (action) {
       case "addMinute":
-        await DnD5eCalendar.manager.advanceTime(amount);
+        await game.dnd5e.time.advance(amount);
         break;
       case "addHour":
-        await DnD5eCalendar.manager.advanceTime(amount * 60);
+        await game.dnd5e.time.advance(amount * 60);
         break;
       case "addDay":
-        for (let i = 0; i < amount; i++) {
-          await DnD5eCalendar.manager.advanceTime(24 * 60);
-        }
+        await game.dnd5e.time.advance(amount * 24 * 60);
         break;
     }
 
     this.render();
-    DnD5eCalendar.hud.render();
   }
 
   addMonth() {

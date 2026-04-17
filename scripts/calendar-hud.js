@@ -28,15 +28,13 @@ export class CalendarHUD extends Application {
   }
 
   async _getData() {
-    if (!DnD5eCalendar.manager) {
+    if (!DnD5eCalendar.dnd5eCalendar) {
       return this._getDefaultData();
     }
 
-    const manager = DnD5eCalendar.manager;
-    const settings = await CalendarData.loadSettings();
-    const date = manager.getDate();
-    const time = manager.getTime();
-    const calendar = manager.getActiveCalendar();
+    const date = DnD5eCalendar.getDate();
+    const time = DnD5eCalendar.getTime();
+    const calendar = DnD5eCalendar.getCalendar();
 
     const dayOfWeek = CalendarUtils.getDayOfWeek(
       date.day,
@@ -45,16 +43,16 @@ export class CalendarHUD extends Application {
       calendar
     );
 
-    const moonPhase = manager.moonManager.getPhase();
-    const weather = manager.weatherManager.getWeather();
-    const weatherIcon = manager.weatherManager.getWeatherIcon();
-    const season = manager.seasonManager.getCurrentSeason();
-    const seasonName = manager.seasonManager.getCurrentSeasonName();
-    const seasonIcon = manager.seasonManager.getCurrentSeasonIcon();
+    const moonPhase = DnD5eCalendar.moonManager.getPhase();
+    const weather = DnD5eCalendar.weatherManager.getWeather();
+    const weatherIcon = DnD5eCalendar.weatherManager.getWeatherIcon();
+    const season = DnD5eCalendar.seasonManager.getCurrentSeason();
+    const seasonName = DnD5eCalendar.seasonManager.getCurrentSeasonName();
+    const seasonIcon = DnD5eCalendar.seasonManager.getCurrentSeasonIcon();
 
-    const isDay = manager.dayNightManager.isDay();
-    const periodIcon = manager.dayNightManager.getPeriodIcon();
-    const progress = manager.dayNightManager.getProgress();
+    const isDay = time.hour >= 6 && time.hour < 18;
+    const periodIcon = isDay ? "fa-sun" : "fa-moon";
+    const progress = { isDay, progress: (time.hour * 60 + time.minute) / 1440 };
 
     const formattedDate = CalendarUtils.formatDate(
       date.day,
@@ -68,15 +66,11 @@ export class CalendarHUD extends Application {
       time.hour,
       time.minute,
       0,
-      settings.showSeconds
+      false
     );
 
-    const calendars = Object.entries(manager.data.calendars).map(([id, cal]) => ({
-      id,
-      name: cal.name,
-      shortName: cal.shortName,
-      isActive: id === manager.data.activeCalendarId
-    }));
+    const calendarName = DnD5eCalendar.getCalendarName();
+    const calendars = [{ id: "primary", name: calendarName, isActive: true }];
 
     return {
       formattedDate,
@@ -93,8 +87,8 @@ export class CalendarHUD extends Application {
       isDay,
       periodIcon,
       progress,
-      showGradient: settings.enableGradientBar,
-      showIcon: settings.enableIconToggle,
+      showGradient: true,
+      showIcon: true,
       calendars,
       canEdit: CalendarPermissions.canEdit(),
       calendarsCount: calendars.length
@@ -174,7 +168,7 @@ export class CalendarHUD extends Application {
     html.find(".dnd5e-calendar-hud-date").on("click", (e) => {
       e.preventDefault();
       if (CalendarPermissions.canEdit()) {
-        DnD5eCalendar.config.render(true);
+        window.DnD5eCalendarConfig?.render(true);
       }
     });
 
@@ -207,7 +201,7 @@ export class CalendarHUD extends Application {
   }
 
   async showTimeEditor() {
-    const currentTime = DnD5eCalendar.manager.getTime();
+    const currentTime = DnD5eCalendar.getTime();
     const content = `
       <form>
         <div class="dnd5e-calendar-time-editor">
@@ -236,7 +230,10 @@ export class CalendarHUD extends Application {
       callback: async (html) => {
         const hour = parseInt(html.find('input[name="hour"]').val());
         const minute = parseInt(html.find('input[name="minute"]').val());
-        await DnD5eCalendar.manager.setTime(hour, minute);
+        if (game.dnd5e?.time) {
+          const minutesDiff = (hour - currentTime.hour) * 60 + (minute - currentTime.minute);
+          await game.dnd5e.time.advance(minutesDiff);
+        }
         await this.render();
       },
       rejectClose: false
@@ -244,7 +241,7 @@ export class CalendarHUD extends Application {
   }
 
   async showSeasonSelector() {
-    const currentSeason = DnD5eCalendar.manager.seasonManager.getCurrentSeason();
+    const currentSeason = DnD5eCalendar.seasonManager.getCurrentSeason();
     const seasons = [
       { key: "spring", name: game.i18n.localize("DNDCAL.Season.Spring") },
       { key: "summer", name: game.i18n.localize("DNDCAL.Season.Summer") },
@@ -267,7 +264,7 @@ export class CalendarHUD extends Application {
       callback: async (html) => {
         const season = html.find(".season-btn.active").data("season");
         if (season) {
-          await DnD5eCalendar.manager.seasonManager.setSeason(season);
+          DnD5eCalendar.seasonManager.setSeason(season);
           await this.render();
         }
       },
@@ -276,7 +273,7 @@ export class CalendarHUD extends Application {
   }
 
   async showWeatherSelector() {
-    const currentWeather = DnD5eCalendar.manager.weatherManager.getWeather();
+    const currentWeather = DnD5eCalendar.weatherManager.getWeather();
     const weatherTypes = [
       { key: "Clear skies", label: game.i18n.localize("DNDCAL.Weather.ClearSkies") },
       { key: "Partly cloudy", label: game.i18n.localize("DNDCAL.Weather.PartlyCloudy") },
@@ -306,7 +303,7 @@ export class CalendarHUD extends Application {
       label: game.i18n.localize("DNDCAL.Config.Save"),
       callback: async (html) => {
         const weather = html.find('select[name="weather"]').val();
-        await DnD5eCalendar.manager.weatherManager.setWeather(weather);
+        DnD5eCalendar.weatherManager.setWeather(weather);
         await this.render();
       },
       rejectClose: false
@@ -314,17 +311,14 @@ export class CalendarHUD extends Application {
   }
 
   async switchCalendar(calendarId) {
-    DnD5eCalendar.manager.data.activeCalendarId = calendarId;
-    await CalendarData.save(DnD5eCalendar.manager.data);
-    await this.render();
-    Hooks.callAll("dnd5e-calendar:calendarChange", calendarId);
+    ui.notifications.warn("Calendar switching is handled by dnd5e system settings");
   }
 
   updateWeatherEffect() {
     const container = document.getElementById("dnd5e-calendar-weather-effect");
-    if (!container || !DnD5eCalendar.manager) return;
+    if (!container || !DnD5eCalendar.weatherManager) return;
 
-    const weatherEffect = DnD5eCalendar.manager.weatherManager.getWeatherEffect();
+    const weatherEffect = DnD5eCalendar.weatherManager.getWeatherEffect();
 
     container.className = "weather-effect-container";
 
