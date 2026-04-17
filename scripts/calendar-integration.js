@@ -36,9 +36,7 @@ export class DnD5eCalendarIntegration {
    * Called after dnd5e calendar is set up
    */
   async initialize() {
-    console.log("[DnD5e-Calendar] DEBUG: DnD5eCalendarIntegration.initialize() STARTED");
-    
-    CalendarDebug.feature("calendar", "Initializing DnD5e Calendar Integration");
+    CalendarDebug.trackInit("initialize", true);
     
     // Load custom data from calendar flags
     await this.loadCustomData();
@@ -52,7 +50,7 @@ export class DnD5eCalendarIntegration {
     // Register updateWorldTime hook for day changes
     this.registerWorldTimeHooks();
     
-    CalendarDebug.feature("calendar", "Integration initialized successfully");
+    
     console.log("[DnD5e-Calendar] Integration initialized with calendar:", this.dnd5eCalendar?.name);
   }
 
@@ -61,9 +59,7 @@ export class DnD5eCalendarIntegration {
    * @param {Object} calendar - The DnD5e calendar instance
    */
   setupCalendar(calendar) {
-    console.log("[DnD5e-Calendar] DEBUG: dnd5e.setupCalendar hook fired!", calendar);
-    CalendarDebug.feature("calendar", "dnd5e.setupCalendar hook fired", calendar);
-    
+    CalendarDebug.trackCalendarSetup(calendar, true);
     this.dnd5eCalendar = calendar;
     
     // Extend calendar with custom flags if not present
@@ -122,7 +118,7 @@ export class DnD5eCalendarIntegration {
       calendar.customName = calendar.name || "Campaign Calendar";
     }
     
-    CalendarDebug.feature("calendar", "Extended calendar with custom properties", {
+    
       customName: calendar.customName,
       showSeasonNames: calendar.showSeasonNames
     });
@@ -132,8 +128,6 @@ export class DnD5eCalendarIntegration {
    * Load custom data from the calendar flags
    */
   async loadCustomData() {
-    CalendarDebug.feature("data", "Loading custom data from calendar flags");
-    
     if (this.dnd5eCalendar?.flags?.['dnd5e-calendar']) {
       const savedData = this.dnd5eCalendar.flags['dnd5e-calendar'];
       this.customData = {
@@ -183,7 +177,7 @@ export class DnD5eCalendarIntegration {
       };
     }
     
-    CalendarDebug.feature("data", "Custom data loaded", this.customData);
+    
   }
 
   /**
@@ -203,7 +197,7 @@ export class DnD5eCalendarIntegration {
       holidays: this.customData.holidays
     };
     
-    CalendarDebug.feature("data", "Custom data saved to calendar flags");
+    
   }
 
   /**
@@ -214,11 +208,9 @@ export class DnD5eCalendarIntegration {
     console.log("[DnD5e-Calendar] DEBUG: registerWorldTimeHooks() called");
 
     Hooks.on("updateWorldTime", async (worldTime, delta, options) => {
-      console.log("[DnD5e-Calendar] DEBUG: updateWorldTime fired!", { worldTime, delta, options });
-      CalendarDebug.feature("time", "updateWorldTime hook fired", { worldTime, delta, options });
+      CalendarDebug.trackWorldTime(worldTime, delta, options, true);
 
       if (!this.dnd5eCalendar) {
-        CalendarDebug.warn("updateWorldTime: calendar not initialized");
         return;
       }
 
@@ -261,10 +253,7 @@ export class DnD5eCalendarIntegration {
       Hooks.callAll("dnd5e-calendar:timeChange", { time, date, isNewDay, delta });
       Hooks.callAll("dnd5e-calendar:calendarChange", state);
 
-      CalendarDebug.feature("time", "Time engine update complete");
-    });
-
-    CalendarDebug.feature("hooks", "updateWorldTime hook registered with full time engine");
+      });
   }
 
   /**
@@ -322,16 +311,9 @@ export class DnD5eCalendarIntegration {
     // Signal integration is ready
     Hooks.callAll("dnd5e-calendar:integrationReady");
     
-    CalendarDebug.feature("hooks", "UI hooks registered with proper lifecycle");
-  }
+    }
 
-  /**
-   * Handle new day events
-   */
   onNewDay() {
-    console.log("[DnD5e-Calendar] DEBUG: onNewDay() fired");
-    CalendarDebug.feature("calendar", "New day detected!");
-
     const date = this.getDate();
     const state = CalendarState.get();
 
@@ -460,7 +442,6 @@ export class DnD5eCalendarIntegration {
   setCalendarName(name) {
     if (this.dnd5eCalendar) {
       this.dnd5eCalendar.customName = name;
-      CalendarDebug.feature("calendar", "Calendar name updated", { name });
       Hooks.callAll("dnd5e-calendar:calendarNameChanged", name);
     }
   }

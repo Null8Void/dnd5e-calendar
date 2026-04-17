@@ -12,7 +12,7 @@ let config = null;
 function init() {
   console.log("[DnD5e-Calendar] DEBUG: init() STARTED");
   CalendarDebug.init();
-  CalendarDebug.info("Module initialization starting");
+  
 
   hud = new CalendarHUD();
   config = new CalendarConfig();
@@ -30,7 +30,7 @@ function init() {
   registerCalendarWithDND5E();
   console.log("[DnD5e-Calendar] DEBUG: registerCalendarWithDND5E() completed");
 
-  CalendarDebug.info("Module initialization complete");
+  
   console.log("DnD5e Calendar | Module initialized (v14 Integration)");
 }
 
