@@ -117,11 +117,6 @@ export class DnD5eCalendarIntegration {
     if (!calendar.customName) {
       calendar.customName = calendar.name || "Campaign Calendar";
     }
-    
-    
-      customName: calendar.customName,
-      showSeasonNames: calendar.showSeasonNames
-    });
   }
 
   /**
