@@ -29,6 +29,26 @@ export class DnD5eCalendarIntegration {
     this.weatherManager = new WeatherManager(this);
     this.seasonManager = new SeasonManager(this);
     this.holidayManager = new HolidayManager(this);
+    
+    // Centralized state object for data-driven HUD
+    this.state = {
+      date: { day: 1, month: 0, year: 0 },
+      time: { hour: 0, minute: 0 },
+      weather: "Clear skies",
+      weatherIcon: "fa-sun",
+      season: "spring",
+      seasonName: "Spring",
+      seasonIcon: "fa-leaf",
+      moonPhase: { name: "New Moon", key: "new", index: 0 },
+      moonIcon: "fa-moon",
+      isDay: true,
+      dayOfWeek: "Starday",
+      holidays: [],
+      isHoliday: false,
+      showGradient: true,
+      showIcon: true,
+      lastUpdate: 0
+    };
   }
 
   /**
@@ -231,6 +251,9 @@ export class DnD5eCalendarIntegration {
       if (midnights > 0) {
         this.seasonManager.onDayChange(null, this.getDate());
       }
+      
+      // Sync centralized state for data-driven HUD
+      this.syncState();
       
       // Emit custom hook for our features
       Hooks.callAll("dnd5e-calendar:timeUpdate", {
@@ -438,6 +461,62 @@ export class DnD5eCalendarIntegration {
       container.classList.add("active");
       container.classList.add(weatherEffect);
     }
+  }
+
+  /**
+   * Sync the centralized state object with current calendar data
+   * This drives the data-driven HUD
+   */
+  syncState() {
+    if (!this.dnd5eCalendar) return this.state;
+    
+    const date = this.getDate();
+    const time = this.getTime();
+    const calendar = this.dnd5eCalendar;
+    
+    // Update date and time
+    this.state.date = date;
+    this.state.time = time;
+    
+    // Update weather
+    this.state.weather = this.weatherManager.getWeather();
+    this.state.weatherIcon = this.weatherManager.getWeatherIcon();
+    
+    // Update season
+    this.state.season = this.seasonManager.getCurrentSeason();
+    this.state.seasonName = this.seasonManager.getCurrentSeasonName();
+    this.state.seasonIcon = this.seasonManager.getCurrentSeasonIcon();
+    
+    // Update moon phase
+    const moonPhase = this.moonManager.getPhase();
+    this.state.moonPhase = moonPhase;
+    this.state.moonIcon = CalendarUtils.getMoonPhaseIcon(moonPhase.key);
+    
+    // Update day/night
+    this.state.isDay = time.hour >= 6 && time.hour < 18;
+    
+    // Update day of week
+    if (calendar.weekdays && calendar.months) {
+      this.state.dayOfWeek = CalendarUtils.getDayOfWeek(date.day, date.month, date.year, calendar)?.name || "Starday";
+    }
+    
+    // Check for holidays
+    const holiday = this.holidayManager.getHolidayOnDate(date.day, date.month, date.year, "primary");
+    this.state.isHoliday = !!holiday;
+    this.state.holidays = holiday ? [holiday] : [];
+    
+    // Mark state as updated
+    this.state.lastUpdate = Date.now();
+    
+    return this.state;
+  }
+
+  /**
+   * Get the centralized state object
+   *HUD binds to this for reactive updates
+   */
+  getState() {
+    return this.syncState();
   }
 }
 

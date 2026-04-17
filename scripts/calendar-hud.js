@@ -26,10 +26,71 @@ export class CalendarHUD extends Application {
     return await this._getData();
   }
 
-  async _getData() {
+async _getData() {
     if (!DnD5eCalendar.dnd5eCalendar) {
       return this._getDefaultData();
     }
+
+    // Use centralized state for data-driven HUD
+    const state = DnD5eCalendar.getState();
+    const date = state.date;
+    const time = state.time;
+    const calendar = DnD5eCalendar.getCalendar();
+
+    const dayOfWeek = CalendarUtils.getDayOfWeek(
+      date.day,
+      date.month,
+      date.year,
+      calendar
+    );
+
+    const isDay = state.isDay;
+    const periodIcon = isDay ? "fa-sun" : "fa-moon";
+    const progress = { isDay, progress: (time.hour * 60 + time.minute) / 1440 };
+
+    const formattedDate = CalendarUtils.formatDate(
+      date.day,
+      date.month,
+      date.year,
+      calendar,
+      true
+    );
+
+    const formattedTime = CalendarUtils.formatTime(
+      time.hour,
+      time.minute,
+      0,
+      false
+    );
+
+    const calendarName = DnD5eCalendar.getCalendarName();
+    const calendars = [{ id: "primary", name: calendarName, isActive: true }];
+
+    return {
+      formattedDate,
+      formattedTime,
+      dayOfWeek: state.dayOfWeek || dayOfWeek?.name || game.i18n.localize("DNDCAL.Weekdays.Starday"),
+      dayAbbr: dayOfWeek?.abbr || game.i18n.localize("DNDCAL.Weekdays.StardayAbbr"),
+      moonPhase: state.moonPhase?.name || "New Moon",
+      moonIcon: state.moonIcon || "fa-moon",
+      weather: state.weather || "Clear skies",
+      weatherIcon: state.weatherIcon || "fa-sun",
+      season: state.season || "spring",
+      seasonName: state.seasonName || "Spring",
+      seasonIcon: state.seasonIcon || "fa-leaf",
+      isDay: state.isDay,
+      periodIcon,
+      progress,
+      showGradient: true,
+      showIcon: true,
+      calendars,
+      canEdit: CalendarPermissions.canEdit(),
+      calendarsCount: calendars.length,
+      // Holiday data from centralized state
+      isHoliday: state.isHoliday,
+      holidays: state.holidays || []
+    };
+  }
 
     const date = DnD5eCalendar.getDate();
     const time = DnD5eCalendar.getTime();
