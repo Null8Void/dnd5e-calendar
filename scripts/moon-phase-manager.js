@@ -2,10 +2,8 @@ import { CalendarUtils } from "./calendar-utils.js";
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
 export class MoonPhaseManager {
-  constructor() {
+  constructor(manager = null) {
     console.log("[DnD5e-Calendar] DEBUG: MoonPhaseManager class instantiated");
-  }
-  constructor(manager) {
     this.manager = manager;
     this.data = null;
   }

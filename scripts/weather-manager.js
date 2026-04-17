@@ -1,10 +1,8 @@
 import { CalendarUtils } from "./calendar-utils.js";
 
 export class WeatherManager {
-  constructor() {
+  constructor(manager = null) {
     console.log("[DnD5e-Calendar] DEBUG: WeatherManager class instantiated");
-  }
-  constructor(manager) {
     this.manager = manager;
     this.data = null;
   }

@@ -3,10 +3,8 @@ import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarUtils } from "./calendar-utils.js";
 
 export class HolidayManager {
-  constructor() {
+  constructor(manager = null) {
     console.log("[DnD5e-Calendar] DEBUG: HolidayManager class instantiated");
-  }
-  constructor(manager) {
     this.manager = manager;
     this.data = null;
   }

@@ -1,3 +1,11 @@
+/**
+ * Calendar Manager - Standalone Calendar Implementation
+ * 
+ * DEPRECATED: This class is no longer the primary calendar manager.
+ * DnD5e Calendar now integrates with dnd5e's built-in calendar system.
+ * Use DnD5eCalendar from calendar-integration.js instead.
+ */
+
 import { CalendarData } from "./calendar-data.js";
 import { CalendarUtils } from "./calendar-utils.js";
 import { MoonPhaseManager } from "./moon-phase-manager.js";
@@ -6,6 +14,8 @@ import { SeasonManager } from "./season-manager.js";
 import { DayNightManager } from "./day-night-manager.js";
 import { HolidayManager } from "./holiday-manager.js";
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
+
+console.warn("[DnD5e-Calendar] DEPRECATED: CalendarManager is deprecated. Use DnD5eCalendar from calendar-integration.js");
 
 export class CalendarManager {
   constructor() {
