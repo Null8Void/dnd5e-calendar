@@ -208,58 +208,117 @@ export class DnD5eCalendarIntegration {
 
   /**
    * Register hooks for updateWorldTime events
+   * Time engine - drives all calendar updates
    */
   registerWorldTimeHooks() {
     console.log("[DnD5e-Calendar] DEBUG: registerWorldTimeHooks() called");
     
-    Hooks.on("updateWorldTime", (worldTime, delta, options) => {
+    Hooks.on("updateWorldTime", async (worldTime, delta, options) => {
       console.log("[DnD5e-Calendar] DEBUG: updateWorldTime fired!", { worldTime, delta, options });
       CalendarDebug.feature("time", "updateWorldTime hook fired", { worldTime, delta, options });
       
-      // Check for midnight transition (new day)
+      if (!this.dnd5eCalendar) {
+        CalendarDebug.warn("updateWorldTime: calendar not initialized");
+        return;
+      }
+      
+      // Get current state before changes
+      const previousDate = CalendarState.get().date;
+      
+      // Extract dnd5e-specific deltas
       const dnd5eDeltas = options?.dnd5e?.deltas || {};
       const midnights = dnd5eDeltas.midnights || 0;
+      const isNewDay = midnights > 0 || delta >= 86400;
       
-      if (midnights > 0 || delta >= 86400) {
+      // === TIME ENGINE: Drive all systems ===
+      
+      // 1. NEW DAY - triggers weather generation, season check
+      if (isNewDay) {
+        console.log("[DnD5e-Calendar] NEW DAY - triggering day systems");
         this.onNewDay();
+        Hooks.callAll("dnd5e-calendar:dateChange", this.getDate());
       }
       
-      // Update moon phase - runs on EVERY time update to catch changes
+      // 2. Update moon phase - runs on every time update
+      const oldPhase = CalendarState.get().moon?.phase?.name || "";
       this.updateMoonPhase();
-      
-      // Call season manager day change
-      if (midnights > 0) {
-        this.seasonManager.onDayChange(null, this.getDate());
+      const newPhase = CalendarState.get().moon?.phase?.name || "";
+      if (oldPhase !== newPhase) {
+        Hooks.callAll("dnd5e-calendar:moonPhaseChange", { 
+          oldPhase, 
+          newPhase, 
+          phase: this.moonManager.getPhase() 
+        });
       }
       
-      // Update scene darkness on time change
+      // 3. Update season on day change
+      if (isNewDay) {
+        this.seasonManager.onDayChange(null, this.getDate());
+        const currentSeason = this.seasonManager.getCurrentSeason();
+        Hooks.callAll("dnd5e-calendar:seasonChange", { season: currentSeason });
+      }
+      
+      // 4. Update scene darkness
       this.updateSceneDarkness();
       
-      // Sync centralized state for data-driven HUD
-      this.syncState();
+      // 5. Sync state to persistent storage
+      await this.syncState();
       
-      // Emit custom hook for our features
-      Hooks.callAll("dnd5e-calendar:timeUpdate", {
-        worldTime,
-        delta,
-        midnights,
-        isNewDay: midnights > 0
+      // 6. Fire timeChange hook
+      Hooks.callAll("dnd5e-calendar:timeChange", {
+        time: this.getTime(),
+        date: this.getDate(),
+        isNewDay,
+        delta
       });
+      
+      // 7. Fire general calendarChange hook
+      Hooks.callAll("dnd5e-calendar:calendarChange", CalendarState.get());
+      
+      CalendarDebug.feature("time", "Time engine update complete");
     });
     
-    CalendarDebug.feature("hooks", "updateWorldTime hook registered");
+    CalendarDebug.feature("hooks", "updateWorldTime hook registered with full time engine");
   }
 
   /**
    * Register UI-related hooks
+   * Handle all state changes and trigger UI updates
    */
   registerUIHooks() {
-    Hooks.on("dnd5e-calendar:timeUpdate", () => {
+    // Time change triggers full HUD render
+    Hooks.on("dnd5e-calendar:timeChange", () => {
       Hooks.callAll("dnd5e-calendar:render");
     });
     
-    Hooks.on("dnd5e-calendar:weatherChange", () => {
+    // Date change triggers full HUD render
+    Hooks.on("dnd5e-calendar:dateChange", () => {
+      Hooks.callAll("dnd5e-calendar:render");
+    });
+    
+    // Weather change updates effects and renders
+    Hooks.on("dnd5e-calendar:weatherChange", (data) => {
       this.updateWeatherVisualEffect();
+      Hooks.callAll("dnd5e-calendar:render");
+    });
+    
+    // Moon phase change triggers render
+    Hooks.on("dnd5e-calendar:moonPhaseChange", () => {
+      Hooks.callAll("dnd5e-calendar:render");
+    });
+    
+    // Season change triggers render
+    Hooks.on("dnd5e-calendar:seasonChange", () => {
+      Hooks.callAll("dnd5e-calendar:render");
+    });
+    
+    // Day/night change triggers render
+    Hooks.on("dnd5e-calendar:dayNightChange", () => {
+      Hooks.callAll("dnd5e-calendar:render");
+    });
+    
+    // General calendar change
+    Hooks.on("dnd5e-calendar:calendarChange", () => {
       Hooks.callAll("dnd5e-calendar:render");
     });
     
@@ -274,13 +333,10 @@ export class DnD5eCalendarIntegration {
       Hooks.callAll("dnd5e-calendar:dayNightChange", { period: "night", isDay: false });
     });
     
-    Hooks.on("dnd5e-calendar:seasonChange", () => {
-      Hooks.callAll("dnd5e-calendar:render");
-    });
-    
+    // Signal integration is ready
     Hooks.callAll("dnd5e-calendar:integrationReady");
     
-    CalendarDebug.feature("hooks", "UI hooks registered");
+    CalendarDebug.feature("hooks", "UI hooks registered with proper lifecycle");
   }
 
   /**
