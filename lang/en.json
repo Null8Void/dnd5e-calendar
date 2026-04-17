@@ -132,6 +132,10 @@
     "Weather": {
       "CurrentWeather": "Current Weather",
       "SetWeather": "Set Weather",
+      "SelectWeather": "Select Weather",
+      "WeatherMode": "Weather Mode",
+      "AutoGenerate": "Auto-generate on day change",
+      "RollNewWeather": "Roll New Weather",
       "GmNotes": "GM Notes",
       "GmNotesPlaceholder": "Private notes about weather effects...",
       "ClearSkies": "Clear skies",

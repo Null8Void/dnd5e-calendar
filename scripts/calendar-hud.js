@@ -1,5 +1,6 @@
 import { CalendarUtils } from "./calendar-utils.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
+import { DnD5eCalendarAPI } from "./calendar-api.js";
 
 export class CalendarHUD extends Application {
   constructor(options = {}) {
@@ -30,69 +31,6 @@ async _getData() {
     if (!DnD5eCalendar.dnd5eCalendar) {
       return this._getDefaultData();
     }
-
-    // Use centralized state for data-driven HUD
-    const state = DnD5eCalendar.getState();
-    const date = state.date;
-    const time = state.time;
-    const calendar = DnD5eCalendar.getCalendar();
-
-    const dayOfWeek = CalendarUtils.getDayOfWeek(
-      date.day,
-      date.month,
-      date.year,
-      calendar
-    );
-
-    const isDay = state.isDay;
-    const periodIcon = isDay ? "fa-sun" : "fa-moon";
-    const progress = { isDay, progress: (time.hour * 60 + time.minute) / 1440 };
-
-    const formattedDate = CalendarUtils.formatDate(
-      date.day,
-      date.month,
-      date.year,
-      calendar,
-      true
-    );
-
-    const formattedTime = CalendarUtils.formatTime(
-      time.hour,
-      time.minute,
-      0,
-      false
-    );
-
-    const calendarName = DnD5eCalendar.getCalendarName();
-    const calendars = [{ id: "primary", name: calendarName, isActive: true }];
-
-    return {
-      formattedDate,
-      formattedTime,
-      dayOfWeek: state.dayOfWeek || dayOfWeek?.name || game.i18n.localize("DNDCAL.Weekdays.Starday"),
-      dayAbbr: dayOfWeek?.abbr || game.i18n.localize("DNDCAL.Weekdays.StardayAbbr"),
-      moonPhase: state.moonPhase?.name || "New Moon",
-      moonIcon: state.moonIcon || "fa-moon",
-      weather: state.weather || "Clear skies",
-      weatherIcon: state.weatherIcon || "fa-sun",
-      season: state.season || "spring",
-      seasonName: state.seasonName || "Spring",
-      seasonIcon: state.seasonIcon || "fa-leaf",
-      isDay: state.isDay,
-      periodIcon,
-      progress,
-      showGradient: true,
-      showIcon: true,
-      calendars,
-      canEdit: CalendarPermissions.canEdit(),
-      calendarsCount: calendars.length,
-      // Holiday data from centralized state
-      isHoliday: state.isHoliday,
-      holidays: state.holidays || [],
-      hasHoliday: state.isHoliday,
-      currentHoliday: state.holidays?.[0]?.name || ""
-    };
-  }
 
     const date = DnD5eCalendar.getDate();
     const time = DnD5eCalendar.getTime();
@@ -163,7 +101,9 @@ async _getData() {
       canEdit: CalendarPermissions.canEdit(),
       calendarsCount: calendars.length,
       currentHoliday: currentHoliday ? currentHoliday.name : null,
-      hasHoliday: !!currentHoliday
+      hasHoliday: !!currentHoliday,
+      isHoliday: !!currentHoliday,
+      holidays: currentHoliday ? [currentHoliday] : []
     };
   }
 
@@ -277,7 +217,7 @@ async _getData() {
   }
 
   async showTimeEditor() {
-    const currentTime = DnD5eCalendar.getTime();
+    const currentTime = DnD5eCalendarAPI.getTime();
     const content = `
       <form>
         <div class="dnd5e-calendar-time-editor">
@@ -290,7 +230,7 @@ async _getData() {
             <label>${game.i18n.localize("DNDCAL.Time.Minute")}</label>
             <input type="number" name="minute" min="0" max="59" value="${currentTime.minute}">
           </div>
-          <div class="form-group">
+          <div class="form-group time-advance-buttons">
             <button type="button" class="time-advance" data-minutes="1">${game.i18n.localize("DNDCAL.Time.AddMinute")}</button>
             <button type="button" class="time-advance" data-minutes="15">${game.i18n.localize("DNDCAL.Time.Add15Minutes")}</button>
             <button type="button" class="time-advance" data-minutes="60">${game.i18n.localize("DNDCAL.Time.AddHour")}</button>
@@ -306,10 +246,7 @@ async _getData() {
       callback: async (html) => {
         const hour = parseInt(html.find('input[name="hour"]').val());
         const minute = parseInt(html.find('input[name="minute"]').val());
-        if (game.dnd5e?.time) {
-          const minutesDiff = (hour - currentTime.hour) * 60 + (minute - currentTime.minute);
-          await game.dnd5e.time.advance(minutesDiff);
-        }
+        await DnD5eCalendarAPI.setTime(hour, minute);
         await this.render();
       },
       rejectClose: false
@@ -317,7 +254,7 @@ async _getData() {
   }
 
   async showSeasonSelector() {
-    const currentSeason = DnD5eCalendar.seasonManager.getCurrentSeason();
+    const currentSeason = DnD5eCalendarAPI.getSeason();
     const seasons = [
       { key: "spring", name: game.i18n.localize("DNDCAL.Season.Spring") },
       { key: "summer", name: game.i18n.localize("DNDCAL.Season.Summer") },
@@ -340,7 +277,7 @@ async _getData() {
       callback: async (html) => {
         const season = html.find(".season-btn.active").data("season");
         if (season) {
-          DnD5eCalendar.seasonManager.setSeason(season);
+          DnD5eCalendarAPI.setSeason(season);
           await this.render();
         }
       },
@@ -350,6 +287,7 @@ async _getData() {
 
   async showWeatherSelector() {
     const currentWeather = DnD5eCalendar.weatherManager.getWeather();
+    const weatherMode = DnD5eCalendar.weatherManager.getMode();
     const weatherTypes = [
       { key: "Clear skies", label: game.i18n.localize("DNDCAL.Weather.ClearSkies") },
       { key: "Partly cloudy", label: game.i18n.localize("DNDCAL.Weather.PartlyCloudy") },
@@ -367,19 +305,39 @@ async _getData() {
       { key: "Hail", label: game.i18n.localize("DNDCAL.Weather.Hail") }
     ];
 
-    let content = `<form><div class="dnd5e-calendar-weather-selector"><h3>${game.i18n.localize("DNDCAL.Weather.SetWeather")}</h3><select name="weather">`;
-    for (const weather of weatherTypes) {
-      content += `<option value="${weather.key}" ${weather.key === currentWeather ? 'selected' : ''}>${weather.label}</option>`;
-    }
-    content += '</select></div></form>';
+    let content = `<form>
+      <div class="dnd5e-calendar-weather-selector">
+        <h3>${game.i18n.localize("DNDCAL.Weather.SetWeather")}</h3>
+        <div class="form-group">
+          <label>${game.i18n.localize("DNDCAL.Weather.WeatherMode")}</label>
+          <label class="checkbox">
+            <input type="checkbox" name="weatherMode" ${weatherMode === "auto" ? "checked" : ""}>
+            ${game.i18n.localize("DNDCAL.Weather.AutoGenerate")}
+          </label>
+        </div>
+        <div class="form-group weather-select-group" style="${weatherMode === "auto" ? "display:none" : ""}">
+          <label>${game.i18n.localize("DNDCAL.Weather.SelectWeather")}</label>
+          <select name="weather">
+            ${weatherTypes.map(w => `<option value="${w.key}" ${w.key === currentWeather ? "selected" : ""}>${w.label}</option>`).join("")}
+          </select>
+        </div>
+        <div class="form-group">
+          <button type="button" class="roll-weather-btn" ${weatherMode === "auto" ? "" : "disabled"}>${game.i18n.localize("DNDCAL.Weather.RollNewWeather")}</button>
+        </div>
+      </div>
+    </form>`;
 
     await Dialog.prompt({
       title: game.i18n.localize("DNDCAL.Weather.CurrentWeather"),
       content,
       label: game.i18n.localize("DNDCAL.Config.Save"),
       callback: async (html) => {
-        const weather = html.find('select[name="weather"]').val();
-        DnD5eCalendar.weatherManager.setWeather(weather);
+        const autoMode = html.find('input[name="weatherMode"]').prop("checked");
+        await DnD5eCalendarAPI.setWeatherMode(autoMode ? "auto" : "manual");
+        if (!autoMode) {
+          const weather = html.find('select[name="weather"]').val();
+          await DnD5eCalendarAPI.setWeather(weather);
+        }
         await this.render();
       },
       rejectClose: false

@@ -1,26 +1,42 @@
+import { CalendarState } from "./calendar-data.js";
+
 export class CalendarAPI {
   getCalendar() {
     return DnD5eCalendar?.getCalendar() ?? null;
   }
 
   getDate() {
-    return DnD5eCalendar?.getDate() ?? null;
+    const state = CalendarState.get();
+    return state?.date ?? { day: 1, month: 0, year: 1492 };
   }
 
   getTime() {
-    return DnD5eCalendar?.getTime() ?? null;
+    const state = CalendarState.get();
+    return state?.time ?? { hour: 6, minute: 0 };
+  }
+
+  getState() {
+    return CalendarState.get();
   }
 
   getSeason() {
-    return DnD5eCalendar?.seasonManager?.getCurrentSeason() ?? null;
+    const state = CalendarState.get();
+    return state?.season?.current ?? "spring";
   }
 
   getWeather() {
-    return DnD5eCalendar?.weatherManager?.getWeather() ?? null;
+    const state = CalendarState.get();
+    return state?.weather?.current ?? "Clear skies";
+  }
+
+  getWeatherMode() {
+    const state = CalendarState.get();
+    return state?.weather?.mode ?? "manual";
   }
 
   getMoonPhase() {
-    return DnD5eCalendar?.moonManager?.getPhase() ?? null;
+    const state = CalendarState.get();
+    return state?.moon?.phase ?? { name: "New Moon", key: "new", index: 0 };
   }
 
   getDayNightStatus() {
@@ -34,35 +50,95 @@ export class CalendarAPI {
 
   async setDate(day, month, year) {
     if (!game.dnd5e?.time) return null;
-    return await game.dnd5e.time.setDate(day, month, year);
+    const result = await game.dnd5e.time.setDate(day, month, year);
+    const state = CalendarState.get();
+    state.date = { day, month, year };
+    await CalendarState.set(state);
+    Hooks.callAll("dnd5e-calendar:dateChange", state.date);
+    return result;
   }
 
   async setTime(hour, minute) {
     if (!game.dnd5e?.time) return null;
     const currentTime = this.getTime();
     const minutesDiff = (hour - (currentTime?.hour ?? 0)) * 60 + (minute - (currentTime?.minute ?? 0));
-    return await game.dnd5e.time.advance(minutesDiff);
+    const result = await game.dnd5e.time.advance(minutesDiff);
+    const state = CalendarState.get();
+    state.time = { hour, minute };
+    await CalendarState.set(state);
+    Hooks.callAll("dnd5e-calendar:timeChange", state.time);
+    return result;
   }
 
   async advanceTime(minutes = 1) {
     if (!game.dnd5e?.time) return null;
-    return await game.dnd5e.time.advance(minutes);
+    const result = await game.dnd5e.time.advance(minutes);
+    return result;
   }
 
-  setWeather(weather) {
-    return DnD5eCalendar?.weatherManager?.setWeather(weather) ?? null;
+  async setWeather(weather) {
+    if (!DnD5eCalendar?.weatherManager) return null;
+    const oldWeather = this.getWeather();
+    const result = DnD5eCalendar.weatherManager.setWeather(weather);
+    const state = CalendarState.get();
+    state.weather.current = weather;
+    state.weather.mode = "manual";
+    await CalendarState.set(state);
+    Hooks.callAll("dnd5e-calendar:weatherChange", { old: oldWeather, new: weather });
+    return result;
+  }
+
+  async setWeatherMode(mode) {
+    if (!DnD5eCalendar?.weatherManager) return null;
+    const result = DnD5eCalendar.weatherManager.setMode(mode);
+    const state = CalendarState.get();
+    state.weather.mode = mode;
+    await CalendarState.set(state);
+    Hooks.callAll("dnd5e-calendar:weatherModeChange", { mode });
+    return result;
   }
 
   setSeason(season) {
-    return DnD5eCalendar?.seasonManager?.setSeason(season) ?? null;
+    if (!DnD5eCalendar?.seasonManager) return null;
+    const oldSeason = this.getSeason();
+    const result = DnD5eCalendar.seasonManager.setSeason(season);
+    const state = CalendarState.get();
+    state.season.current = season;
+    CalendarState.set(state);
+    Hooks.callAll("dnd5e-calendar:seasonChange", { season, oldSeason });
+    return result;
   }
 
-  rollWeather(season = null) {
-    return DnD5eCalendar?.seasonManager?.rollWeatherForDay(season) ?? null;
+  async rollWeather(season = null) {
+    if (!DnD5eCalendar?.seasonManager) return null;
+    const oldWeather = this.getWeather();
+    const weather = DnD5eCalendar.seasonManager.rollWeatherForDay(season);
+    const state = CalendarState.get();
+    state.weather.current = weather;
+    state.weather.mode = "auto";
+    await CalendarState.set(state);
+    Hooks.callAll("dnd5e-calendar:autoWeatherRoll", { weather, season });
+    return weather;
   }
 
   async submitHoliday(name, date, description = "") {
     return await DnD5eCalendar?.holidayManager?.submitHoliday(name, date, description) ?? null;
+  }
+
+  async approveHoliday(id) {
+    return await DnD5eCalendar?.holidayManager?.approveHoliday(id) ?? null;
+  }
+
+  async rejectHoliday(id, reason = "") {
+    return await DnD5eCalendar?.holidayManager?.rejectHoliday(id, reason) ?? null;
+  }
+
+  getPendingHolidays() {
+    return DnD5eCalendar?.holidayManager?.getPendingHolidays() ?? [];
+  }
+
+  getApprovedHolidays() {
+    return DnD5eCalendar?.holidayManager?.getApprovedHolidays() ?? [];
   }
 
   onDateChange(callback) {

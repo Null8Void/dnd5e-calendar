@@ -34,7 +34,7 @@ export class CalendarState {
       time: { hour: 6, minute: 0 },
       weather: {
         current: "Clear skies",
-        mode: "manual", // "manual" or "auto"
+        mode: "manual",
         gmNotes: ""
       },
       season: {
@@ -50,7 +50,9 @@ export class CalendarState {
       moon: {
         cycleDays: 10,
         currentDay: 0,
-        enabled: true
+        currentPhase: 0,
+        enabled: true,
+        phase: { name: "New Moon", key: "new", index: 0 }
       },
       holidays: {
         approved: [],
@@ -60,7 +62,9 @@ export class CalendarState {
       dayNight: {
         dayStartHour: 6,
         nightStartHour: 18
-      }
+      },
+      isDay: true,
+      dayOfWeek: "Starday"
     };
   }
 
