@@ -47,6 +47,7 @@ export class DnD5eCalendarIntegration {
       isHoliday: false,
       showGradient: true,
       showIcon: true,
+      autoWeatherRoll: false,
       lastUpdate: 0
     };
   }
@@ -517,6 +518,9 @@ export class DnD5eCalendarIntegration {
     const holiday = this.holidayManager.getHolidayOnDate(date.day, date.month, date.year, "primary");
     this.state.isHoliday = !!holiday;
     this.state.holidays = holiday ? [holiday] : [];
+    
+    // Update auto weather roll setting
+    this.state.autoWeatherRoll = this.seasonManager.isAutoWeatherRollEnabled();
     
     // Mark state as updated
     this.state.lastUpdate = Date.now();
