@@ -1,5 +1,9 @@
 import { CALENDAR_CONSTANTS } from "./calendar-constants.js";
 
+function getCurrentUser() {
+  return game.users?.current ?? game.users?.activeUser;
+}
+
 export class CalendarData {
   constructor() {
     console.log("[DnD5e-Calendar] DEBUG: CalendarData class instantiated");
@@ -187,7 +191,7 @@ export class CalendarData {
   static async addHoliday(holiday, status = "pending") {
     const holidays = await this.loadHolidays();
     holiday.id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    holiday.submittedBy = game.users.current?.name ?? "Unknown User";
+    holiday.submittedBy = getCurrentUser()?.name ?? "Unknown User";
     holiday.submittedAt = new Date().toISOString();
     holiday.status = status;
 
@@ -223,7 +227,7 @@ export class CalendarData {
 
     const holiday = holidays.pending.splice(pendingIndex, 1)[0];
     holiday.status = "approved";
-    holiday.approvedBy = game.users.current?.name ?? "Unknown User";
+    holiday.approvedBy = getCurrentUser()?.name ?? "Unknown User";
     holiday.approvedAt = new Date().toISOString();
     holidays.approved.push(holiday);
 
@@ -239,7 +243,7 @@ export class CalendarData {
 
     const holiday = holidays.pending.splice(pendingIndex, 1)[0];
     holiday.status = "rejected";
-    holiday.rejectedBy = game.users.current?.name ?? "Unknown User";
+    holiday.rejectedBy = getCurrentUser()?.name ?? "Unknown User";
     holiday.rejectedAt = new Date().toISOString();
     holiday.rejectionReason = reason;
     holidays.rejected.push(holiday);

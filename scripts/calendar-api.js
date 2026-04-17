@@ -1,78 +1,68 @@
 export class CalendarAPI {
-  constructor() {
-    console.log("[DnD5e-Calendar] DEBUG: CalendarAPI class instantiated");
-  }
   getCalendar() {
-    if (!DnD5eCalendar.manager) return null;
-    return DnD5eCalendar.manager.getActiveCalendar();
+    return DnD5eCalendar?.getCalendar() ?? null;
   }
 
   getDate() {
-    if (!DnD5eCalendar.manager) return null;
-    return DnD5eCalendar.manager.getDate();
+    return DnD5eCalendar?.getDate() ?? null;
   }
 
   getTime() {
-    if (!DnD5eCalendar.manager) return null;
-    return DnD5eCalendar.manager.getTime();
+    return DnD5eCalendar?.getTime() ?? null;
   }
 
   getSeason() {
-    if (!DnD5eCalendar.manager) return null;
-    return DnD5eCalendar.manager.seasonManager.getCurrentSeason();
+    return DnD5eCalendar?.seasonManager?.getCurrentSeason() ?? null;
   }
 
   getWeather() {
-    if (!DnD5eCalendar.manager) return null;
-    return DnD5eCalendar.manager.weatherManager.getWeather();
+    return DnD5eCalendar?.weatherManager?.getWeather() ?? null;
   }
 
   getMoonPhase() {
-    if (!DnD5eCalendar.manager) return null;
-    return DnD5eCalendar.manager.moonManager.getPhase();
+    return DnD5eCalendar?.moonManager?.getPhase() ?? null;
   }
 
   getDayNightStatus() {
-    if (!DnD5eCalendar.manager) return null;
+    const time = this.getTime();
+    if (!time) return null;
     return {
-      isDay: DnD5eCalendar.manager.dayNightManager.isDay(),
-      period: DnD5eCalendar.manager.dayNightManager.getPeriod()
+      isDay: time.hour >= 6 && time.hour < 18,
+      period: time.hour >= 6 && time.hour < 18 ? "day" : "night"
     };
   }
 
   async setDate(day, month, year) {
-    if (!DnD5eCalendar.manager) return null;
-    return await DnD5eCalendar.manager.setDate(day, month, year);
+    if (!game.dnd5e?.time) return null;
+    return await game.dnd5e.time.setDate(day, month, year);
   }
 
   async setTime(hour, minute) {
-    if (!DnD5eCalendar.manager) return null;
-    return await DnD5eCalendar.manager.setTime(hour, minute);
+    if (!game.dnd5e?.time) return null;
+    const currentTime = this.getTime();
+    const minutesDiff = (hour - (currentTime?.hour ?? 0)) * 60 + (minute - (currentTime?.minute ?? 0));
+    return await game.dnd5e.time.advance(minutesDiff);
   }
 
   async advanceTime(minutes = 1) {
-    if (!DnD5eCalendar.manager) return null;
-    return await DnD5eCalendar.manager.advanceTime(minutes);
+    if (!game.dnd5e?.time) return null;
+    return await game.dnd5e.time.advance(minutes);
   }
 
-  async setWeather(weather) {
-    if (!DnD5eCalendar.manager) return null;
-    return await DnD5eCalendar.manager.weatherManager.setWeather(weather);
+  setWeather(weather) {
+    return DnD5eCalendar?.weatherManager?.setWeather(weather) ?? null;
   }
 
-  async setSeason(season) {
-    if (!DnD5eCalendar.manager) return null;
-    return await DnD5eCalendar.manager.seasonManager.setSeason(season);
+  setSeason(season) {
+    return DnD5eCalendar?.seasonManager?.setSeason(season) ?? null;
   }
 
   rollWeather(season = null) {
-    if (!DnD5eCalendar.manager) return null;
-    return DnD5eCalendar.manager.seasonManager.rollWeatherForDay(season);
+    return DnD5eCalendar?.seasonManager?.rollWeatherForDay(season) ?? null;
   }
 
   async submitHoliday(name, date, description = "") {
-    if (!DnD5eCalendar.manager) return null;
-    return await DnD5eCalendar.manager.holidayManager.submitHoliday(name, date, description);
+    return await DnD5eCalendar?.holidayManager?.submitHoliday(name, date, description) ?? null;
   }
 
   onDateChange(callback) {
