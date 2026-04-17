@@ -147,11 +147,23 @@ The module defaults to a Forgotten Realms style calendar:
 
 ## Compatibility
 
-- FoundryVTT v10.0.0+
-- FoundryVTT v11.x compatible
-- DnD5e system 2.0.0+
+- FoundryVTT v13.x (minimum)
+- FoundryVTT v14.x compatible
+- DnD5e system v5.0.0+ (minimum)
+- DnD5e system v5.3.0 verified
 
 ## Changelog
+
+### v1.1.0
+- **Major: Foundry VTT v14 Integration**
+  - Module now integrates with dnd5e's built-in calendar system
+  - Uses `dnd5e.setupCalendar` hook for calendar setup
+  - Uses `updateWorldTime` hook for day/time changes
+  - Custom data (weather, seasons, moon phases) stored in calendar.flags
+- Fixed duplicate constructor issues in manager classes
+- Fixed v14 API compatibility (`game.users.current` → `game.users?.current`)
+- Updated time operations to use `game.dnd5e.time`
+- Deprecated `CalendarManager` - use `DnD5eCalendar` from integration layer
 
 ### v1.0.0
 - Initial release
