@@ -253,6 +253,9 @@ export class DnD5eCalendarIntegration {
         this.seasonManager.onDayChange(null, this.getDate());
       }
       
+      // Update scene darkness on time change
+      this.updateSceneDarkness();
+      
       // Sync centralized state for data-driven HUD
       this.syncState();
       
@@ -279,6 +282,17 @@ export class DnD5eCalendarIntegration {
     Hooks.on("dnd5e-calendar:weatherChange", () => {
       this.updateWeatherVisualEffect();
       Hooks.callAll("dnd5e-calendar:render");
+    });
+    
+    // Handle sunrise/sunset for day/night visual effects
+    Hooks.on("dnd5e-calendar:sunrise", () => {
+      this.updateSceneDarkness();
+      Hooks.callAll("dnd5e-calendar:dayNightChange", { period: "day", isDay: true });
+    });
+    
+    Hooks.on("dnd5e-calendar:sunset", () => {
+      this.updateSceneDarkness();
+      Hooks.callAll("dnd5e-calendar:dayNightChange", { period: "night", isDay: false });
     });
     
     Hooks.on("dnd5e-calendar:seasonChange", () => {
@@ -466,14 +480,57 @@ export class DnD5eCalendarIntegration {
    */
   updateWeatherVisualEffect() {
     const container = document.getElementById("dnd5e-calendar-weather-effect");
-    if (!container) return;
-
     const weatherEffect = this.weatherManager.getWeatherEffect();
-    container.className = "weather-effect-container";
+    const weather = this.weatherManager.getWeather();
+    
+    // Update CSS overlay effect
+    if (container) {
+      container.className = "weather-effect-container";
+      if (weatherEffect) {
+        container.classList.add("active");
+        container.classList.add(weatherEffect);
+      }
+    }
+    
+    // Integrate with FXMaster if available
+    if (game.modules.get("fxmaster")?.active) {
+      this.applyFXMasterWeather(weather);
+    }
+    
+    Hooks.callAll("dnd5e-calendar:weatherEffect", { weather, effect: weatherEffect });
+  }
 
-    if (weatherEffect) {
-      container.classList.add("active");
-      container.classList.add(weatherEffect);
+  /**
+   * Apply weather effects via FXMaster API
+   */
+  applyFXMasterWeather(weather) {
+    if (!game.fxmaster) return;
+    
+    const weatherEffects = {
+      "Light rain": { type: "rain", intensity: 0.3 },
+      "Heavy rain": { type: "rain", intensity: 0.7 },
+      "Thunderstorm": { type: "rain", intensity: 1.0, lightning: true },
+      "Light snow": { type: "snow", intensity: 0.3 },
+      "Heavy snow": { type: "snow", intensity: 0.7 },
+      "Blizzard": { type: "snow", intensity: 1.0 },
+      "Foggy": { type: "fog", intensity: 0.5 },
+      "Windy": { type: "wind", intensity: 0.5 }
+    };
+    
+    const effect = weatherEffects[weather];
+    if (effect) {
+      // FXMaster API call (if available)
+      try {
+        game.fxmaster.applyWeatherEffect(effect.type, effect.intensity);
+      } catch (e) {
+        console.log("[DnD5e-Calendar] FXMaster not available:", e);
+      }
+    } else {
+      try {
+        game.fxmaster.clearWeatherEffect();
+      } catch (e) {
+        // Ignore
+      }
     }
   }
 
