@@ -244,7 +244,7 @@ export class DnD5eCalendarIntegration {
         this.onNewDay();
       }
       
-      // Update moon phase if needed
+      // Update moon phase - runs on EVERY time update to catch changes
       this.updateMoonPhase();
       
       // Call season manager day change
@@ -329,17 +329,30 @@ export class DnD5eCalendarIntegration {
 
   /**
    * Update moon phase based on current day count
+   * Called every updateWorldTime to ensure phase is current
    */
   updateMoonPhase() {
-    if (!this.customData.moon.enabled) return;
+    if (!this.customData?.moon?.enabled) return;
     
     const dayCount = this.getDayCount();
-    const oldPhase = this.customData.moon.currentDay % this.customData.moon.cycleDays;
-    const newPhase = dayCount % this.customData.moon.cycleDays;
+    const cycleDays = this.customData.moon.cycleDays || 15;
+    const previousPhase = this.customData.moon.currentDay % cycleDays;
+    const currentPhase = dayCount % cycleDays;
     
-    if (oldPhase !== newPhase) {
+    // Only trigger hook if phase actually changed
+    if (previousPhase !== currentPhase) {
+      console.log(`[DnD5e-Calendar] Moon phase changed: ${previousPhase} -> ${currentPhase} (day ${dayCount})`);
+      
       this.customData.moon.currentDay = dayCount;
-      this.moonManager.updateMoonPhase(dayCount);
+      const phaseData = this.moonManager.updateMoonPhase(dayCount);
+      
+      // Fire moon phase change hook
+      Hooks.callAll("dnd5e-calendar:moonPhaseChange", {
+        day: currentPhase,
+        phase: this.moonManager.getPhase(),
+        dayCount: dayCount
+      });
+      
       this.saveCustomData();
     }
   }
