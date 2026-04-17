@@ -10,28 +10,26 @@ let hud = null;
 let config = null;
 
 function init() {
-  console.log("[DnD5e-Calendar] DEBUG: init() STARTED");
   CalendarDebug.init();
-  
+  CalendarDebug.master("MODULE STARTUP - v1.1.3");
 
   hud = new CalendarHUD();
   config = new CalendarConfig();
   window.DnD5eCalendarConfig = config;
 
   registerSettings();
-  console.log("[DnD5e-Calendar] DEBUG: registerSettings() completed");
+  CalendarDebug.trackInit("registerSettings", true);
 
   registerHooks();
-  console.log("[DnD5e-Calendar] DEBUG: registerHooks() completed");
+  CalendarDebug.trackInit("registerHooks", true);
 
   registerKeyboardShortcuts();
-  console.log("[DnD5e-Calendar] DEBUG: registerKeyboardShortcuts() completed");
+  CalendarDebug.trackInit("registerKeyboardShortcuts", true);
 
   registerCalendarWithDND5E();
-  console.log("[DnD5e-Calendar] DEBUG: registerCalendarWithDND5E() completed");
+  CalendarDebug.trackInit("registerCalendarWithDND5E", true);
 
-  
-  console.log("DnD5e Calendar | Module initialized (v14 Integration)");
+  CalendarDebug.trackInit("FULL_INIT", true, CalendarDebug.getFlowState());
 }
 
 function registerCalendarWithDND5E() {
