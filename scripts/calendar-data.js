@@ -4,6 +4,104 @@ function getCurrentUser() {
   return game.users?.current ?? game.users?.activeUser;
 }
 
+/**
+ * Centralized Calendar State Manager
+ * Stores all calendar state persistently in game settings
+ * Single source of truth for the entire module
+ */
+export class CalendarState {
+  static SETTINGS_KEY = "dnd5e-calendar.state";
+
+  /**
+   * Get current state from game settings
+   */
+  static get() {
+    let state = game.settings.get("world", this.SETTINGS_KEY);
+    if (!state) {
+      state = this.getDefaultState();
+      this.set(state);
+    }
+    return state;
+  }
+
+  /**
+   * Get default state structure
+   */
+  static getDefaultState() {
+    return {
+      version: CALENDAR_CONSTANTS.VERSION,
+      date: { day: 1, month: 0, year: 1492 },
+      time: { hour: 6, minute: 0 },
+      weather: {
+        current: "Clear skies",
+        mode: "manual", // "manual" or "auto"
+        gmNotes: ""
+      },
+      season: {
+        current: "spring",
+        autoTrack: true,
+        seasonNames: {
+          spring: "Spring",
+          summer: "Summer",
+          fall: "Fall",
+          winter: "Winter"
+        }
+      },
+      moon: {
+        cycleDays: 10,
+        currentDay: 0,
+        enabled: true
+      },
+      holidays: {
+        approved: [],
+        pending: [],
+        rejected: []
+      },
+      dayNight: {
+        dayStartHour: 6,
+        nightStartHour: 18
+      }
+    };
+  }
+
+  /**
+   * Set state (replaces entire state)
+   */
+  static async set(state) {
+    await game.settings.set("world", this.SETTINGS_KEY, state);
+    return state;
+  }
+
+  /**
+   * Update specific fields in state
+   */
+  static async update(path, value) {
+    const state = this.get();
+    const keys = path.split(".");
+    let current = state;
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (current[keys[i]] === undefined) {
+        current[keys[i]] = {};
+      }
+      current = current[keys[i]];
+    }
+
+    current[keys[keys.length - 1]] = value;
+    await this.set(state);
+    return state;
+  }
+
+  /**
+   * Get total elapsed days from state
+   */
+  static getTotalDays() {
+    const state = this.get();
+    const { day, month, year } = state.date;
+    return year * 360 + month * 30 + day;
+  }
+}
+
 export class CalendarData {
   constructor() {
     console.log("[DnD5e-Calendar] DEBUG: CalendarData class instantiated");

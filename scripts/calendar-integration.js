@@ -9,7 +9,7 @@
  * - Provides companion UI for custom features
  */
 
-import { CalendarData } from "./calendar-data.js";
+import { CalendarData, CalendarState } from "./calendar-data.js";
 import { CalendarUtils } from "./calendar-utils.js";
 import { CalendarDebug } from "./calendar-debug.js";
 import { MoonPhaseManager } from "./moon-phase-manager.js";
@@ -29,27 +29,6 @@ export class DnD5eCalendarIntegration {
     this.weatherManager = new WeatherManager(this);
     this.seasonManager = new SeasonManager(this);
     this.holidayManager = new HolidayManager(this);
-    
-    // Centralized state object for data-driven HUD
-    this.state = {
-      date: { day: 1, month: 0, year: 0 },
-      time: { hour: 0, minute: 0 },
-      weather: "Clear skies",
-      weatherIcon: "fa-sun",
-      season: "spring",
-      seasonName: "Spring",
-      seasonIcon: "fa-leaf",
-      moonPhase: { name: "New Moon", key: "new", index: 0 },
-      moonIcon: "fa-moon",
-      isDay: true,
-      dayOfWeek: "Starday",
-      holidays: [],
-      isHoliday: false,
-      showGradient: true,
-      showIcon: true,
-      autoWeatherRoll: false,
-      lastUpdate: 0
-    };
   }
 
   /**
@@ -537,60 +516,96 @@ export class DnD5eCalendarIntegration {
   /**
    * Sync the centralized state object with current calendar data
    * This drives the data-driven HUD
+   * Also syncs with persistent CalendarState in game settings
    */
   syncState() {
-    if (!this.dnd5eCalendar) return this.state;
+    if (!this.dnd5eCalendar) return CalendarState.get();
     
     const date = this.getDate();
     const time = this.getTime();
     const calendar = this.dnd5eCalendar;
     
-    // Update date and time
-    this.state.date = date;
-    this.state.time = time;
+    // Get current persisted state
+    const state = CalendarState.get();
+    
+    // Update date and time from dnd5e calendar
+    state.date = date;
+    state.time = time;
     
     // Update weather
-    this.state.weather = this.weatherManager.getWeather();
-    this.state.weatherIcon = this.weatherManager.getWeatherIcon();
+    state.weather = {
+      current: this.weatherManager.getWeather(),
+      mode: state.weather?.mode || "manual",
+      icon: this.weatherManager.getWeatherIcon()
+    };
     
     // Update season
-    this.state.season = this.seasonManager.getCurrentSeason();
-    this.state.seasonName = this.seasonManager.getCurrentSeasonName();
-    this.state.seasonIcon = this.seasonManager.getCurrentSeasonIcon();
+    state.season.current = this.seasonManager.getCurrentSeason();
+    state.season.seasonNames = state.season.seasonNames || {
+      spring: "Spring", summer: "Summer", fall: "Fall", winter: "Winter"
+    };
     
     // Update moon phase
     const moonPhase = this.moonManager.getPhase();
-    this.state.moonPhase = moonPhase;
-    this.state.moonIcon = CalendarUtils.getMoonPhaseIcon(moonPhase.key);
+    state.moon = state.moon || {};
+    state.moon.currentDay = state.moon.currentDay || 0;
+    state.moon.cycleDays = state.moon.cycleDays || 10;
+    state.moon.phase = moonPhase;
+    state.moon.icon = CalendarUtils.getMoonPhaseIcon(moonPhase.key);
     
     // Update day/night
-    this.state.isDay = time.hour >= 6 && time.hour < 18;
+    state.isDay = time.hour >= 6 && time.hour < 18;
     
     // Update day of week
     if (calendar.weekdays && calendar.months) {
-      this.state.dayOfWeek = CalendarUtils.getDayOfWeek(date.day, date.month, date.year, calendar)?.name || "Starday";
+      state.dayOfWeek = CalendarUtils.getDayOfWeek(date.day, date.month, date.year, calendar)?.name || "Starday";
     }
     
     // Check for holidays
     const holiday = this.holidayManager.getHolidayOnDate(date.day, date.month, date.year, "primary");
-    this.state.isHoliday = !!holiday;
-    this.state.holidays = holiday ? [holiday] : [];
+    state.isHoliday = !!holiday;
+    state.holidays = holiday ? [holiday] : [];
     
     // Update auto weather roll setting
-    this.state.autoWeatherRoll = this.seasonManager.isAutoWeatherRollEnabled();
+    state.autoWeatherRoll = this.seasonManager.isAutoWeatherRollEnabled();
     
     // Mark state as updated
-    this.state.lastUpdate = Date.now();
+    state.lastUpdate = Date.now();
     
-    return this.state;
+    // Sync back to persisted state
+    CalendarState.set(state);
+    
+    return state;
   }
 
   /**
    * Get the centralized state object
-   *HUD binds to this for reactive updates
+   * HUD binds to this for reactive updates
    */
   getState() {
     return this.syncState();
+  }
+  
+  /**
+   * Get specific value from state
+   */
+  getFromState(path) {
+    const state = CalendarState.get();
+    const keys = path.split(".");
+    let current = state;
+    for (const key of keys) {
+      if (current === undefined) return null;
+      current = current[key];
+    }
+    return current;
+  }
+  
+  /**
+   * Update specific value in state
+   */
+  async setInState(path, value) {
+    await CalendarState.update(path, value);
+    this.syncState();
   }
 }
 
