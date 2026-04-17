@@ -88,7 +88,9 @@ async _getData() {
       calendarsCount: calendars.length,
       // Holiday data from centralized state
       isHoliday: state.isHoliday,
-      holidays: state.holidays || []
+      holidays: state.holidays || [],
+      hasHoliday: state.isHoliday,
+      currentHoliday: state.holidays?.[0]?.name || ""
     };
   }
 
@@ -185,7 +187,11 @@ async _getData() {
       showIcon: false,
       calendars: [{ id: "primary", name: game.i18n.localize("DNDCAL.HUD.PrimaryCalendar"), isActive: true }],
       canEdit: false,
-      calendarsCount: 1
+      calendarsCount: 1,
+      isHoliday: false,
+      holidays: [],
+      hasHoliday: false,
+      currentHoliday: ""
     };
   }
 
