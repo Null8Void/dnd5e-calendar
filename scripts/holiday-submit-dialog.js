@@ -23,15 +23,14 @@ export class HolidaySubmitDialog extends Application {
 
   async getData(options = {}) {
     const settings = await CalendarData.loadSettings();
-    const manager = DnD5eCalendar.manager;
-    const date = manager.getDate();
-    const calendar = manager.getActiveCalendar();
+    const date = DnD5eCalendar.getDate();
+    const calendar = DnD5eCalendar.getCalendar();
 
     return {
       day: date.day,
       month: date.month,
       year: date.year,
-      calendarName: calendar.name,
+      calendarName: calendar?.name || "Campaign Calendar",
       canSubmit: CalendarPermissions.canSubmitHolidays(settings),
       maxChars: 400
     };
@@ -79,7 +78,7 @@ export class HolidaySubmitDialog extends Application {
     }
 
     try {
-      await DnD5eCalendar.manager.holidayManager.submitHoliday(name, { day, month, year }, description);
+      await DnD5eCalendar.holidayManager.submitHoliday(name, { day, month, year }, description);
       ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.HolidaySubmitted"));
       this.close();
     } catch (error) {

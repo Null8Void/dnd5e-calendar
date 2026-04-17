@@ -70,7 +70,7 @@ export class CalendarApprovalPanel extends Application {
 
   async approveHoliday(id) {
     try {
-      await DnD5eCalendar.manager.holidayManager.approveHoliday(id);
+      await DnD5eCalendar.holidayManager.approveHoliday(id);
       ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.HolidayApproved"));
       this.render();
     } catch (error) {
@@ -86,7 +86,7 @@ export class CalendarApprovalPanel extends Application {
     });
 
     try {
-      await DnD5eCalendar.manager.holidayManager.rejectHoliday(id, reason || "");
+      await DnD5eCalendar.holidayManager.rejectHoliday(id, reason || "");
       ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.HolidayRejected"));
       this.render();
     } catch (error) {
@@ -96,7 +96,7 @@ export class CalendarApprovalPanel extends Application {
 
   async deleteHoliday(id) {
     try {
-      await DnD5eCalendar.manager.holidayManager.deleteHoliday(id);
+      await DnD5eCalendar.holidayManager.deleteHoliday(id);
       ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.HolidayDeleted"));
       this.render();
     } catch (error) {

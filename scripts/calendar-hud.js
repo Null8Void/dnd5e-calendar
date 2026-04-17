@@ -1,4 +1,3 @@
-import { CalendarData } from "./calendar-data.js";
 import { CalendarUtils } from "./calendar-utils.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 

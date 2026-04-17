@@ -181,5 +181,3 @@ Hooks.once("init", () => {
   console.log("[DnD5e-Calendar] DEBUG: Hooks.once('init') fired - calling init()");
   init();
 });
-
-export { DnD5eCalendar };
