@@ -27,8 +27,20 @@ function init() {
   registerKeyboardShortcuts();
   console.log("[DnD5e-Calendar] DEBUG: registerKeyboardShortcuts() completed");
 
+  registerCalendarWithDND5E();
+  console.log("[DnD5e-Calendar] DEBUG: registerCalendarWithDND5E() completed");
+
   CalendarDebug.info("Module initialization complete");
   console.log("DnD5e Calendar | Module initialized (v14 Integration)");
+}
+
+function registerCalendarWithDND5E() {
+  if (typeof CONFIG !== "undefined" && CONFIG.DND5E) {
+    CONFIG.DND5E.calendar = CONFIG.DND5E.calendar || {};
+    CONFIG.DND5E.calendar.application = CalendarHUD;
+
+    console.log("[DnD5e-Calendar] Registered CalendarHUD as CONFIG.DND5E.calendar.application");
+  }
 }
 
 function registerSettings() {
@@ -93,8 +105,38 @@ function registerHooks() {
     DnD5eCalendar.setupCalendar(calendar);
   });
 
+  Hooks.on("updateWorldTime", (worldTime, delta, options) => {
+    console.log("[DnD5e-Calendar] DEBUG: updateWorldTime hook fired!", { worldTime, delta, options });
+    
+    if (DnD5eCalendar && DnD5eCalendar.dnd5eCalendar) {
+      const dnd5eDeltas = options?.dnd5e?.deltas || {};
+      const midnights = dnd5eDeltas.midnights || 0;
+      
+      if (midnights > 0 || delta >= 86400) {
+        if (DnD5eCalendar.onNewDay) {
+          DnD5eCalendar.onNewDay();
+        }
+      }
+      
+      if (DnD5eCalendar.updateMoonPhase) {
+        DnD5eCalendar.updateMoonPhase();
+      }
+      
+      Hooks.callAll("dnd5e-calendar:timeChange", { worldTime, delta, midnights });
+    }
+    
+    if (hud) {
+      hud.render();
+    }
+  });
+
   Hooks.on("ready", () => {
     console.log("[DnD5e-Calendar] DEBUG: Hooks.on('ready') fired!");
+
+    if (game.dnd5e) {
+      game.dnd5e.ui = game.dnd5e.ui || {};
+      game.dnd5e.ui.calendar = hud;
+    }
 
     if (hud) {
       hud.render(true).catch(err => {

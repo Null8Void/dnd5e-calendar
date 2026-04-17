@@ -16,6 +16,9 @@
     <div class="date-display dnd5e-calendar-hud-date">
       <span class="day-of-week">{{dayOfWeek}}</span>
       <span class="full-date">{{formattedDate}}</span>
+      {{#if hasHoliday}}
+      <span class="holiday-indicator" title="{{currentHoliday}}"><i class="fas fa-star"></i> {{currentHoliday}}</span>
+      {{/if}}
     </div>
   </div>
 

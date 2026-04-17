@@ -71,6 +71,14 @@ export class CalendarHUD extends Application {
     const calendarName = DnD5eCalendar.getCalendarName();
     const calendars = [{ id: "primary", name: calendarName, isActive: true }];
 
+    const currentDate = DnD5eCalendar.getDate();
+    const currentHoliday = DnD5eCalendar.holidayManager?.getHolidayOnDate(
+      currentDate.day,
+      currentDate.month,
+      currentDate.year,
+      "primary"
+    );
+
     return {
       formattedDate,
       formattedTime,
@@ -90,7 +98,9 @@ export class CalendarHUD extends Application {
       showIcon: true,
       calendars,
       canEdit: CalendarPermissions.canEdit(),
-      calendarsCount: calendars.length
+      calendarsCount: calendars.length,
+      currentHoliday: currentHoliday ? currentHoliday.name : null,
+      hasHoliday: !!currentHoliday
     };
   }
 

@@ -273,13 +273,35 @@ export class DnD5eCalendarIntegration {
     console.log("[DnD5e-Calendar] DEBUG: onNewDay() fired");
     CalendarDebug.feature("calendar", "New day detected!");
     
-    // Auto-roll weather if enabled
+    if (this.customData.season.autoTrackSeasons) {
+      this.seasonManager.enableAutoTrack(true);
+    }
+    
     if (this.customData.season.autoWeatherRoll) {
       this.seasonManager.rollWeatherForDay(this.getDate());
     }
     
-    // Emit day change hook
+    this.updateSceneDarkness();
+    
     Hooks.callAll("dnd5e-calendar:dayChange", this.getDate());
+  }
+  
+  updateSceneDarkness() {
+    const time = this.getTime();
+    const dayStartHour = CALENDAR_CONSTANTS.DAY_NIGHT.DAY_START_HOUR;
+    const nightStartHour = CALENDAR_CONSTANTS.DAY_NIGHT.NIGHT_START_HOUR;
+    
+    let darkness = 0;
+    if (time.hour >= nightStartHour || time.hour < dayStartHour) {
+      darkness = 0.7;
+    } else if (time.hour >= nightStartHour - 2 || time.hour < dayStartHour + 2) {
+      darkness = 0.35;
+    }
+    
+    if (game.scenes?.active && canvas?.scene) {
+      canvas.scene.update({ darkness });
+      Hooks.callAll("dnd5e-calendar:darknessChange", darkness);
+    }
   }
 
   /**
