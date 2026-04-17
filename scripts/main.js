@@ -60,12 +60,12 @@ function registerSettings() {
   });
 
   game.settings.register("dnd5e-calendar", "debugMode", {
-    name: game.i18n.localize("DNDCAL.Settings.DebugMode"),
-    hint: game.i18n.localize("DNDCAL.Settings.DebugModeHint"),
+    name: "DNDCAL.Settings.DebugMode",
+    hint: "DNDCAL.Settings.DebugModeHint",
     scope: "world",
     config: true,
     type: Boolean,
-    default: false,
+    default: true,
     onChange: (value) => {
       CalendarDebug.setDebugMode(value);
     }
