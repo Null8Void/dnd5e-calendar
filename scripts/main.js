@@ -54,34 +54,37 @@ async function runPreflightDiagnostics() {
 }
 
 async function init() {
+  registerSettings();
   CalendarDebug.init();
   CalendarDebug.master("MODULE STARTUP - v1.1.3");
 
-  // Initialize DnD5eCalendar integration (needs to be available early)
+  registerHooks();
+  CalendarDebug.trackInit("registerHooks", true);
+
+  registerKeyboardShortcuts();
+  CalendarDebug.trackInit("registerKeyboardShortcuts", true);
+
+  registerCalendarWithDND5E();
+  CalendarDebug.trackInit("registerCalendarWithDND5E", true);
+
   await DnD5eCalendar.initialize?.();
   CalendarDebug.trackInit("DnD5eCalendar", true);
 
-  // Initialize Calendar Integration Service (non-blocking)
   await CalendarIntegration.initialize();
   CalendarDebug.trackInit("CalendarIntegration", true);
 
-  // Initialize Time Tracking Service
   await TimeTracking.initialize();
   CalendarDebug.trackInit("TimeTracking", true);
 
-  // Initialize Season Service
   await SeasonService.initialize();
   CalendarDebug.trackInit("SeasonService", true);
 
-  // Initialize Weather Manager Service
   await WeatherManagerService.initialize();
   CalendarDebug.trackInit("WeatherManagerService", true);
 
-  // Initialize Moon Phase Service
   await MoonPhaseService.initialize();
   CalendarDebug.trackInit("MoonPhaseService", true);
 
-  // Expose API globally for other modules
   window.CalendarIntegration = CalendarIntegration;
   window.TimeTracking = TimeTracking;
   window.SeasonService = SeasonService;
@@ -133,18 +136,6 @@ async function init() {
   // Initialize centralized HUDRenderer
   HUDRenderer.initialize();
   CalendarDebug.trackInit("HUDRenderer", true);
-
-  registerSettings();
-  CalendarDebug.trackInit("registerSettings", true);
-
-  registerHooks();
-  CalendarDebug.trackInit("registerHooks", true);
-
-  registerKeyboardShortcuts();
-  CalendarDebug.trackInit("registerKeyboardShortcuts", true);
-
-  registerCalendarWithDND5E();
-  CalendarDebug.trackInit("registerCalendarWithDND5E", true);
 
   CalendarDebug.trackInit("FULL_INIT", true, CalendarDebug.getFlowState());
 }

@@ -154,6 +154,13 @@ The module defaults to a Forgotten Realms style calendar:
 
 ## Changelog
 
+### v1.1.7
+- **Fixed: CalendarDebug reads setting before registered**
+  - Moved `registerSettings()` to run BEFORE `CalendarDebug.init()`
+  - Debug now properly reads the debugMode setting
+- **Fixed: Duplicate initialization calls**
+  - Removed duplicate `registerSettings()`, `registerHooks()`, etc. calls
+
 ### v1.1.6
 - **Added: Preflight Diagnostics**
   - Runs on init to detect module/import/settings issues early
