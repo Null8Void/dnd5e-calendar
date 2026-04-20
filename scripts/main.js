@@ -4,6 +4,7 @@ import { CalendarHUD } from "./calendar-hud.js";
 import { CalendarConfig } from "./calendar-config.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarIntegration } from "./calendar-integration-service.js";
+import { TimeTracking } from "./time-tracking-service.js";
 
 Handlebars.registerHelper("eq", (a, b) => a === b);
 Handlebars.registerHelper("and", (...args) => {
@@ -24,8 +25,13 @@ async function init() {
   await CalendarIntegration.initialize();
   CalendarDebug.trackInit("CalendarIntegration", true);
 
+  // Initialize Time Tracking Service
+  await TimeTracking.initialize();
+  CalendarDebug.trackInit("TimeTracking", true);
+
   // Expose API globally for other modules
   window.CalendarIntegration = CalendarIntegration;
+  window.TimeTracking = TimeTracking;
   window.CalendarAPI = {
     getCurrentDate: (id) => CalendarIntegration.getCurrentDate(id),
     getTime: (id) => CalendarIntegration.getTime(id),
@@ -33,6 +39,14 @@ async function init() {
     syncWithWorldTime: () => CalendarIntegration.syncWithWorldTime(),
     getAllCalendars: () => CalendarIntegration.getAllCalendars(),
     switchCalendar: (id) => CalendarIntegration.switchCalendar(id)
+  };
+  window.TimeAPI = {
+    getCurrentTime: () => TimeTracking.getCurrentTime(),
+    getFormattedTime: () => TimeTracking.getFormattedTime(),
+    advanceTime: (mins) => TimeTracking.advanceTime(mins),
+    setTime: (h, m) => TimeTracking.setTime(h, m),
+    getConfig: () => TimeTracking.getConfig(),
+    setAutoAdvance: (enabled) => TimeTracking.setAutoAdvance(enabled)
   };
 
   // Initialize UI (HUD and Config) - Keep existing dnd5e calendar
