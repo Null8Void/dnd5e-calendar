@@ -5,6 +5,7 @@ import { CalendarConfig } from "./calendar-config.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarIntegration } from "./calendar-integration-service.js";
 import { TimeTracking } from "./time-tracking-service.js";
+import { HUDAugmentation } from "./hud-augmentation.js";
 
 Handlebars.registerHelper("eq", (a, b) => a === b);
 Handlebars.registerHelper("and", (...args) => {
@@ -32,6 +33,7 @@ async function init() {
   // Expose API globally for other modules
   window.CalendarIntegration = CalendarIntegration;
   window.TimeTracking = TimeTracking;
+  window.HUDAugmentation = HUDAugmentation;
   window.CalendarAPI = {
     getCurrentDate: (id) => CalendarIntegration.getCurrentDate(id),
     getTime: (id) => CalendarIntegration.getTime(id),
@@ -53,6 +55,10 @@ async function init() {
   hud = new CalendarHUD();
   config = new CalendarConfig();
   window.DnD5eCalendarConfig = config;
+
+  // Initialize HUD Augmentation (injects into dnd5e HUD)
+  HUDAugmentation.initialize();
+  CalendarDebug.trackInit("HUDAugmentation", true);
 
   registerSettings();
   CalendarDebug.trackInit("registerSettings", true);

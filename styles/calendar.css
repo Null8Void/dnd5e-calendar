@@ -982,3 +982,110 @@
   50% { transform: translateX(50px); opacity: 0.6; }
   75% { transform: translateX(30px); opacity: 0.9; }
 }
+
+/* ========================================
+   HUD AUGMENTATION STYLES
+   Augments existing dnd5e calendar HUD
+   ======================================== */
+
+/* Container for augmented elements */
+.dnd5e-calendar-additional {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px;
+  background: rgba(40, 40, 50, 0.9);
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+/* Additional calendar display */
+.dnd5e-calendar-additional .additional-calendar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #b8b4a8;
+  font-size: 11px;
+}
+
+.dnd5e-calendar-additional .additional-calendar .label {
+  color: #6b6788;
+  font-weight: 600;
+}
+
+.dnd5e-calendar-additional .additional-calendar .offset {
+  color: #c9a227;
+  font-weight: bold;
+  font-size: 10px;
+}
+
+/* Weather indicator */
+.dnd5e-calendar-additional .weather-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: #a8b4c8;
+  font-size: 14px;
+  cursor: help;
+}
+
+.dnd5e-calendar-additional .weather-indicator:hover {
+  color: #c9a227;
+}
+
+/* Season indicator */
+.dnd5e-calendar-additional .season-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #a8c8a8;
+}
+
+.dnd5e-calendar-additional .season-indicator .season-name {
+  font-size: 10px;
+}
+
+.dnd5e-calendar-additional .season-indicator:hover {
+  color: #c9a227;
+}
+
+/* Moon indicator */
+.dnd5e-calendar-additional .moon-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: #c8c8d8;
+  font-size: 14px;
+}
+
+.dnd5e-calendar-additional .moon-indicator:hover {
+  color: #c9a227;
+}
+
+/* Mobile responsiveness for augmentation */
+@media (max-width: 768px) {
+  .dnd5e-calendar-additional {
+    gap: 6px;
+    padding: 2px 4px;
+  }
+  
+  .dnd5e-calendar-additional .additional-calendar .label,
+  .dnd5e-calendar-additional .season-indicator .season-name {
+    display: none;
+  }
+}
+
+/* Re-render safety - ensure elements persist */
+.dnd5e-calendar-additional[data-augmented="true"] {
+  /* Prevent duplicate injection */
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
