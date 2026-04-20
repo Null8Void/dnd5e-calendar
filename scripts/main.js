@@ -7,6 +7,7 @@ import { CalendarIntegration } from "./calendar-integration-service.js";
 import { TimeTracking } from "./time-tracking-service.js";
 import { SeasonService } from "./season-service.js";
 import { WeatherManagerService } from "./weather-service.js";
+import { MoonPhaseService } from "./moon-phase-service.js";
 import { HUDAugmentation } from "./hud-augmentation.js";
 
 Handlebars.registerHelper("eq", (a, b) => a === b);
@@ -40,11 +41,16 @@ async function init() {
   await WeatherManagerService.initialize();
   CalendarDebug.trackInit("WeatherManagerService", true);
 
+  // Initialize Moon Phase Service
+  await MoonPhaseService.initialize();
+  CalendarDebug.trackInit("MoonPhaseService", true);
+
   // Expose API globally for other modules
   window.CalendarIntegration = CalendarIntegration;
   window.TimeTracking = TimeTracking;
   window.SeasonService = SeasonService;
   window.WeatherManagerService = WeatherManagerService;
+  window.MoonPhaseService = MoonPhaseService;
   window.HUDAugmentation = HUDAugmentation;
   window.CalendarAPI = {
     getCurrentDate: (id) => CalendarIntegration.getCurrentDate(id),
@@ -68,6 +74,14 @@ async function init() {
     setGMNotes: (notes) => WeatherManagerService.setGMNotes(notes),
     getWeatherTypes: () => WeatherManagerService.getWeatherTypes(),
     setAutoRoll: (enabled) => WeatherManagerService.setAutoRoll(enabled)
+  };
+  window.MoonAPI = {
+    getPhase: () => MoonPhaseService.getCurrentPhase(),
+    getPhaseName: () => MoonPhaseService.getPhaseName(),
+    getHUDDisplay: () => MoonPhaseService.getHUDDisplay(),
+    setDay: (day) => MoonPhaseService.setDay(day),
+    setCycleDays: (days) => MoonPhaseService.setCycleDays(days),
+    getConfig: () => MoonPhaseService.getConfig()
   };
 
   // Initialize UI (HUD and Config) - Keep existing dnd5e calendar

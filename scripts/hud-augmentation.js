@@ -263,11 +263,12 @@ class HUDAugmentationService {
    * Create moon element HTML
    */
   _createMoonElement() {
-    const moon = DnD5eCalendar?.moonManager?.getPhaseName() || "New Moon";
-    const icon = this._getMoonIcon(moon);
+    // Try MoonPhaseService first, fallback to DnD5eCalendar
+    const moonData = window.MoonPhaseService?.getHUDDisplay() || 
+                   { name: "New Moon", icon: "moon" };
     return `
-      <div class="moon-indicator">
-        <i class="fas fa-${icon}"></i>
+      <div class="moon-indicator" data-tooltip="${moonData.name}">
+        <i class="fas fa-${moonData.icon}"></i>
       </div>
     `;
   }
