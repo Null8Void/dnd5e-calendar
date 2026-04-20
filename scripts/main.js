@@ -154,7 +154,7 @@ function registerSettings() {
     name: game.i18n.localize("DNDCAL.Settings.Enabled"),
     hint: game.i18n.localize("DNDCAL.Settings.EnabledHint"),
     scope: "world",
-    config: false,
+    config: true,
     type: Boolean,
     default: true
   });
@@ -162,9 +162,13 @@ function registerSettings() {
   game.settings.register("dnd5e-calendar", "hudPosition", {
     name: game.i18n.localize("DNDCAL.Settings.HudPosition"),
     scope: "world",
-    config: false,
+    config: true,
     type: String,
-    default: "top"
+    default: "top",
+    choices: {
+      top: "Top",
+      bottom: "Bottom"
+    }
   });
 
   game.settings.register("dnd5e-calendar", "debugMode", {
@@ -256,8 +260,19 @@ function registerHooks() {
   });
 
   Hooks.on("renderSettingsConfig", (app, html) => {
-    if (!CalendarPermissions.canEdit()) return;
-    if (!game.settings.get("dnd5e-calendar", "enabled")) return;
+    console.log("[DnD5e-Calendar] DEBUG: renderSettingsConfig fired, canEditForce:", CalendarPermissions.canEditForce());
+
+    if (!CalendarPermissions.canEdit()) {
+      console.log("[DnD5e-Calendar] DEBUG: canEdit() returned false - no permission");
+      return;
+    }
+
+    if (!game.settings.get("dnd5e-calendar", "enabled")) {
+      console.log("[DnD5e-Calendar] DEBUG: Module enabled = false");
+      return;
+    }
+
+    console.log("[DnD5e-Calendar] DEBUG: Adding config button to settings");
 
     const button = document.createElement("button");
     button.type = "button";

@@ -89,18 +89,25 @@ export class CalendarConfig extends Application {
    * Only GMs/Assistants can configure calendar
    */
   async render(force = false, options = {}) {
+    console.log("[DnD5e-Calendar] DEBUG: CalendarConfig.render() called");
+    console.log("[DnD5e-Calendar] DEBUG: canEdit():", CalendarPermissions.canEdit());
+    console.log("[DnD5e-Calendar] DEBUG: enabled:", game.settings.get("dnd5e-calendar", "enabled"));
+
     if (!CalendarPermissions.canEdit()) {
+      console.log("[DnD5e-Calendar] DEBUG: Render blocked - no edit permission");
       ui.notifications.warn(game.i18n.localize("DNDCAL.Permissions.GMOnly"));
       return;
     }
 
     if (!game.settings.get("dnd5e-calendar", "enabled")) {
+      console.log("[DnD5e-Calendar] DEBUG: Render blocked - module disabled");
       ui.notifications.warn("DnD5e Calendar is currently disabled");
       return;
     }
 
     // Refresh data before render
     this.context = await this.getData();
+    console.log("[DnD5e-Calendar] DEBUG: CalendarConfig rendering...");
     return super.render(force, options);
   }
 

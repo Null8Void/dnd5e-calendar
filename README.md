@@ -154,6 +154,15 @@ The module defaults to a Forgotten Realms style calendar:
 
 ## Changelog
 
+### v1.1.8
+- **Fixed: Settings visibility**
+  - Changed `config: false` to `config: true` for enabled and hudPosition settings
+  - Added choices for hudPosition dropdown
+- **Fixed: CalendarPermissions for Foundry v14**
+  - Changed `game.users?.current` to `game.user` for v14 compatibility
+- **Added: Debug logging**
+  - Added extensive debug logging to track permission and render issues
+
 ### v1.1.7
 - **Fixed: CalendarDebug reads setting before registered**
   - Moved `registerSettings()` to run BEFORE `CalendarDebug.init()`

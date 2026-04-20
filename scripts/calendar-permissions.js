@@ -1,6 +1,6 @@
 export class CalendarPermissions {
   static getCurrentUser() {
-    return game.users?.current ?? game.users?.activeUser;
+    return game.user;
   }
 
   static canView() {
@@ -10,6 +10,18 @@ export class CalendarPermissions {
   static canEdit() {
     const user = this.getCurrentUser();
     if (!user) return false;
+    return user.role >= CONST.USER_ROLES.ASSISTANT;
+  }
+
+  static canEditForce() {
+    const user = this.getCurrentUser();
+    console.log("[DnD5e-Calendar] DEBUG: canEditForce() user:", user);
+    if (!user) {
+      console.log("[DnD5e-Calendar] DEBUG: No user found");
+      return false;
+    }
+    console.log("[DnD5e-Calendar] DEBUG: User role:", user.role, "CONST.ASSISTANT:", CONST.USER_ROLES.ASSISTANT);
+    console.log("[DnD5e-Calendar] DEBUG: Has permission:", user.role >= CONST.USER_ROLES.ASSISTANT);
     return user.role >= CONST.USER_ROLES.ASSISTANT;
   }
 
