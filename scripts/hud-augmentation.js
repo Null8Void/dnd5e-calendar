@@ -203,6 +203,12 @@ class HUDAugmentationService {
     const allCals = CalendarIntegration.getAllCalendars();
     const timeConfig = TimeTracking.getConfig();
     
+    // Get season from SeasonService
+    const season = window.SeasonService?.getCurrentSeason() || 
+                   DnD5eCalendar?.seasonManager?.getCurrentSeasonName() || "Spring";
+    const seasonIcon = window.SeasonService?._getSeasonIcon?.(window.SeasonService.getCurrentSeason()?.key) || 
+                       this._getSeasonIcon(season);
+    
     return `
       <div class="dnd5e-calendar-additional" data-augmented="true">
         <div class="additional-calendar">
@@ -233,8 +239,13 @@ class HUDAugmentationService {
    * Create season element HTML
    */
   _createSeasonElement() {
-    const season = DnD5eCalendar?.seasonManager?.getCurrentSeasonName() || "Spring";
-    const icon = this._getSeasonIcon(season);
+    // Try SeasonService first, fallback to DnD5eCalendar
+    const seasonData = window.SeasonService?.getCurrentSeason();
+    const season = seasonData?.name || 
+                  DnD5eCalendar?.seasonManager?.getCurrentSeasonName() || 
+                  "Spring";
+    const seasonKey = seasonData?.key || season.toLowerCase();
+    const icon = this._getSeasonIcon(seasonKey);
     return `
       <div class="season-indicator">
         <i class="fas fa-${icon}"></i>

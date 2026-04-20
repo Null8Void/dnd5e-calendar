@@ -5,6 +5,7 @@ import { CalendarConfig } from "./calendar-config.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarIntegration } from "./calendar-integration-service.js";
 import { TimeTracking } from "./time-tracking-service.js";
+import { SeasonService } from "./season-service.js";
 import { HUDAugmentation } from "./hud-augmentation.js";
 
 Handlebars.registerHelper("eq", (a, b) => a === b);
@@ -30,9 +31,14 @@ async function init() {
   await TimeTracking.initialize();
   CalendarDebug.trackInit("TimeTracking", true);
 
+  // Initialize Season Service
+  await SeasonService.initialize();
+  CalendarDebug.trackInit("SeasonService", true);
+
   // Expose API globally for other modules
   window.CalendarIntegration = CalendarIntegration;
   window.TimeTracking = TimeTracking;
+  window.SeasonService = SeasonService;
   window.HUDAugmentation = HUDAugmentation;
   window.CalendarAPI = {
     getCurrentDate: (id) => CalendarIntegration.getCurrentDate(id),
