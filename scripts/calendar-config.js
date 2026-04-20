@@ -93,7 +93,12 @@ export class CalendarConfig extends Application {
       ui.notifications.warn(game.i18n.localize("DNDCAL.Permissions.GMOnly"));
       return;
     }
-    
+
+    if (!game.settings.get("dnd5e-calendar", "enabled")) {
+      ui.notifications.warn("DnD5e Calendar is currently disabled");
+      return;
+    }
+
     // Refresh data before render
     this.context = await this.getData();
     return super.render(force, options);

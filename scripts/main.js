@@ -1,4 +1,4 @@
-import { DnD5eCalendar } from "./calendar-integration.js";
+import { DnD5eCalendar, DnD5eCalendarIntegration } from "./calendar-integration.js";
 import { CalendarDebug } from "./calendar-debug.js";
 import { CalendarHUD } from "./calendar-hud.js";
 import { CalendarConfig } from "./calendar-config.js";
@@ -25,6 +25,10 @@ let config = null;
 async function init() {
   CalendarDebug.init();
   CalendarDebug.master("MODULE STARTUP - v1.1.3");
+
+  // Initialize DnD5eCalendar integration (needs to be available early)
+  await DnD5eCalendar.initialize?.();
+  CalendarDebug.trackInit("DnD5eCalendar", true);
 
   // Initialize Calendar Integration Service (non-blocking)
   await CalendarIntegration.initialize();
@@ -231,9 +235,24 @@ function registerHooks() {
 
   Hooks.on("renderSettingsConfig", (app, html) => {
     if (!CalendarPermissions.canEdit()) return;
+    if (!game.settings.get("dnd5e-calendar", "enabled")) return;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "dnd5e-calendar-config-btn";
+    button.style.marginTop = "10px";
+    button.innerHTML = `<i class="fas fa-calendar"></i> ${game.i18n.localize("DNDCAL.Settings.OpenConfigLabel")}`;
+    button.addEventListener("click", () => {
+      config?.render(true);
+    });
+
+    const container = html.querySelector(".settings-buttons") || html.querySelector("footer") || html;
+    if (container) {
+      container.appendChild(button);
+    }
   });
 
-  Hooks.on("closeCalendarConfig", () => {
+  Hooks.on("closeSettingsConfig", () => {
     if (hud) hud.render();
   });
 

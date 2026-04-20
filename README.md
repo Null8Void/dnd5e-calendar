@@ -154,6 +154,16 @@ The module defaults to a Forgotten Realms style calendar:
 
 ## Changelog
 
+### v1.1.5
+- **Fixed: Settings not appearing**
+  - Fixed missing `DnD5eCalendar` import in main.js causing `onNewDay` to be undefined
+  - Fixed empty `renderSettingsConfig` hook - now properly injects config button into Foundry settings
+  - Added enabled state check before showing config menu
+  - Fixed wrong close event name (`closeCalendarConfig` -> `closeSettingsConfig`)
+- **Fixed: Hooks not firing correctly**
+  - Fixed duplicate `updateWorldTime` handler causing conflicts
+  - Internal code cleanup for v14 compatibility
+
 ### v1.1.0
 - **Major: Foundry VTT v14 Integration**
   - Module now integrates with dnd5e's built-in calendar system
