@@ -1,6 +1,7 @@
 import { CalendarData } from "./calendar-data.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarUtils } from "./calendar-utils.js";
+import { CalendarIntegration } from "./calendar-integration-service.js";
 
 export class HolidayManager {
   constructor(manager = null) {
@@ -55,12 +56,13 @@ export class HolidayManager {
       throw new Error("Description exceeds 400 character limit");
     }
 
+    const calendarId = CalendarIntegration.getActiveCalendarId();
     const holiday = {
       name,
       day: date.day,
       month: date.month,
       year: date.year,
-      calendarId: this.manager.data.activeCalendarId,
+      calendarId,
       description
     };
 
@@ -130,12 +132,13 @@ export class HolidayManager {
       throw new Error("User does not have permission to add holidays");
     }
 
+    const calId = calendarId || CalendarIntegration.getActiveCalendarId();
     const holiday = {
       name,
       day,
       month,
       year,
-      calendarId: calendarId || this.manager.data.activeCalendarId,
+      calendarId: calId,
       description
     };
 

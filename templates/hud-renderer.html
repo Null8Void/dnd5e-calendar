@@ -1,0 +1,42 @@
+<!-- HUD Renderer Template -->
+<!-- Used by HUDRenderer class for centralized injection -->
+
+{{#if showCalendar}}
+<div class="dnd5e-calendar-additional" data-augmented="true" data-version="14">
+  {{#if showSecondary}}
+  <div class="additional-calendar">
+    <span class="label">Alt:</span>
+    <span class="value">{{secondaryDate}}</span>
+    {{#if timeOffset}}
+    <span class="offset">({{timeOffset}}d)</span>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  {{#if showWeather}}
+  <div class="weather-indicator" data-tooltip="{{weather.name}}">
+    <i class="fas fa-{{weather.icon}}"></i>
+  </div>
+  {{/if}}
+
+  {{#if showSeason}}
+  <div class="season-indicator">
+    <i class="fas fa-{{season.icon}}"></i>
+    <span class="season-name">{{season.name}}</span>
+  </div>
+  {{/if}}
+
+  {{#if showMoon}}
+  <div class="moon-indicator" data-tooltip="{{moon.name}}">
+    <i class="fas fa-{{moon.icon}}"></i>
+  </div>
+  {{/if}}
+
+  {{#if showHoliday}}
+  <div class="holiday-indicator" data-tooltip="{{holiday.name}}{{holiday.description}}">
+    <i class="fas fa-glass-cheers"></i>
+    <span class="holiday-name">{{holiday.name}}</span>
+  </div>
+  {{/if}}
+</div>
+{{/if}}

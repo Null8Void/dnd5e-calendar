@@ -253,54 +253,21 @@ export class DnD5eCalendarIntegration {
 
   /**
    * Register UI-related hooks
-   * Handle all state changes and trigger UI updates
+   * Handle state changes - no re-broadcast as existing events propagate
    */
   registerUIHooks() {
-    // Time change triggers full HUD render
-    Hooks.on("dnd5e-calendar:timeChange", () => {
-      Hooks.callAll("dnd5e-calendar:render");
-    });
-    
-    // Date change triggers full HUD render
-    Hooks.on("dnd5e-calendar:dateChange", () => {
-      Hooks.callAll("dnd5e-calendar:render");
-    });
-    
-    // Weather change updates effects and renders
+    // Weather change updates visual effects
     Hooks.on("dnd5e-calendar:weatherChange", (data) => {
       this.updateWeatherVisualEffect();
-      Hooks.callAll("dnd5e-calendar:render");
-    });
-    
-    // Moon phase change triggers render
-    Hooks.on("dnd5e-calendar:moonPhaseChange", () => {
-      Hooks.callAll("dnd5e-calendar:render");
-    });
-    
-    // Season change triggers render
-    Hooks.on("dnd5e-calendar:seasonChange", () => {
-      Hooks.callAll("dnd5e-calendar:render");
-    });
-    
-    // Day/night change triggers render
-    Hooks.on("dnd5e-calendar:dayNightChange", () => {
-      Hooks.callAll("dnd5e-calendar:render");
-    });
-    
-    // General calendar change
-    Hooks.on("dnd5e-calendar:calendarChange", () => {
-      Hooks.callAll("dnd5e-calendar:render");
     });
     
     // Handle sunrise/sunset for day/night visual effects
     Hooks.on("dnd5e-calendar:sunrise", () => {
       this.updateSceneDarkness();
-      Hooks.callAll("dnd5e-calendar:dayNightChange", { period: "day", isDay: true });
     });
     
     Hooks.on("dnd5e-calendar:sunset", () => {
       this.updateSceneDarkness();
-      Hooks.callAll("dnd5e-calendar:dayNightChange", { period: "night", isDay: false });
     });
     
     // Signal integration is ready

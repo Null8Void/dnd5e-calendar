@@ -136,10 +136,12 @@ class MoonPhaseService {
     const oldDay = this._config.currentDay;
     const oldPhase = this._config.currentPhase;
     
-    // Update day count and phase
-    this._config.currentDay += days;
-    this._config.currentDay = this._config.currentDay % this._config.cycleDays;
-    this._config.currentPhase = this._config.currentDay % 8;
+    // Update day count (track position in cycle 0 to cycleDays-1)
+    this._config.currentDay = (this._config.currentDay + days) % this._config.cycleDays;
+    
+    // Calculate phase from day position: (day / cycleDays) * 8 gives 0-8 range
+    const phaseIndex = Math.floor((this._config.currentDay / this._config.cycleDays) * 8) % 8;
+    this._config.currentPhase = phaseIndex;
     
     const oldPhaseData = MOON_PHASES[oldPhase];
     const newPhaseData = this._getCurrentPhase();
@@ -223,8 +225,9 @@ class MoonPhaseService {
     if (!CalendarPermissions?.canEdit()) return;
     
     this._config.cycleDays = Math.max(1, Math.min(100, days));
-    // Recalculate phase
-    this._config.currentPhase = this._config.currentDay % this._config.cycleDays;
+    this._config.currentDay = this._config.currentDay % this._config.cycleDays;
+    const phaseIndex = Math.floor((this._config.currentDay / this._config.cycleDays) * 8) % 8;
+    this._config.currentPhase = phaseIndex;
     await this._saveConfig();
   }
 
@@ -233,7 +236,8 @@ class MoonPhaseService {
    */
   async setDay(day) {
     this._config.currentDay = day % this._config.cycleDays;
-    this._config.currentPhase = this._config.currentDay % 8;
+    const phaseIndex = Math.floor((this._config.currentDay / this._config.cycleDays) * 8) % 8;
+    this._config.currentPhase = phaseIndex;
     await this._saveConfig();
     
     Hooks.callAll("dnd5e-calendar:moonPhaseChange", {

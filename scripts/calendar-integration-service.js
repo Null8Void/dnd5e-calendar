@@ -479,6 +479,14 @@ class CalendarIntegrationService {
     return this._config?.timeOffset || 0;
   }
 
+  /**
+   * Get active calendar ID
+   * @returns {string} "primary" or "secondary"
+   */
+  getActiveCalendarId() {
+    return this._config?.activeCalendarId || "primary";
+  }
+
   // ============== Private Helpers ==============
 
   _calculateDayCount(day, month, year) {

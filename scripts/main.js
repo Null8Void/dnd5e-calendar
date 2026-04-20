@@ -9,6 +9,7 @@ import { SeasonService } from "./season-service.js";
 import { WeatherManagerService } from "./weather-service.js";
 import { MoonPhaseService } from "./moon-phase-service.js";
 import { HUDAugmentation } from "./hud-augmentation.js";
+import { HUDRenderer } from "./hud-renderer.js";
 
 Handlebars.registerHelper("eq", (a, b) => a === b);
 Handlebars.registerHelper("and", (...args) => {
@@ -52,6 +53,7 @@ async function init() {
   window.WeatherManagerService = WeatherManagerService;
   window.MoonPhaseService = MoonPhaseService;
   window.HUDAugmentation = HUDAugmentation;
+  window.HUDRenderer = HUDRenderer;
   window.CalendarAPI = {
     getCurrentDate: (id) => CalendarIntegration.getCurrentDate(id),
     getTime: (id) => CalendarIntegration.getTime(id),
@@ -92,6 +94,10 @@ async function init() {
   // Initialize HUD Augmentation (injects into dnd5e HUD)
   HUDAugmentation.initialize();
   CalendarDebug.trackInit("HUDAugmentation", true);
+
+  // Initialize centralized HUDRenderer
+  HUDRenderer.initialize();
+  CalendarDebug.trackInit("HUDRenderer", true);
 
   registerSettings();
   CalendarDebug.trackInit("registerSettings", true);
@@ -180,8 +186,6 @@ function registerHooks() {
   });
 
   Hooks.on("updateWorldTime", (worldTime, delta, options) => {
-    console.log("[DnD5e-Calendar] DEBUG: updateWorldTime hook fired!", { worldTime, delta, options });
-    
     if (DnD5eCalendar && DnD5eCalendar.dnd5eCalendar) {
       const dnd5eDeltas = options?.dnd5e?.deltas || {};
       const midnights = dnd5eDeltas.midnights || 0;

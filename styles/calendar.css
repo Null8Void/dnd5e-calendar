@@ -1066,6 +1066,24 @@
   color: #c9a227;
 }
 
+/* Holiday indicator */
+.dnd5e-calendar-additional .holiday-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #c8c8d8;
+  font-size: 12px;
+}
+
+.dnd5e-calendar-additional .holiday-indicator .fas {
+  font-size: 14px;
+  color: #e08d56;
+}
+
+.dnd5e-calendar-additional .holiday-indicator:hover {
+  color: #c9a227;
+}
+
 /* Mobile responsiveness for augmentation */
 @media (max-width: 768px) {
   .dnd5e-calendar-additional {

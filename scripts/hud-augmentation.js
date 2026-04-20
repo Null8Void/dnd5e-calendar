@@ -2,22 +2,14 @@
  * HUD Augmentation Service
  * 
  * Injects additional elements into the existing dnd5e calendar HUD.
- * Preserves original layout and functionality.
  * 
- * Technical approach:
- * - Uses Hooks.on("render<ApplicationName>") to inject HTML
- * - Appends elements cleanly without DOM hacks
- * - Handles re-renders safely
- * 
- * Injected elements:
- * - Secondary calendar display
- * - Season indicator
- * - Weather indicator  
- * - Moon phase display
+ * Now delegates to HUDRenderer for centralized rendering.
+ * Kept for backwards compatibility and fallback.
  */
 
 import { CalendarIntegration } from "./calendar-integration-service.js";
 import { TimeTracking } from "./time-tracking-service.js";
+import { HUDRenderer } from "./hud-renderer.js";
 
 /**
  * HUD Augmentation Service
@@ -39,49 +31,33 @@ class HUDAugmentationService {
     
     console.log("[DnD5e-Calendar] Initializing HUD augmentation");
     
-    // Try to find and augment dnd5e's calendar HUD
-    this._findAndAugmentHUD();
+    // Check if HUDRenderer should take precedence
+    if (window.HUDRenderer && typeof window.HUDRenderer.initialize === 'function') {
+      console.log("[DnD5e-Calendar] HUDRenderer available - HUDAugmentation acts as fallback only");
+    }
     
-    // Also listen for render events
     this._registerHooks();
-    
     console.log("[DnD5e-Calendar] HUD augmentation ready");
   }
 
   /**
    * Register hooks for HUD rendering
+   * Only registers if no other renderer is active
    */
   _registerHooks() {
-    // Hook into dnd5e's MainHUD if available
-    if (typeof MainHUD !== "undefined") {
-      Hooks.on("renderMainHUD", (app, html, options) => {
-        this._injectIntoHUD(html, app);
-      });
-    }
+    if (this._hooksRegistered) return;
     
-    // Hook into dnd5e calendar application
+    // Only register render hooks, rely on event bubbling for updates
     Hooks.on("renderApplication", (app, html, options) => {
-      if (app.constructor.name === "MainHUD" || 
-          app.constructor.name === "Dnd5eHUD" ||
-          app.id?.includes("dnd5e")) {
+      const isDnd5eHUD = app.constructor.name === "CalendarHUD" || 
+          app.constructor.name === "BaseCalendarHUD" ||
+          app.constructor.name.includes("Dnd5e");
+      
+      // Only inject if HUDRenderer hasn't already done so
+      if (isDnd5eHUD && !document.querySelector('.dnd5e-calendar-additional[data-version="14"]')) {
         this._injectIntoHUD(html, app);
       }
     });
-    
-    // Generic fallback - check for dnd5e calendar elements
-    Hooks.on("renderChatLog", (app, html, options) => {
-      // Only inject if we haven't found the HUD yet
-      if (!this._injectedElements) {
-        this._findAndAugmentHUD();
-      }
-    });
-    
-    // Listen for calendar updates to refresh injection
-    Hooks.on("dnd5e-calendar:dateChange", () => this._updateInjection());
-    Hooks.on("dnd5e-calendar:timeChange", () => this._updateInjection());
-    Hooks.on("dnd5e-calendar:seasonChange", () => this._updateInjection());
-    Hooks.on("dnd5e-calendar:weatherChange", () => this._updateInjection());
-    Hooks.on("dnd5e-calendar:moonPhaseChange", () => this._updateInjection());
     
     this._hooksRegistered = true;
   }
@@ -151,15 +127,26 @@ class HUDAugmentationService {
    */
   _isDnd5eHUD(app) {
     if (!app) return false;
-    
     const name = app.constructor.name;
     const id = app.id || "";
     
-    return name.includes("HUD") || 
-           name.includes("Calendar") ||
-           id.includes("dnd5e") ||
-           id.includes("calendar") ||
-           id.includes("Dnd");
+    if (name === "CalendarHUD" || 
+        name === "BaseCalendarHUD" ||
+        name.includes("Dnd5e")) {
+      return true;
+    }
+    
+    if (id.includes("dnd5e-calendar") ||
+        id === "calendar-hud" ||
+        id === "dnd5e-hud") {
+      return true;
+    }
+    
+    if (name.includes("Calendar") && name.includes("HUD")) {
+      return true;
+    }
+    
+    return false;
   }
 
   /**
@@ -194,23 +181,26 @@ class HUDAugmentationService {
 
   /**
    * Create HTML for additional elements
+   * Delegates to HUDRenderer for centralized rendering
    * @returns {string} HTML string
    */
   _createAdditionalElements() {
-    // Get current data from services
+    if (window.HUDRenderer?.render) {
+      return window.HUDRenderer.render();
+    }
+    return this._createFallbackElements();
+  }
+
+  /**
+   * Fallback elements if HUDRenderer unavailable
+   * @returns {string} HTML string
+   */
+  _createFallbackElements() {
     const secondaryCal = CalendarIntegration.getSecondaryCalendar();
     const timeOffset = CalendarIntegration.getTimeOffset();
-    const allCals = CalendarIntegration.getAllCalendars();
-    const timeConfig = TimeTracking.getConfig();
-    
-    // Get season from SeasonService
-    const season = window.SeasonService?.getCurrentSeason() || 
-                   DnD5eCalendar?.seasonManager?.getCurrentSeasonName() || "Spring";
-    const seasonIcon = window.SeasonService?._getSeasonIcon?.(window.SeasonService.getCurrentSeason()?.key) || 
-                       this._getSeasonIcon(season);
     
     return `
-      <div class="dnd5e-calendar-additional" data-augmented="true">
+      <div class="dnd5e-calendar-additional" data-augmented="true" data-version="14">
         <div class="additional-calendar">
           <span class="label">Alt:</span>
           <span class="value">${secondaryCal?.currentMonth + 1}/${secondaryCal?.currentDay}/${secondaryCal?.currentYear}</span>
@@ -219,6 +209,7 @@ class HUDAugmentationService {
         ${this._createWeatherElement()}
         ${this._createSeasonElement()}
         ${this._createMoonElement()}
+        ${this._createHolidayElement()}
       </div>
     `;
   }
@@ -269,6 +260,31 @@ class HUDAugmentationService {
     return `
       <div class="moon-indicator" data-tooltip="${moonData.name}">
         <i class="fas fa-${moonData.icon}"></i>
+      </div>
+    `;
+  }
+
+  /**
+   * Create holiday element HTML
+   */
+  _createHolidayElement() {
+    const currentDate = CalendarIntegration.getCurrentDate();
+    const activeCalId = CalendarIntegration.getActiveCalendarId();
+    
+    const holiday = DnD5eCalendar?.holidayManager?.getHolidayOnDate(
+      currentDate.day, 
+      currentDate.month, 
+      currentDate.year, 
+      activeCalId
+    );
+    
+    if (!holiday) return '';
+    
+    const description = holiday.description ? ` - ${holiday.description}` : '';
+    return `
+      <div class="holiday-indicator" data-tooltip="${holiday.name}${description}">
+        <i class="fas fa-glass-cheers"></i>
+        <span class="holiday-name">${holiday.name}</span>
       </div>
     `;
   }
