@@ -227,10 +227,15 @@ class HUDAugmentationService {
    * Create weather element HTML
    */
   _createWeatherElement() {
-    const weather = DnD5eCalendar?.weatherManager?.getWeather() || "Clear";
+    // Try WeatherManagerService first, fallback to DnD5eCalendar
+    const weather = window.WeatherManagerService?.getWeather() || 
+                    DnD5eCalendar?.weatherManager?.getWeather() || 
+                    "Clear skies";
+    const icon = window.WeatherManagerService?.getWeatherIcon() || 
+                 this._getWeatherIcon(weather);
     return `
       <div class="weather-indicator" data-tooltip="${weather}">
-        <i class="fas fa-${this._getWeatherIcon(weather)}"></i>
+        <i class="fas fa-${icon}"></i>
       </div>
     `;
   }

@@ -6,6 +6,7 @@ import { CalendarPermissions } from "./calendar-permissions.js";
 import { CalendarIntegration } from "./calendar-integration-service.js";
 import { TimeTracking } from "./time-tracking-service.js";
 import { SeasonService } from "./season-service.js";
+import { WeatherManagerService } from "./weather-service.js";
 import { HUDAugmentation } from "./hud-augmentation.js";
 
 Handlebars.registerHelper("eq", (a, b) => a === b);
@@ -35,10 +36,15 @@ async function init() {
   await SeasonService.initialize();
   CalendarDebug.trackInit("SeasonService", true);
 
+  // Initialize Weather Manager Service
+  await WeatherManagerService.initialize();
+  CalendarDebug.trackInit("WeatherManagerService", true);
+
   // Expose API globally for other modules
   window.CalendarIntegration = CalendarIntegration;
   window.TimeTracking = TimeTracking;
   window.SeasonService = SeasonService;
+  window.WeatherManagerService = WeatherManagerService;
   window.HUDAugmentation = HUDAugmentation;
   window.CalendarAPI = {
     getCurrentDate: (id) => CalendarIntegration.getCurrentDate(id),
@@ -55,6 +61,13 @@ async function init() {
     setTime: (h, m) => TimeTracking.setTime(h, m),
     getConfig: () => TimeTracking.getConfig(),
     setAutoAdvance: (enabled) => TimeTracking.setAutoAdvance(enabled)
+  };
+  window.WeatherAPI = {
+    getWeather: () => WeatherManagerService.getWeather(),
+    setWeather: (weather, notes) => WeatherManagerService.setWeather(weather, notes),
+    setGMNotes: (notes) => WeatherManagerService.setGMNotes(notes),
+    getWeatherTypes: () => WeatherManagerService.getWeatherTypes(),
+    setAutoRoll: (enabled) => WeatherManagerService.setAutoRoll(enabled)
   };
 
   // Initialize UI (HUD and Config) - Keep existing dnd5e calendar
