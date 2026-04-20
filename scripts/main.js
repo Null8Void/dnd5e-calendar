@@ -1,15 +1,31 @@
+console.log("%c DND5E-CALENDAR: START OF main.js ", "background: yellow; color: black; font-size: 14px");
+
+// Imports at top
 import { DnD5eCalendar, DnD5eCalendarIntegration } from "./calendar-integration.js";
+
 import { CalendarDebug } from "./calendar-debug.js";
+
 import { CalendarHUD } from "./calendar-hud.js";
+
 import { CalendarConfig } from "./calendar-config.js";
+
 import { CalendarPermissions } from "./calendar-permissions.js";
+
 import { CalendarIntegration } from "./calendar-integration-service.js";
+
 import { TimeTracking } from "./time-tracking-service.js";
+
 import { SeasonService } from "./season-service.js";
+
 import { WeatherManagerService } from "./weather-service.js";
+
 import { MoonPhaseService } from "./moon-phase-service.js";
+
 import { HUDAugmentation } from "./hud-augmentation.js";
+
 import { HUDRenderer } from "./hud-renderer.js";
+
+console.log("DND5E-CALENDAR: all imports done; Handlebars next");
 
 Handlebars.registerHelper("eq", (a, b) => a === b);
 Handlebars.registerHelper("and", (...args) => {
@@ -351,16 +367,21 @@ function registerKeyboardShortcuts() {
   });
 }
 
-console.log("[DnD5e-Calendar] DEBUG: main.js - registering Hooks.on('init', {once: true})");
+console.log("DND5E-CALENDAR: Registering Hooks.once now");
+
+// Register immediately at load time
+window.DND5E_CALENDAR_READY = false;
 
 Hooks.once("init", async () => {
-  console.log("[DnD5e-Calendar] BOOTSTRAP INIT");
+  console.log("%c DND5E-CALENDAR: INSIDE INIT HOOK ", "background: green; color: white; font-size: 16px; font-weight: bold");
+
+  window.DND5E_CALENDAR_READY = true;
 
   try {
     await runPreflightDiagnostics();
     await init();
-    console.log("[DnD5e-Calendar] INIT COMPLETE");
+    console.log("DND5E-CALENDAR: INIT COMPLETE");
   } catch (err) {
-    console.error("[DnD5e-Calendar] FATAL INIT FAILURE", err);
+    console.error("DND5E-CALENDAR: FATAL INIT FAILURE", err);
   }
 });

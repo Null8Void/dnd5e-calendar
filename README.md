@@ -154,6 +154,11 @@ The module defaults to a Forgotten Realms style calendar:
 
 ## Changelog
 
+### v1.1.9
+- **Added: Aggressive debug logging**
+  - Added styled console logs at every stage
+  - Debug enabled by default until module fully loads
+
 ### v1.1.8
 - **Fixed: Settings visibility**
   - Changed `config: false` to `config: true` for enabled and hudPosition settings

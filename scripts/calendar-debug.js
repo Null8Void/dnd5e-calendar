@@ -1,7 +1,6 @@
+console.log("DND5E-CALENDAR: calendar-debug.js loading");
+
 export class CalendarDebug {
-  constructor() {
-    console.log("[DnD5e-Calendar] DEBUG: CalendarDebug class instantiated");
-  }
   static PREFIX = "[DnD5e-Calendar]";
   static enabled = false;
 
@@ -20,10 +19,21 @@ export class CalendarDebug {
   };
 
   static init() {
-    this.enabled = game.settings.get("dnd5e-calendar", "debugMode") ?? false;
+    console.log("[DnD5e-Calendar] CalendarDebug.init() called");
+    try {
+      if (typeof game !== "undefined" && game.settings) {
+        this.enabled = game.settings.get("dnd5e-calendar", "debugMode") ?? false;
+      } else {
+        console.log("[DnD5e-Calendar] game.settings not available, defaulting debug to true");
+        this.enabled = true;
+      }
 
-    if (this.enabled) {
-      this.master("CalendarDebug initialized - Master Debugger ACTIVE");
+      if (this.enabled) {
+        this.master("CalendarDebug initialized - Master Debugger ACTIVE");
+      }
+    } catch (e) {
+      console.error("[DnD5e-Calendar] CalendarDebug.init() error:", e);
+      this.enabled = true;
     }
   }
 
