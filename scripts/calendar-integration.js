@@ -1,6 +1,6 @@
 /**
  * DnD5e Calendar - Calendar Integration Layer
- * 
+ *
  * This module extends and integrates with DnD5e's built-in calendar system.
  * Instead of creating a standalone calendar, it:
  * - Hooks into dnd5e.setupCalendar to extend the existing calendar
@@ -8,6 +8,8 @@
  * - Stores custom data (weather, holidays, seasons) in calendar.flags
  * - Provides companion UI for custom features
  */
+alert("DND5E INTEGRATION JS LOADED");
+console.log("DND5E-CALENDAR INTEGRATION.JS LOADING");
 
 import { CalendarData, CalendarState } from "./calendar-data.js";
 import { CalendarUtils } from "./calendar-utils.js";

@@ -1,4 +1,5 @@
-console.log("DND5E-CALENDAR: calendar-debug.js loading");
+console.log("DND5E-CALENDAR DEBUG.JS LOADING");
+alert("DND5E DEBUG LOADED");
 
 export class CalendarDebug {
   static PREFIX = "[DnD5e-Calendar]";

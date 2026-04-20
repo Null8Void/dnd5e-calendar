@@ -3,7 +3,7 @@
   "title": "DnD5e Calendar & Time Tracker",
   "description": "A fully editable in-game calendar with time tracking, seasons, weather, moon phases, day/night cycles, and holiday management for DnD5e.",
   "author": "Null8Void",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "compatibility": {
     "minimum": "13",
     "verified": "14",

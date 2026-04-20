@@ -1,4 +1,5 @@
-console.log("%c DND5E-CALENDAR: START OF main.js ", "background: yellow; color: black; font-size: 14px");
+console.log("DND5E-CALENDAR MAIN.JS EXECUTING");
+alert("DND5E CALENDAR MAIN.JS LOADED");
 
 // Imports at top
 import { DnD5eCalendar, DnD5eCalendarIntegration } from "./calendar-integration.js";

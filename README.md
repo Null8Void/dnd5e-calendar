@@ -154,6 +154,10 @@ The module defaults to a Forgotten Realms style calendar:
 
 ## Changelog
 
+### v1.1.10
+- **Added: Alert-based debug**
+  - Added alert() calls to track if files are executing at all
+
 ### v1.1.9
 - **Added: Aggressive debug logging**
   - Added styled console logs at every stage
