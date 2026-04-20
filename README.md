@@ -154,6 +154,16 @@ The module defaults to a Forgotten Realms style calendar:
 
 ## Changelog
 
+### v1.1.6
+- **Added: Preflight Diagnostics**
+  - Runs on init to detect module/import/settings issues early
+  - Outputs structured report to console
+  - Forces debug on during bootstrap for troubleshooting
+- **Fixed: Config hidden settings**
+  - Changed `config: false` for enabled/hudPosition to `config: true`
+- **Fixed: Hooks.once vs Hooks.on**
+  - Changed to `Hooks.once` for proper init execution
+
 ### v1.1.5
 - **Fixed: Settings not appearing**
   - Fixed missing `DnD5eCalendar` import in main.js causing `onNewDay` to be undefined

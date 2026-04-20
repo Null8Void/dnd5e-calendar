@@ -22,6 +22,37 @@ console.log("[DnD5e-Calendar] v14 Integration - main.js loaded");
 let hud = null;
 let config = null;
 
+async function runPreflightDiagnostics() {
+  const report = [];
+
+  const mod = game.modules.get("dnd5e-calendar");
+  if (!mod) {
+    report.push({ area: "MODULE", status: "FAIL", issue: "Module not found in game.modules", fix: "Check module.json id and folder name match" });
+  } else {
+    report.push({ area: "MODULE", status: "OK", issue: `Module registered: ${mod.version}`, fix: null });
+  }
+
+  if (typeof DnD5eCalendar === "undefined") {
+    report.push({ area: "IMPORT", status: "FAIL", issue: "DnD5eCalendar undefined", fix: "Check esmodules path and export in calendar-integration.js" });
+  } else {
+    report.push({ area: "IMPORT", status: "OK", issue: "DnD5eCalendar imported", fix: null });
+  }
+
+  const version = game.version || game.data?.version;
+  report.push({ area: "FOUNDRY", status: version?.startsWith?.("14") ? "OK" : "WARN", issue: `Version: ${version}`, fix: "Verify compatibility in module.json" });
+
+  if (!game.settings) {
+    report.push({ area: "SETTINGS", status: "FAIL", issue: "game.settings unavailable", fix: "Init hook not firing correctly" });
+  } else {
+    report.push({ area: "SETTINGS", status: "OK", issue: "Settings system available", fix: null });
+  }
+
+  console.group("[DnD5e-Calendar] Preflight Report");
+  console.table(report);
+  console.groupEnd();
+  return report;
+}
+
 async function init() {
   CalendarDebug.init();
   CalendarDebug.master("MODULE STARTUP - v1.1.3");
@@ -316,7 +347,14 @@ function registerKeyboardShortcuts() {
 
 console.log("[DnD5e-Calendar] DEBUG: main.js - registering Hooks.on('init', {once: true})");
 
-Hooks.on("init", () => {
-  console.log("[DnD5e-Calendar] DEBUG: Hooks.on('init') fired - calling init()");
-  init();
-}, { once: true });
+Hooks.once("init", async () => {
+  console.log("[DnD5e-Calendar] BOOTSTRAP INIT");
+
+  try {
+    await runPreflightDiagnostics();
+    await init();
+    console.log("[DnD5e-Calendar] INIT COMPLETE");
+  } catch (err) {
+    console.error("[DnD5e-Calendar] FATAL INIT FAILURE", err);
+  }
+});
