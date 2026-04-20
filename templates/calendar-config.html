@@ -53,6 +53,14 @@
             <label>{{localize "DNDCAL.Calendar.YearZero"}}</label>
             <input type="number" name="yearZero" value="{{yearZero}}">
           </div>
+          <div class="form-group">
+            <label>{{localize "DNDCAL.Calendar.YearName"}}</label>
+            <input type="text" name="yearName" value="{{yearName}}" placeholder="{{localize "DNDCAL.Calendar.YearNamePlaceholder"}}">
+          </div>
+          <div class="form-group">
+            <label>{{localize "DNDCAL.Calendar.IntercalaryDays"}}</label>
+            <input type="number" name="intercalaryDays" value="{{intercalaryDays}}" min="0" max="30">
+          </div>
         </div>
         {{/each}}
       </div>

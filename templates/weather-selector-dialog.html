@@ -1,0 +1,29 @@
+<form class="dnd5e-calendar-weather-selector">
+  <h3>{{localize "DNDCAL.Weather.SetWeather"}}</h3>
+  <div class="form-group">
+    <label>{{localize "DNDCAL.Weather.WeatherMode"}}</label>
+    <label class="checkbox">
+      <input type="checkbox" name="weatherMode" {{#if (eq weatherMode "auto")}}checked{{/if}}>
+      {{localize "DNDCAL.Weather.AutoGenerate"}}
+    </label>
+  </div>
+  <div class="form-group weather-select-group" {{#if (eq weatherMode "auto")}}style="display:none"{{/if}}>
+    <label>{{localize "DNDCAL.Weather.SelectWeather"}}</label>
+    <select name="weather">
+      {{#each weatherTypes}}
+      <option value="{{this.key}}" {{#if (eq this.key ../currentWeather)}}selected{{/if}}>{{this.label}}</option>
+      {{/each}}
+    </select>
+  </div>
+  <div class="form-group">
+    <button type="button" class="roll-weather-btn" {{#if (eq weatherMode "auto")}}disabled{{/if}}>{{localize "DNDCAL.Weather.RollNewWeather"}}</button>
+  </div>
+  <div class="form-group" id="gmNotesGroup">
+    <label>{{localize "DNDCAL.Weather.GMNotes"}}</label>
+    <textarea name="gmNotes" rows="3" placeholder="{{localize "DNDCAL.Weather.GMNotesPlaceholder"}}">{{gmNotes}}</textarea>
+  </div>
+  <div class="dialog-buttons">
+    <button type="submit" class="save-btn">{{localize "DNDCAL.Config.Save"}}</button>
+    <button type="button" class="cancel-btn">{{localize "DNDCAL.Config.Cancel"}}</button>
+  </div>
+</form>

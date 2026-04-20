@@ -1,6 +1,18 @@
 import { CalendarUtils } from "./calendar-utils.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 import { DnD5eCalendarAPI } from "./calendar-api.js";
+import { CalendarData } from "./calendar-data.js";
+
+const defaultOptions = {
+  id: "dnd5e-calendar-hud",
+  classes: ["dnd5e-calendar-hud"],
+  template: "modules/dnd5e-calendar/templates/calendar-hud.html",
+  popOut: false,
+  width: "100%",
+  height: 48,
+  resizable: false,
+  draggable: false
+};
 
 export class CalendarHUD extends Application {
   constructor(options = {}) {
@@ -11,16 +23,7 @@ export class CalendarHUD extends Application {
   }
 
   static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      id: "dnd5e-calendar-hud",
-      classes: ["dnd5e-calendar-hud"],
-      template: "modules/dnd5e-calendar/templates/calendar-hud.html",
-      popOut: false,
-      width: "100%",
-      height: 48,
-      resizable: false,
-      draggable: false
-    });
+    return foundry.utils.mergeObject(super.defaultOptions, defaultOptions);
   }
 
   async getData(options = {}) {
@@ -53,6 +56,9 @@ async _getData() {
     const isDay = time.hour >= 6 && time.hour < 18;
     const periodIcon = isDay ? "fa-sun" : "fa-moon";
     const progress = { isDay, progress: (time.hour * 60 + time.minute) / 1440 };
+    const settings = await CalendarData.loadSettings();
+    const showGradient = settings?.enableGradientBar ?? true;
+    const showIcon = settings?.enableIconToggle ?? false;
 
     const formattedDate = CalendarUtils.formatDate(
       date.day,
@@ -95,8 +101,8 @@ async _getData() {
       isDay,
       periodIcon,
       progress,
-      showGradient: true,
-      showIcon: true,
+      showGradient,
+      showIcon,
       calendars,
       canEdit: CalendarPermissions.canEdit(),
       calendarsCount: calendars.length,
@@ -140,14 +146,12 @@ async _getData() {
     return super.render(force, options);
   }
 
-  _renderInner(data) {
-    const html = document.createElement("div");
-    html.innerHTML = `<template>${this.template}</template>`;
-    const template = html.querySelector("template");
-    if (template) {
-      return this._renderTemplate(this.template, data);
+  async close() {
+    const hud = document.getElementById("dnd5e-calendar-hud");
+    if (hud) {
+      hud.remove();
     }
-    return super._renderInner(data);
+    return super.close();
   }
 
   _injectHTML(html) {
@@ -163,52 +167,38 @@ async _getData() {
     });
   }
 
-  _replaceHTML(html) {
-    const existingHud = document.getElementById("dnd5e-calendar-hud");
-    if (existingHud) {
-      existingHud.remove();
-    }
-    document.body.appendChild(html);
-  }
-
-  _onClose() {
-    const hud = document.getElementById("dnd5e-calendar-hud");
-    if (hud) {
-      hud.remove();
-    }
-  }
-
   activateListeners(html) {
     super.activateListeners(html);
+    const el = html[0];
 
-    html.find(".dnd5e-calendar-hud-date").on("click", (e) => {
+    el.querySelector(".dnd5e-calendar-hud-date")?.addEventListener("click", (e) => {
       e.preventDefault();
       if (CalendarPermissions.canEdit()) {
         window.DnD5eCalendarConfig?.render(true);
       }
     });
 
-    html.find(".dnd5e-calendar-hud-time").on("click", (e) => {
+    el.querySelector(".dnd5e-calendar-hud-time")?.addEventListener("click", (e) => {
       e.preventDefault();
       if (CalendarPermissions.canEdit()) {
         this.showTimeEditor();
       }
     });
 
-    html.find(".dnd5e-calendar-selector").on("change", (e) => {
+    el.querySelector(".dnd5e-calendar-selector")?.addEventListener("change", (e) => {
       e.preventDefault();
       const calendarId = e.currentTarget.value;
       this.switchCalendar(calendarId);
     });
 
-    html.find(".dnd5e-calendar-hud-season").on("click", (e) => {
+    el.querySelector(".dnd5e-calendar-hud-season")?.addEventListener("click", (e) => {
       e.preventDefault();
       if (CalendarPermissions.canEdit()) {
         this.showSeasonSelector();
       }
     });
 
-    html.find(".dnd5e-calendar-hud-weather").on("click", (e) => {
+    el.querySelector(".dnd5e-calendar-hud-weather")?.addEventListener("click", (e) => {
       e.preventDefault();
       if (CalendarPermissions.canEdit()) {
         this.showWeatherSelector();
@@ -218,130 +208,45 @@ async _getData() {
 
   async showTimeEditor() {
     const currentTime = DnD5eCalendarAPI.getTime();
-    const content = `
-      <form>
-        <div class="dnd5e-calendar-time-editor">
-          <h3>${game.i18n.localize("DNDCAL.Time.AdjustTime")}</h3>
-          <div class="form-group">
-            <label>${game.i18n.localize("DNDCAL.Time.Hour")}</label>
-            <input type="number" name="hour" min="0" max="23" value="${currentTime.hour}">
-          </div>
-          <div class="form-group">
-            <label>${game.i18n.localize("DNDCAL.Time.Minute")}</label>
-            <input type="number" name="minute" min="0" max="59" value="${currentTime.minute}">
-          </div>
-          <div class="form-group time-advance-buttons">
-            <button type="button" class="time-advance" data-minutes="1">${game.i18n.localize("DNDCAL.Time.AddMinute")}</button>
-            <button type="button" class="time-advance" data-minutes="15">${game.i18n.localize("DNDCAL.Time.Add15Minutes")}</button>
-            <button type="button" class="time-advance" data-minutes="60">${game.i18n.localize("DNDCAL.Time.AddHour")}</button>
-          </div>
-        </div>
-      </form>
-    `;
-
-    await Dialog.prompt({
-      title: game.i18n.localize("DNDCAL.Time.CurrentTime"),
-      content,
-      label: game.i18n.localize("DNDCAL.Config.Save"),
-      callback: async (html) => {
-        const hour = parseInt(html.find('input[name="hour"]').val());
-        const minute = parseInt(html.find('input[name="minute"]').val());
+    const dialog = new TimeEditorDialog(currentTime, {
+      callback: async (hour, minute) => {
         await DnD5eCalendarAPI.setTime(hour, minute);
         await this.render();
-      },
-      rejectClose: false
+      }
     });
+    dialog.render(true);
   }
 
   async showSeasonSelector() {
     const currentSeason = DnD5eCalendarAPI.getSeason();
-    const seasons = [
-      { key: "spring", name: game.i18n.localize("DNDCAL.Season.Spring") },
-      { key: "summer", name: game.i18n.localize("DNDCAL.Season.Summer") },
-      { key: "fall", name: game.i18n.localize("DNDCAL.Season.Fall") },
-      { key: "winter", name: game.i18n.localize("DNDCAL.Season.Winter") }
-    ];
-
-    let content = `<form><div class="dnd5e-calendar-season-selector"><h3>${game.i18n.localize("DNDCAL.Config.SelectSeason")}</h3><div class="season-buttons">`;
-    for (const season of seasons) {
-      content += `<button type="button" class="season-btn ${season.key === currentSeason ? 'active' : ''}" data-season="${season.key}">
-        <i class="fas ${CalendarUtils.getSeasonIcon(season.key)}"></i> ${season.name}
-      </button>`;
-    }
-    content += '</div></div></form>';
-
-    await Dialog.prompt({
-      title: game.i18n.localize("DNDCAL.Season.CurrentSeason"),
-      content,
-      label: game.i18n.localize("DNDCAL.Config.Save"),
-      callback: async (html) => {
-        const season = html.find(".season-btn.active").data("season");
-        if (season) {
-          DnD5eCalendarAPI.setSeason(season);
-          await this.render();
-        }
-      },
-      rejectClose: false
+    const dialog = new SeasonSelectorDialog(currentSeason, {
+      callback: async (season) => {
+        DnD5eCalendarAPI.setSeason(season);
+        await this.render();
+      }
     });
+    dialog.render(true);
   }
 
   async showWeatherSelector() {
     const currentWeather = DnD5eCalendar.weatherManager.getWeather();
     const weatherMode = DnD5eCalendar.weatherManager.getMode();
-    const weatherTypes = [
-      { key: "Clear skies", label: game.i18n.localize("DNDCAL.Weather.ClearSkies") },
-      { key: "Partly cloudy", label: game.i18n.localize("DNDCAL.Weather.PartlyCloudy") },
-      { key: "Overcast", label: game.i18n.localize("DNDCAL.Weather.Overcast") },
-      { key: "Light rain", label: game.i18n.localize("DNDCAL.Weather.LightRain") },
-      { key: "Heavy rain", label: game.i18n.localize("DNDCAL.Weather.HeavyRain") },
-      { key: "Thunderstorm", label: game.i18n.localize("DNDCAL.Weather.Thunderstorm") },
-      { key: "Light snow", label: game.i18n.localize("DNDCAL.Weather.LightSnow") },
-      { key: "Heavy snow", label: game.i18n.localize("DNDCAL.Weather.HeavySnow") },
-      { key: "Foggy", label: game.i18n.localize("DNDCAL.Weather.Foggy") },
-      { key: "Windy", label: game.i18n.localize("DNDCAL.Weather.Windy") },
-      { key: "Hot", label: game.i18n.localize("DNDCAL.Weather.Hot") },
-      { key: "Cold", label: game.i18n.localize("DNDCAL.Weather.Cold") },
-      { key: "Blizzard", label: game.i18n.localize("DNDCAL.Weather.Blizzard") },
-      { key: "Hail", label: game.i18n.localize("DNDCAL.Weather.Hail") }
-    ];
-
-    let content = `<form>
-      <div class="dnd5e-calendar-weather-selector">
-        <h3>${game.i18n.localize("DNDCAL.Weather.SetWeather")}</h3>
-        <div class="form-group">
-          <label>${game.i18n.localize("DNDCAL.Weather.WeatherMode")}</label>
-          <label class="checkbox">
-            <input type="checkbox" name="weatherMode" ${weatherMode === "auto" ? "checked" : ""}>
-            ${game.i18n.localize("DNDCAL.Weather.AutoGenerate")}
-          </label>
-        </div>
-        <div class="form-group weather-select-group" style="${weatherMode === "auto" ? "display:none" : ""}">
-          <label>${game.i18n.localize("DNDCAL.Weather.SelectWeather")}</label>
-          <select name="weather">
-            ${weatherTypes.map(w => `<option value="${w.key}" ${w.key === currentWeather ? "selected" : ""}>${w.label}</option>`).join("")}
-          </select>
-        </div>
-        <div class="form-group">
-          <button type="button" class="roll-weather-btn" ${weatherMode === "auto" ? "" : "disabled"}>${game.i18n.localize("DNDCAL.Weather.RollNewWeather")}</button>
-        </div>
-      </div>
-    </form>`;
-
-    await Dialog.prompt({
-      title: game.i18n.localize("DNDCAL.Weather.CurrentWeather"),
-      content,
-      label: game.i18n.localize("DNDCAL.Config.Save"),
-      callback: async (html) => {
-        const autoMode = html.find('input[name="weatherMode"]').prop("checked");
-        await DnD5eCalendarAPI.setWeatherMode(autoMode ? "auto" : "manual");
-        if (!autoMode) {
-          const weather = html.find('select[name="weather"]').val();
-          await DnD5eCalendarAPI.setWeather(weather);
+    const gmNotes = DnD5eCalendar.customData?.weather?.gmNotes || "";
+    const dialog = new WeatherSelectorDialog(currentWeather, weatherMode, {
+      gmNotes,
+      callback: async (data) => {
+        await DnD5eCalendarAPI.setWeatherMode(data.mode);
+        if (data.mode === "manual") {
+          await DnD5eCalendarAPI.setWeather(data.weather);
+        }
+        if (data.gmNotes !== undefined) {
+          DnD5eCalendar.customData.weather.gmNotes = data.gmNotes;
+          await DnD5eCalendar.saveCustomData();
         }
         await this.render();
-      },
-      rejectClose: false
+      }
     });
+    dialog.render(true);
   }
 
   async switchCalendar(calendarId) {
@@ -359,6 +264,197 @@ async _getData() {
     if (weatherEffect) {
       container.classList.add("active");
       container.classList.add(weatherEffect);
+    }
+  }
+}
+
+const timeEditorDialogProps = {
+  id: "dnd5e-time-editor",
+  classes: ["dnd5e-calendar-dialog"],
+  title: game.i18n.localize("DNDCAL.Time.CurrentTime"),
+  template: "modules/dnd5e-calendar/templates/time-editor-dialog.html",
+  width: 350,
+  height: "auto"
+};
+
+class TimeEditorDialog extends Application {
+  constructor(currentTime, options = {}) {
+    super({ ...timeEditorDialogProps, ...options });
+    this.currentTime = currentTime;
+    this.callback = options.callback;
+  }
+
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, timeEditorDialogProps);
+  }
+
+  async getData() {
+    return {
+      hour: this.currentTime.hour,
+      minute: this.currentTime.minute
+    };
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    const form = html[0].querySelector("form");
+    if (!form) return;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const hour = parseInt(form.hour.value);
+      const minute = parseInt(form.minute.value);
+      if (this.callback) await this.callback(hour, minute);
+      this.close();
+    });
+
+    const cancelBtn = html[0].querySelector(".cancel-btn");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", () => this.close());
+    }
+  }
+}
+
+const seasonSelectorDialogProps = {
+  id: "dnd5e-season-selector",
+  classes: ["dnd5e-calendar-dialog"],
+  title: game.i18n.localize("DNDCAL.Season.CurrentSeason"),
+  template: "modules/dnd5e-calendar/templates/season-selector-dialog.html",
+  width: 300,
+  height: "auto"
+};
+
+class SeasonSelectorDialog extends Application {
+  constructor(currentSeason, options = {}) {
+    super({ ...seasonSelectorDialogProps, ...options });
+    this.currentSeason = currentSeason;
+    this.callback = options.callback;
+  }
+
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, seasonSelectorDialogProps);
+  }
+
+  async getData() {
+    const seasons = [
+      { key: "spring", name: game.i18n.localize("DNDCAL.Season.Spring"), icon: CalendarUtils.getSeasonIcon("spring") },
+      { key: "summer", name: game.i18n.localize("DNDCAL.Season.Summer"), icon: CalendarUtils.getSeasonIcon("summer") },
+      { key: "fall", name: game.i18n.localize("DNDCAL.Season.Fall"), icon: CalendarUtils.getSeasonIcon("fall") },
+      { key: "winter", name: game.i18n.localize("DNDCAL.Season.Winter"), icon: CalendarUtils.getSeasonIcon("winter") }
+    ];
+    return { seasons, currentSeason: this.currentSeason };
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    const form = html[0].querySelector("form");
+    if (!form) return;
+
+    const buttons = form.querySelectorAll(".season-btn");
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const activeBtn = form.querySelector(".season-btn.active");
+      if (activeBtn && this.callback) {
+        await this.callback(activeBtn.dataset.season);
+      }
+      this.close();
+    });
+
+    const cancelBtn = html[0].querySelector(".cancel-btn");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", () => this.close());
+    }
+  }
+}
+
+const weatherSelectorDialogProps = {
+  id: "dnd5e-weather-selector",
+  classes: ["dnd5e-calendar-dialog"],
+  title: game.i18n.localize("DNDCAL.Weather.CurrentWeather"),
+  template: "modules/dnd5e-calendar/templates/weather-selector-dialog.html",
+  width: 350,
+  height: "auto"
+};
+
+class WeatherSelectorDialog extends Application {
+  constructor(currentWeather, weatherMode, options = {}) {
+    super({ ...weatherSelectorDialogProps, ...options });
+    this.currentWeather = currentWeather;
+    this.weatherMode = weatherMode;
+    this.gmNotes = options.gmNotes || "";
+    this.callback = options.callback;
+  }
+
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, weatherSelectorDialogProps);
+  }
+
+  async getData() {
+    const weatherTypes = [
+      { key: "Clear skies", label: game.i18n.localize("DNDCAL.Weather.ClearSkies") },
+      { key: "Partly cloudy", label: game.i18n.localize("DNDCAL.Weather.PartlyCloudy") },
+      { key: "Overcast", label: game.i18n.localize("DNDCAL.Weather.Overcast") },
+      { key: "Light rain", label: game.i18n.localize("DNDCAL.Weather.LightRain") },
+      { key: "Heavy rain", label: game.i18n.localize("DNDCAL.Weather.HeavyRain") },
+      { key: "Thunderstorm", label: game.i18n.localize("DNDCAL.Weather.Thunderstorm") },
+      { key: "Light snow", label: game.i18n.localize("DNDCAL.Weather.LightSnow") },
+      { key: "Heavy snow", label: game.i18n.localize("DNDCAL.Weather.HeavySnow") },
+      { key: "Foggy", label: game.i18n.localize("DNDCAL.Weather.Foggy") },
+      { key: "Windy", label: game.i18n.localize("DNDCAL.Weather.Windy") },
+      { key: "Hot", label: game.i18n.localize("DNDCAL.Weather.Hot") },
+      { key: "Cold", label: game.i18n.localize("DNDCAL.Weather.Cold") },
+      { key: "Blizzard", label: game.i18n.localize("DNDCAL.Weather.Blizzard") },
+      { key: "Hail", label: game.i18n.localize("DNDCAL.Weather.Hail") }
+    ];
+    return {
+      weatherTypes,
+      currentWeather: this.currentWeather,
+      weatherMode: this.weatherMode,
+      gmNotes: this.gmNotes || ""
+    };
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    const form = html[0].querySelector("form");
+    if (!form) return;
+
+    const weatherModeCb = form.querySelector('input[name="weatherMode"]');
+    const weatherSelectGroup = form.querySelector(".weather-select-group");
+    if (weatherModeCb && weatherSelectGroup) {
+      weatherModeCb.addEventListener("change", () => {
+        weatherSelectGroup.style.display = weatherModeCb.checked ? "none" : "";
+      });
+    }
+
+    const rollBtn = form.querySelector(".roll-weather-btn");
+    if (rollBtn && weatherModeCb) {
+      weatherModeCb.addEventListener("change", () => {
+        rollBtn.disabled = !weatherModeCb.checked;
+      });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const mode = weatherModeCb?.checked ? "auto" : "manual";
+      const weather = form.weather?.value || this.currentWeather;
+      const gmNotes = form.gmNotes?.value || "";
+      if (this.callback) {
+        await this.callback({ mode, weather, gmNotes });
+      }
+      this.close();
+    });
+
+    const cancelBtn = html[0].querySelector(".cancel-btn");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", () => this.close());
     }
   }
 }

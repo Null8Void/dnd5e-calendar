@@ -1,0 +1,20 @@
+<form class="dnd5e-calendar-time-editor">
+  <h3>{{localize "DNDCAL.Time.AdjustTime"}}</h3>
+  <div class="form-group">
+    <label>{{localize "DNDCAL.Time.Hour"}}</label>
+    <input type="number" name="hour" min="0" max="23" value="{{hour}}">
+  </div>
+  <div class="form-group">
+    <label>{{localize "DNDCAL.Time.Minute"}}</label>
+    <input type="number" name="minute" min="0" max="59" value="{{minute}}">
+  </div>
+  <div class="form-group time-advance-buttons">
+    <button type="button" class="time-advance" data-minutes="1">{{localize "DNDCAL.Time.AddMinute"}}</button>
+    <button type="button" class="time-advance" data-minutes="15">{{localize "DNDCAL.Time.Add15Minutes"}}</button>
+    <button type="button" class="time-advance" data-minutes="60">{{localize "DNDCAL.Time.AddHour"}}</button>
+  </div>
+  <div class="dialog-buttons">
+    <button type="submit" class="save-btn">{{localize "DNDCAL.Config.Save"}}</button>
+    <button type="button" class="cancel-btn">{{localize "DNDCAL.Config.Cancel"}}</button>
+  </div>
+</form>

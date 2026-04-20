@@ -51,20 +51,27 @@ export class CalendarApprovalPanel extends Application {
 
   activateListeners(html) {
     super.activateListeners(html);
+    const el = html[0];
 
-    html.find(".approve-btn").click(async (e) => {
-      const id = $(e.currentTarget).data("id");
-      await this.approveHoliday(id);
+    el.querySelectorAll(".approve-btn").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const id = e.currentTarget.dataset.id;
+        await this.approveHoliday(id);
+      });
     });
 
-    html.find(".reject-btn").click(async (e) => {
-      const id = $(e.currentTarget).data("id");
-      await this.rejectHoliday(id);
+    el.querySelectorAll(".reject-btn").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const id = e.currentTarget.dataset.id;
+        await this.rejectHoliday(id);
+      });
     });
 
-    html.find(".delete-btn").click(async (e) => {
-      const id = $(e.currentTarget).data("id");
-      await this.deleteHoliday(id);
+    el.querySelectorAll(".delete-btn").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const id = e.currentTarget.dataset.id;
+        await this.deleteHoliday(id);
+      });
     });
   }
 
@@ -79,19 +86,18 @@ export class CalendarApprovalPanel extends Application {
   }
 
   async rejectHoliday(id) {
-    const reason = await Dialog.prompt({
-      title: game.i18n.localize("DNDCAL.Holidays.Reject"),
-      content: `<label>${game.i18n.localize("DNDCAL.Holidays.RejectionReason")}:</label><textarea name="reason" rows="3"></textarea>`,
-      callback: (html) => html.find('textarea[name="reason"]').val()
+    const dialog = new RejectReasonDialog({
+      callback: async (reason) => {
+        try {
+          await DnD5eCalendar.holidayManager.rejectHoliday(id, reason || "");
+          ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.HolidayRejected"));
+          this.render();
+        } catch (error) {
+          ui.notifications.error(error.message);
+        }
+      }
     });
-
-    try {
-      await DnD5eCalendar.holidayManager.rejectHoliday(id, reason || "");
-      ui.notifications.info(game.i18n.localize("DNDCAL.Notifications.HolidayRejected"));
-      this.render();
-    } catch (error) {
-      ui.notifications.error(error.message);
-    }
+    dialog.render(true);
   }
 
   async deleteHoliday(id) {
@@ -101,6 +107,52 @@ export class CalendarApprovalPanel extends Application {
       this.render();
     } catch (error) {
       ui.notifications.error(error.message);
+    }
+  }
+}
+
+const rejectReasonDialogProps = {
+  id: "dnd5e-reject-reason",
+  classes: ["dnd5e-calendar-dialog"],
+  title: game.i18n.localize("DNDCAL.Holidays.Reject"),
+  template: "modules/dnd5e-calendar/templates/reject-reason-dialog.html",
+  width: 350,
+  height: "auto"
+};
+
+class RejectReasonDialog extends Application {
+  constructor(options = {}) {
+    super({ ...rejectReasonDialogProps, ...options });
+    this.callback = options.callback;
+  }
+
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, rejectReasonDialogProps);
+  }
+
+  async getData() {
+    return {
+      reasonLabel: game.i18n.localize("DNDCAL.Holidays.RejectionReason")
+    };
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    const form = html[0].querySelector("form");
+    if (!form) return;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const reason = form.reason?.value || "";
+      if (this.callback) {
+        await this.callback(reason);
+      }
+      this.close();
+    });
+
+    const cancelBtn = html[0].querySelector(".cancel-btn");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", () => this.close());
     }
   }
 }

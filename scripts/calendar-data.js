@@ -48,7 +48,7 @@ export class CalendarState {
         }
       },
       moon: {
-        cycleDays: 10,
+        cycleDays: 15,
         currentDay: 0,
         currentPhase: 0,
         enabled: true,

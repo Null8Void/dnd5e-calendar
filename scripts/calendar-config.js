@@ -22,10 +22,7 @@ export class CalendarConfig extends Application {
       template: "modules/dnd5e-calendar/templates/calendar-config.html",
       width: 700,
       height: 600,
-      resizable: true,
-      tabs: [
-        { navSelector: ".tabs", contentSelector: ".tab-content" }
-      ]
+      resizable: true
     });
   }
 
@@ -50,100 +47,111 @@ export class CalendarConfig extends Application {
 
   activateListeners(html) {
     super.activateListeners(html);
+    const el = html[0];
 
-    html.find(".save-btn").click((e) => {
-      this.saveAll(html);
+    el.querySelector(".save-btn")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.saveAll(el);
     });
 
-    html.find(".cancel-btn").click((e) => {
+    el.querySelector(".cancel-btn")?.addEventListener("click", (e) => {
+      e.preventDefault();
       this.close();
     });
 
-    html.find(".time-control button").click((e) => {
-      const action = $(e.currentTarget).data("action");
-      const amount = parseInt($(e.currentTarget).data("amount")) || 1;
-      this.adjustTime(action, amount);
+    el.querySelectorAll(".time-control button").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const action = e.currentTarget.dataset.action;
+        const amount = parseInt(e.currentTarget.dataset.amount) || 1;
+        this.adjustTime(action, amount);
+      });
     });
 
-    html.find(".add-month-btn").click(() => {
+    el.querySelector(".add-month-btn")?.addEventListener("click", () => {
       this.addMonth();
     });
 
-    html.find(".remove-month-btn").click((e) => {
-      const index = $(e.currentTarget).data("index");
-      this.removeMonth(index);
+    el.querySelectorAll(".remove-month-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const index = parseInt(e.currentTarget.dataset.index);
+        this.removeMonth(index);
+      });
     });
 
-    html.find(".add-weekday-btn").click(() => {
+    el.querySelector(".add-weekday-btn")?.addEventListener("click", () => {
       this.addWeekday();
     });
 
-    html.find(".remove-weekday-btn").click((e) => {
-      const index = $(e.currentTarget).data("index");
-      this.removeWeekday(index);
+    el.querySelectorAll(".remove-weekday-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const index = parseInt(e.currentTarget.dataset.index);
+        this.removeWeekday(index);
+      });
     });
 
-    html.find(".view-holidays-btn").click(() => {
+    el.querySelector(".view-holidays-btn")?.addEventListener("click", () => {
       new CalendarApprovalPanel().render(true);
     });
 
-    html.find(".submit-holiday-btn").click(() => {
+    el.querySelector(".submit-holiday-btn")?.addEventListener("click", () => {
       new HolidaySubmitDialog().render(true);
     });
 
-    html.find(".season-auto-toggle").change((e) => {
-      const enabled = $(e.target).prop("checked");
-      this.settings.autoTrackSeasons = enabled;
+    el.querySelector(".season-auto-toggle")?.addEventListener("change", (e) => {
+      this.settings.autoTrackSeasons = e.target.checked;
     });
   }
 
-  async saveAll(html) {
-    const formData = new FormData(html.find("form")[0]);
+  async saveAll(el) {
+    const formEl = el.querySelector("form");
+    const formData = formEl ? new FormData(formEl) : null;
     const data = this.getData();
 
     const calendarId = data.activeCalendarId;
     const calendar = data.calendars[calendarId];
 
-    calendar.epoch = html.find('input[name="epoch"]').val() || "";
-    calendar.yearZero = parseInt(html.find('input[name="yearZero"]').val()) || 0;
+    calendar.epoch = el.querySelector('input[name="epoch"]')?.value || "";
+    calendar.yearZero = parseInt(el.querySelector('input[name="yearZero"]')?.value) || 0;
+    calendar.yearName = el.querySelector('input[name="yearName"]')?.value || "";
+    calendar.intercalaryDays = parseInt(el.querySelector('input[name="intercalaryDays"]')?.value) || 0;
 
-    const selectedCalendar = html.find('select[name="activeCalendar"]').val();
+    const selectedCalendar = el.querySelector('select[name="activeCalendar"]')?.value;
     if (selectedCalendar !== calendarId) {
       this.data.activeCalendarId = selectedCalendar;
     }
 
     const months = [];
-    html.find(".month-row").each((i, row) => {
+    el.querySelectorAll(".month-row").forEach(row => {
       months.push({
-        name: $(row).find('input[name="monthName"]').val(),
-        abbr: $(row).find('input[name="monthAbbr"]').val(),
-        days: parseInt($(row).find('input[name="monthDays"]').val()) || 30
+        name: row.querySelector('input[name="monthName"]')?.value || "",
+        abbr: row.querySelector('input[name="monthAbbr"]')?.value || "",
+        days: parseInt(row.querySelector('input[name="monthDays"]')?.value) || 30
       });
     });
     calendar.months = months;
 
     const weekdays = [];
-    html.find(".weekday-row").each((i, row) => {
+    el.querySelectorAll(".weekday-row").forEach(row => {
       weekdays.push({
-        name: $(row).find('input[name="weekdayName"]').val(),
-        abbr: $(row).find('input[name="weekdayAbbr"]').val()
+        name: row.querySelector('input[name="weekdayName"]')?.value || "",
+        abbr: row.querySelector('input[name="weekdayAbbr"]')?.value || ""
       });
     });
     calendar.weekdays = weekdays;
 
-    this.settings.enableGradientBar = html.find('input[name="enableGradient"]').prop("checked");
-    this.settings.enableIconToggle = html.find('input[name="enableIconToggle"]').prop("checked");
-    this.settings.playersCanSubmitHolidays = html.find('input[name="playersCanSubmit"]').prop("checked");
-    this.settings.playersCanViewPendingHolidays = html.find('input[name="playersCanViewPending"]').prop("checked");
-    this.settings.autoTrackSeasons = html.find('input[name="autoTrackSeasons"]').prop("checked");
-    this.settings.autoWeatherRoll = html.find('input[name="autoWeatherRoll"]').prop("checked");
-    this.settings.showSeconds = html.find('input[name="showSeconds"]').prop("checked");
+    this.settings.enableGradientBar = el.querySelector('input[name="enableGradient"]')?.checked || false;
+    this.settings.enableIconToggle = el.querySelector('input[name="enableIconToggle"]')?.checked || false;
+    this.settings.playersCanSubmitHolidays = el.querySelector('input[name="playersCanSubmit"]')?.checked || false;
+    this.settings.playersCanViewPendingHolidays = el.querySelector('input[name="playersCanViewPending"]')?.checked || false;
+    this.settings.autoTrackSeasons = el.querySelector('input[name="autoTrackSeasons"]')?.checked || false;
+    this.settings.autoWeatherRoll = el.querySelector('input[name="autoWeatherRoll"]')?.checked || false;
+    this.settings.showSeconds = el.querySelector('input[name="showSeconds"]')?.checked || false;
 
     this.settings.seasonNames = {
-      spring: html.find('input[name="seasonNameSpring"]').val() || "Spring",
-      summer: html.find('input[name="seasonNameSummer"]').val() || "Summer",
-      fall: html.find('input[name="seasonNameFall"]').val() || "Fall",
-      winter: html.find('input[name="seasonNameWinter"]').val() || "Winter"
+      spring: el.querySelector('input[name="seasonNameSpring"]')?.value || "Spring",
+      summer: el.querySelector('input[name="seasonNameSummer"]')?.value || "Summer",
+      fall: el.querySelector('input[name="seasonNameFall"]')?.value || "Fall",
+      winter: el.querySelector('input[name="seasonNameWinter"]')?.value || "Winter"
     };
 
     await CalendarData.saveSettings(this.settings);

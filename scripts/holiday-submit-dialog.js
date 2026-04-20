@@ -38,34 +38,39 @@ export class HolidaySubmitDialog extends Application {
 
   activateListeners(html) {
     super.activateListeners(html);
+    const el = html[0];
 
-    html.find(".submit-btn").click(async () => {
-      await this.submitHoliday(html);
+    el.querySelector(".submit-btn")?.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await this.submitHoliday(el);
     });
 
-    html.find(".cancel-btn").click(() => {
+    el.querySelector(".cancel-btn")?.addEventListener("click", (e) => {
+      e.preventDefault();
       this.close();
     });
 
-    html.find(".description-input").on("input", (e) => {
-      const len = $(e.target).val().length;
+    el.querySelector(".description-input")?.addEventListener("input", (e) => {
+      const len = e.target.value.length;
       const remaining = 400 - len;
-      const charText = game.i18n.localize("DNDCAL.Holidays.CharactersRemaining");
-      html.find(".char-count").text(`${remaining} ${charText}`);
-      if (remaining < 0) {
-        html.find(".char-count").addClass("over-limit");
-      } else {
-        html.find(".char-count").removeClass("over-limit");
+      const charCountEl = el.querySelector(".char-count");
+      if (charCountEl) {
+        charCountEl.textContent = `${remaining} ${game.i18n.localize("DNDCAL.Holidays.CharactersRemaining")}`;
+        if (remaining < 0) {
+          charCountEl.classList.add("over-limit");
+        } else {
+          charCountEl.classList.remove("over-limit");
+        }
       }
     });
   }
 
-  async submitHoliday(html) {
-    const name = html.find('input[name="holidayName"]').val().trim();
-    const day = parseInt(html.find('input[name="day"]').val());
-    const month = parseInt(html.find('input[name="month"]').val());
-    const year = parseInt(html.find('input[name="year"]').val());
-    const description = html.find(".description-input").val().trim();
+  async submitHoliday(el) {
+    const name = el.querySelector('input[name="holidayName"]')?.value.trim() || "";
+    const day = parseInt(el.querySelector('input[name="day"]')?.value) || 1;
+    const month = parseInt(el.querySelector('input[name="month"]')?.value) || 0;
+    const year = parseInt(el.querySelector('input[name="year"]')?.value) || 0;
+    const description = el.querySelector(".description-input")?.value.trim() || "";
 
     if (!name) {
       ui.notifications.error(game.i18n.localize("DNDCAL.Notifications.EnterHolidayName"));

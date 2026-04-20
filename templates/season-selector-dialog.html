@@ -1,0 +1,14 @@
+<form class="dnd5e-calendar-season-selector">
+  <h3>{{localize "DNDCAL.Config.SelectSeason"}}</h3>
+  <div class="season-buttons">
+    {{#each seasons}}
+    <button type="button" class="season-btn {{#if (eq this.key ../currentSeason)}}active{{/if}}" data-season="{{this.key}}">
+      <i class="fas {{this.icon}}"></i> {{this.name}}
+    </button>
+    {{/each}}
+  </div>
+  <div class="dialog-buttons">
+    <button type="submit" class="save-btn">{{localize "DNDCAL.Config.Save"}}</button>
+    <button type="button" class="cancel-btn">{{localize "DNDCAL.Config.Cancel"}}</button>
+  </div>
+</form>

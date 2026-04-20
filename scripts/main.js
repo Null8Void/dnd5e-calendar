@@ -4,6 +4,12 @@ import { CalendarHUD } from "./calendar-hud.js";
 import { CalendarConfig } from "./calendar-config.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
 
+Handlebars.registerHelper("eq", (a, b) => a === b);
+Handlebars.registerHelper("and", (...args) => {
+  args.pop();
+  return args.every(Boolean);
+});
+
 console.log("[DnD5e-Calendar] v14 Integration - main.js loaded");
 
 let hud = null;
@@ -142,7 +148,7 @@ function registerHooks() {
       });
     }
 
-    if (game.users.current?.role >= CONST.USER_ROLES.ASSISTANT) {
+    if (game.user?.role >= CONST.USER_ROLES.ASSISTANT) {
       game.socket.on("dnd5e-calendar:update", (data) => {
         console.log("[DnD5e-Calendar] Socket update received:", data);
       });
@@ -215,9 +221,9 @@ function registerKeyboardShortcuts() {
   });
 }
 
-console.log("[DnD5e-Calendar] DEBUG: main.js - registering Hooks.once('init')");
+console.log("[DnD5e-Calendar] DEBUG: main.js - registering Hooks.on('init', {once: true})");
 
-Hooks.once("init", () => {
-  console.log("[DnD5e-Calendar] DEBUG: Hooks.once('init') fired - calling init()");
+Hooks.on("init", () => {
+  console.log("[DnD5e-Calendar] DEBUG: Hooks.on('init') fired - calling init()");
   init();
-});
+}, { once: true });

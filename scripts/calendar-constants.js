@@ -17,7 +17,7 @@ export const CALENDAR_CONSTANTS = {
   },
 
   MOON: {
-    DEFAULT_CYCLE_DAYS: 10,
+    DEFAULT_CYCLE_DAYS: 15,
     PHASES: [
       "new",
       "waxingCrescent",
@@ -128,6 +128,7 @@ export const CALENDAR_CONSTANTS = {
       weekdays: [],
       epoch: "Dale's Reckoning",
       yearZero: 0,
+      yearName: "",
       intercalaryDays: 0,
       intercalaryMonth: null
     },
@@ -141,6 +142,7 @@ export const CALENDAR_CONSTANTS = {
       weekdays: [],
       epoch: "",
       yearZero: 0,
+      yearName: "",
       intercalaryDays: 0,
       intercalaryMonth: null
     }

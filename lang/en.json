@@ -93,6 +93,9 @@
       "RemoveWeekday": "Remove Weekday",
       "Epoch": "Epoch",
       "YearZero": "Year Zero",
+      "YearName": "Year Naming",
+      "YearNamePlaceholder": "e.g., Year of the Dragon",
+      "IntercalaryDays": "Intercalary Days",
       "Year": "Year"
     },
 
@@ -136,8 +139,8 @@
       "WeatherMode": "Weather Mode",
       "AutoGenerate": "Auto-generate on day change",
       "RollNewWeather": "Roll New Weather",
-      "GmNotes": "GM Notes",
-      "GmNotesPlaceholder": "Private notes about weather effects...",
+      "GMNotes": "GM Notes (Private)",
+      "GMNotesPlaceholder": "Private notes about weather effects...",
       "ClearSkies": "Clear skies",
       "PartlyCloudy": "Partly cloudy",
       "Overcast": "Overcast",

@@ -340,7 +340,7 @@ export class DnD5eCalendarIntegration {
       darkness = 0.35;
     }
     
-    if (game.scenes?.active && canvas?.scene) {
+    if (game.scenes?.current && canvas?.scene) {
       canvas.scene.update({ darkness });
       Hooks.callAll("dnd5e-calendar:darknessChange", darkness);
     }
@@ -354,7 +354,7 @@ export class DnD5eCalendarIntegration {
     if (!this.customData?.moon?.enabled) return;
 
     const dayCount = this.getDayCount();
-    const cycle = this.customData.moon.cycleDays || 10;
+    const cycle = this.customData.moon.cycleDays || 15;
     const dayIndex = dayCount % cycle;
     const phaseIndex = Math.floor((dayIndex / cycle) * 8) % 8;
 
@@ -576,7 +576,7 @@ export class DnD5eCalendarIntegration {
     const moonPhase = this.moonManager.getPhase();
     state.moon = state.moon || {};
     state.moon.currentDay = state.moon.currentDay || 0;
-    state.moon.cycleDays = state.moon.cycleDays || 10;
+    state.moon.cycleDays = state.moon.cycleDays || 15;
     state.moon.phase = moonPhase;
     state.moon.icon = CalendarUtils.getMoonPhaseIcon(moonPhase.key);
     
