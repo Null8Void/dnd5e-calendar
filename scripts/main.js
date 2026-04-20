@@ -3,6 +3,7 @@ import { CalendarDebug } from "./calendar-debug.js";
 import { CalendarHUD } from "./calendar-hud.js";
 import { CalendarConfig } from "./calendar-config.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
+import { MultiCalendar } from "./multi-calendar.js";
 
 Handlebars.registerHelper("eq", (a, b) => a === b);
 Handlebars.registerHelper("and", (...args) => {
@@ -15,13 +16,18 @@ console.log("[DnD5e-Calendar] v14 Integration - main.js loaded");
 let hud = null;
 let config = null;
 
-function init() {
+async function init() {
   CalendarDebug.init();
   CalendarDebug.master("MODULE STARTUP - v1.1.3");
+
+  // Initialize multi-calendar system first
+  await MultiCalendar.initialize();
+  CalendarDebug.trackInit("MultiCalendar", true);
 
   hud = new CalendarHUD();
   config = new CalendarConfig();
   window.DnD5eCalendarConfig = config;
+  window.MultiCalendar = MultiCalendar;
 
   registerSettings();
   CalendarDebug.trackInit("registerSettings", true);

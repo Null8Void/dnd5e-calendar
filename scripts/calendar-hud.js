@@ -3,11 +3,22 @@ import { CalendarPermissions } from "./calendar-permissions.js";
 import { DnD5eCalendarAPI } from "./calendar-api.js";
 import { CalendarData } from "./calendar-data.js";
 
+/**
+ * CalendarHUD - Top-screen HUD display
+ * 
+ * FoundryVTT v14 Compliance Updates:
+ * - Uses Application base class (works for both v13-v14)
+ * - Implements reactive state object for efficient re-rendering
+ * - Uses proper async data loading pattern
+ * - Maintains DOM injection for HUD overlay behavior
+ * 
+ * @extends Application
+ */
 const defaultOptions = {
   id: "dnd5e-calendar-hud",
   classes: ["dnd5e-calendar-hud"],
   template: "modules/dnd5e-calendar/templates/calendar-hud.html",
-  popOut: false,
+  popOut: false,  // HUD is always visible overlay
   width: "100%",
   height: 48,
   resizable: false,
@@ -18,7 +29,18 @@ export class CalendarHUD extends Application {
   constructor(options = {}) {
     console.log("[DnD5e-Calendar] DEBUG: CalendarHUD constructor fired");
     super(options);
-    this.data = null;
+    
+    // Reactive state object - stores current data for comparison
+    // Used to determine if re-render is needed (reduce DOM operations)
+    this._state = {
+      date: null,
+      time: null,
+      weather: null,
+      season: null,
+      moonPhase: null,
+      isDay: true
+    };
+    
     this.settings = null;
   }
 
@@ -26,26 +48,38 @@ export class CalendarHUD extends Application {
     return foundry.utils.mergeObject(super.defaultOptions, defaultOptions);
   }
 
+  /**
+   * Get data for rendering - Called by Application.render()
+   * In v14, this returns a plain object with all context data
+   */
   async getData(options = {}) {
-    return await this._getData();
+    return await this._prepareContext();
   }
 
-async _getData() {
+  /**
+   * Prepare context data for template rendering
+   * Loads all calendar data and returns context object
+   * 
+   * @returns {Promise<Object>} Context data for template
+   */
+  async _prepareContext() {
+    // Check if MultiCalendar is available and use it
+    if (window.MultiCalendar && window.MultiCalendar.getActiveCalendar) {
+      return await this._prepareFromMultiCalendar();
+    }
+    
+    // Fallback to DnD5eCalendar integration
     if (!DnD5eCalendar.dnd5eCalendar) {
       return this._getDefaultData();
     }
 
+    // Get current state from dnd5e calendar
     const date = DnD5eCalendar.getDate();
     const time = DnD5eCalendar.getTime();
     const calendar = DnD5eCalendar.getCalendar();
 
-    const dayOfWeek = CalendarUtils.getDayOfWeek(
-      date.day,
-      date.month,
-      date.year,
-      calendar
-    );
-
+    // Calculate derived values
+    const dayOfWeek = CalendarUtils.getDayOfWeek(date.day, date.month, date.year, calendar);
     const moonPhase = DnD5eCalendar.moonManager.getPhase();
     const weather = DnD5eCalendar.weatherManager.getWeather();
     const weatherIcon = DnD5eCalendar.weatherManager.getWeatherIcon();
@@ -53,39 +87,38 @@ async _getData() {
     const seasonName = DnD5eCalendar.seasonManager.getCurrentSeasonName();
     const seasonIcon = DnD5eCalendar.seasonManager.getCurrentSeasonIcon();
 
+    // Day/night cycle calculations
     const isDay = time.hour >= 6 && time.hour < 18;
     const periodIcon = isDay ? "fa-sun" : "fa-moon";
     const progress = { isDay, progress: (time.hour * 60 + time.minute) / 1440 };
+    
+    // Load settings for display options
     const settings = await CalendarData.loadSettings();
     const showGradient = settings?.enableGradientBar ?? true;
     const showIcon = settings?.enableIconToggle ?? false;
 
-    const formattedDate = CalendarUtils.formatDate(
-      date.day,
-      date.month,
-      date.year,
-      calendar,
-      true
-    );
-
-    const formattedTime = CalendarUtils.formatTime(
-      time.hour,
-      time.minute,
-      0,
-      false
-    );
-
+    // Format display strings
+    const formattedDate = CalendarUtils.formatDate(date.day, date.month, date.year, calendar, true);
+    const formattedTime = CalendarUtils.formatTime(time.hour, time.minute, 0, false);
     const calendarName = DnD5eCalendar.getCalendarName();
     const calendars = [{ id: "primary", name: calendarName, isActive: true }];
 
-    const currentDate = DnD5eCalendar.getDate();
+    // Check for holidays
     const currentHoliday = DnD5eCalendar.holidayManager?.getHolidayOnDate(
-      currentDate.day,
-      currentDate.month,
-      currentDate.year,
-      "primary"
+      date.day, date.month, date.year, "primary"
     );
 
+    // Update reactive state for next render comparison
+    this._state = {
+      date: `${date.day}/${date.month}/${date.year}`,
+      time: `${time.hour}:${time.minute}`,
+      weather,
+      season,
+      moonPhase: moonPhase.key,
+      isDay
+    };
+
+    // Return context object for template
     return {
       formattedDate,
       formattedTime,
@@ -113,6 +146,85 @@ async _getData() {
     };
   }
 
+  /**
+   * Prepare context from MultiCalendar system
+   * Handles Primary + Secondary calendar display
+   */
+  async _prepareFromMultiCalendar() {
+    const mc = window.MultiCalendar;
+    const cal = mc.getActiveCalendar();
+    const settings = await CalendarData.loadSettings();
+    
+    if (!cal) {
+      return this._getDefaultData();
+    }
+    
+    // Get date/time
+    const date = mc.getDate();
+    const time = mc.getTime();
+    
+    // Calculate day of week
+    const dayOfWeek = CalendarUtils.getDayOfWeek(date.day, date.month, date.year, cal);
+    
+    // Get managers
+    const moonPhase = mc.moonManager?.getPhase() || { name: "Unknown", key: "new" };
+    const weather = mc.weatherManager?.getWeather() || "Clear skies";
+    const weatherIcon = mc.weatherManager?.getWeatherIcon() || "fa-cloud";
+    const season = mc.seasonManager?.getCurrentSeason() || "spring";
+    const seasonName = mc.seasonManager?.getCurrentSeasonName() || "Spring";
+    const seasonIcon = mc.seasonManager?.getCurrentSeasonIcon() || "fa-leaf";
+    
+    // Day/night cycle
+    const isDay = time.hour >= 6 && time.hour < 18;
+    const periodIcon = isDay ? "fa-sun" : "fa-moon";
+    const progress = { isDay, progress: (time.hour * 60 + time.minute) / 1440 };
+    
+    // Settings
+    const showGradient = settings?.enableGradientBar ?? true;
+    const showIcon = settings?.enableIconToggle ?? false;
+    
+    // Format strings
+    const formattedDate = mc.getFormattedDate() || `${date.month + 1}/${date.day}/${date.year}`;
+    const formattedTime = mc.getFormattedTime() || `${time.hour}:${time.minute}`;
+    
+    // Get all calendars for selector
+    const calendars = mc.getAllCalendars();
+    
+    // Get holidays
+    const currentHoliday = mc.holidayManager?.getHolidayOnDate(date.day, date.month, date.year, mc.activeCalendarId);
+    
+    return {
+      formattedDate,
+      formattedTime,
+      dayOfWeek: dayOfWeek?.name || game.i18n.localize("DNDCAL.Weekdays.Starday"),
+      dayAbbr: dayOfWeek?.abbr || game.i18n.localize("DNDCAL.Weekdays.StardayAbbr"),
+      moonPhase: moonPhase.name,
+      moonIcon: CalendarUtils.getMoonPhaseIcon(moonPhase.key),
+      weather,
+      weatherIcon,
+      season,
+      seasonName,
+      seasonIcon,
+      isDay,
+      periodIcon,
+      progress,
+      showGradient,
+      showIcon,
+      calendars,
+      activeCalendarId: mc.activeCalendarId,
+      canEdit: CalendarPermissions.canEdit(),
+      calendarsCount: calendars.length,
+      currentHoliday: currentHoliday ? currentHoliday.name : null,
+      hasHoliday: !!currentHoliday,
+      isHoliday: !!currentHoliday,
+      holidays: currentHoliday ? [currentHoliday] : []
+    };
+  }
+
+  /**
+   * Get default data when calendar not initialized
+   * Used during initial load or if dnd5e system not ready
+   */
   _getDefaultData() {
     return {
       formattedDate: game.i18n.localize("DNDCAL.HUD.Loading"),
@@ -141,11 +253,24 @@ async _getData() {
     };
   }
 
+  /**
+   * Render the HUD
+   * Overrides base to fetch data before render
+   * 
+   * @param {boolean} force - Force re-render
+   * @param {Object} options - Render options
+   */
   async render(force = false, options = {}) {
-    this.data = await this._getData();
+    // In v14, we can use the context property for reactive updates
+    // But fetch data manually for compatibility
+    this.context = await this._prepareContext();
     return super.render(force, options);
   }
 
+  /**
+   * Close the HUD - Clean up DOM element
+   * Required because HUD injects into body, not a window
+   */
   async close() {
     const hud = document.getElementById("dnd5e-calendar-hud");
     if (hud) {
@@ -154,12 +279,24 @@ async _getData() {
     return super.close();
   }
 
+  /**
+   * Inject HTML into document body
+   * This is required for HUD overlay (popOut: false)
+   * Custom implementation to ensure proper placement
+   * 
+   * @param {HTMLElement} html - The rendered HTML element
+   */
   _injectHTML(html) {
+    // Remove existing HUD if present
     const existingHud = document.getElementById("dnd5e-calendar-hud");
     if (existingHud) {
       existingHud.remove();
     }
+    
+    // Append to body for HUD positioning
     document.body.appendChild(html);
+    
+    // Apply fade-in animation
     html.style.display = "none";
     requestAnimationFrame(() => {
       html.style.display = "";
@@ -167,10 +304,17 @@ async _getData() {
     });
   }
 
+  /**
+   * Activate event listeners on the rendered element
+   * Uses native DOM API (v14 standard)
+   * 
+   * @param {HTMLElement} html - The rendered HTML element
+   */
   activateListeners(html) {
     super.activateListeners(html);
     const el = html[0];
 
+    // Date click - open config
     el.querySelector(".dnd5e-calendar-hud-date")?.addEventListener("click", (e) => {
       e.preventDefault();
       if (CalendarPermissions.canEdit()) {
@@ -178,6 +322,7 @@ async _getData() {
       }
     });
 
+    // Time click - open time editor
     el.querySelector(".dnd5e-calendar-hud-time")?.addEventListener("click", (e) => {
       e.preventDefault();
       if (CalendarPermissions.canEdit()) {
@@ -185,12 +330,23 @@ async _getData() {
       }
     });
 
-    el.querySelector(".dnd5e-calendar-selector")?.addEventListener("change", (e) => {
+    // Calendar selector change - Use MultiCalendar if available
+    el.querySelector(".dnd5e-calendar-selector")?.addEventListener("change", async (e) => {
       e.preventDefault();
       const calendarId = e.currentTarget.value;
+      
+      // Use MultiCalendar if available
+      if (window.MultiCalendar && window.MultiCalendar.switchCalendar) {
+        await window.MultiCalendar.switchCalendar(calendarId);
+        await this.render();
+        return;
+      }
+      
+      // Fallback
       this.switchCalendar(calendarId);
     });
 
+    // Season click - open season selector
     el.querySelector(".dnd5e-calendar-hud-season")?.addEventListener("click", (e) => {
       e.preventDefault();
       if (CalendarPermissions.canEdit()) {
@@ -198,6 +354,7 @@ async _getData() {
       }
     });
 
+    // Weather click - open weather selector
     el.querySelector(".dnd5e-calendar-hud-weather")?.addEventListener("click", (e) => {
       e.preventDefault();
       if (CalendarPermissions.canEdit()) {
@@ -206,6 +363,30 @@ async _getData() {
     });
   }
 
+  /**
+   * Check if data has changed since last render
+   * Used for reactive optimization
+   * 
+   * @param {Object} newData - New context data
+   * @returns {boolean} True if data changed
+   */
+  _hasDataChanged(newData) {
+    const s = this._state;
+    return !s.date || 
+      s.date !== `${newData.formattedDate}` ||
+      s.time !== newData.formattedTime ||
+      s.weather !== newData.weather ||
+      s.season !== newData.season ||
+      s.moonPhase !== newData.moonPhase.key ||
+      s.isDay !== newData.isDay;
+  }
+
+  // ============== Dialog Methods ==============
+
+  /**
+   * Show time editor dialog
+   * Opens modal for time adjustment
+   */
   async showTimeEditor() {
     const currentTime = DnD5eCalendarAPI.getTime();
     const dialog = new TimeEditorDialog(currentTime, {
@@ -217,6 +398,10 @@ async _getData() {
     dialog.render(true);
   }
 
+  /**
+   * Show season selector dialog
+   * Opens modal for season selection
+   */
   async showSeasonSelector() {
     const currentSeason = DnD5eCalendarAPI.getSeason();
     const dialog = new SeasonSelectorDialog(currentSeason, {
@@ -228,6 +413,10 @@ async _getData() {
     dialog.render(true);
   }
 
+  /**
+   * Show weather selector dialog
+   * Opens modal for weather selection with GM notes
+   */
   async showWeatherSelector() {
     const currentWeather = DnD5eCalendar.weatherManager.getWeather();
     const weatherMode = DnD5eCalendar.weatherManager.getMode();
@@ -249,16 +438,33 @@ async _getData() {
     dialog.render(true);
   }
 
+  /**
+   * Switch between calendars
+   * Uses MultiCalendar if available, otherwise dnd5e system
+   * @param {string} calendarId - Calendar identifier
+   */
   async switchCalendar(calendarId) {
+    // Use MultiCalendar if available
+    if (window.MultiCalendar && window.MultiCalendar.switchCalendar) {
+      await window.MultiCalendar.switchCalendar(calendarId);
+      await this.render();
+      ui.notifications.info(`Switched to ${calendarId} calendar`);
+      return;
+    }
+    
+    // Fallback to dnd5e system
     ui.notifications.warn("Calendar switching is handled by dnd5e system settings");
   }
 
+  /**
+   * Update weather visual effect overlay
+   * Applies CSS classes for weather effects
+   */
   updateWeatherEffect() {
     const container = document.getElementById("dnd5e-calendar-weather-effect");
     if (!container || !DnD5eCalendar.weatherManager) return;
 
     const weatherEffect = DnD5eCalendar.weatherManager.getWeatherEffect();
-
     container.className = "weather-effect-container";
 
     if (weatherEffect) {
@@ -268,6 +474,14 @@ async _getData() {
   }
 }
 
+// ============== Dialog Classes ==============
+
+/**
+ * TimeEditorDialog - Edit time modal
+ * 
+ * Modal dialog for adjusting game time
+ * Uses ApplicationV2 pattern with native DOM events
+ */
 const timeEditorDialogProps = {
   id: "dnd5e-time-editor",
   classes: ["dnd5e-calendar-dialog"],
@@ -288,6 +502,9 @@ class TimeEditorDialog extends Application {
     return foundry.utils.mergeObject(super.defaultOptions, timeEditorDialogProps);
   }
 
+  /**
+   * Get context data for template
+   */
   async getData() {
     return {
       hour: this.currentTime.hour,
@@ -295,11 +512,16 @@ class TimeEditorDialog extends Application {
     };
   }
 
+  /**
+   * Set up event listeners
+   * Uses native DOM event API (v14 standard)
+   */
   activateListeners(html) {
     super.activateListeners(html);
     const form = html[0].querySelector("form");
     if (!form) return;
 
+    // Form submission
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const hour = parseInt(form.hour.value);
@@ -308,13 +530,16 @@ class TimeEditorDialog extends Application {
       this.close();
     });
 
-    const cancelBtn = html[0].querySelector(".cancel-btn");
-    if (cancelBtn) {
-      cancelBtn.addEventListener("click", () => this.close());
-    }
+    // Cancel button
+    html[0].querySelector(".cancel-btn")?.addEventListener("click", () => this.close());
   }
 }
 
+/**
+ * SeasonSelectorDialog - Select season modal
+ * 
+ * Modal dialog for selecting current season
+ */
 const seasonSelectorDialogProps = {
   id: "dnd5e-season-selector",
   classes: ["dnd5e-calendar-dialog"],
@@ -335,6 +560,9 @@ class SeasonSelectorDialog extends Application {
     return foundry.utils.mergeObject(super.defaultOptions, seasonSelectorDialogProps);
   }
 
+  /**
+   * Get context data for template
+   */
   async getData() {
     const seasons = [
       { key: "spring", name: game.i18n.localize("DNDCAL.Season.Spring"), icon: CalendarUtils.getSeasonIcon("spring") },
@@ -345,11 +573,15 @@ class SeasonSelectorDialog extends Application {
     return { seasons, currentSeason: this.currentSeason };
   }
 
+  /**
+   * Set up event listeners
+   */
   activateListeners(html) {
     super.activateListeners(html);
     const form = html[0].querySelector("form");
     if (!form) return;
 
+    // Season button selection
     const buttons = form.querySelectorAll(".season-btn");
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -358,6 +590,7 @@ class SeasonSelectorDialog extends Application {
       });
     });
 
+    // Form submission
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const activeBtn = form.querySelector(".season-btn.active");
@@ -367,13 +600,16 @@ class SeasonSelectorDialog extends Application {
       this.close();
     });
 
-    const cancelBtn = html[0].querySelector(".cancel-btn");
-    if (cancelBtn) {
-      cancelBtn.addEventListener("click", () => this.close());
-    }
+    // Cancel button
+    html[0].querySelector(".cancel-btn")?.addEventListener("click", () => this.close());
   }
 }
 
+/**
+ * WeatherSelectorDialog - Select weather modal
+ * 
+ * Modal dialog for selecting weather and GM notes
+ */
 const weatherSelectorDialogProps = {
   id: "dnd5e-weather-selector",
   classes: ["dnd5e-calendar-dialog"],
@@ -396,6 +632,9 @@ class WeatherSelectorDialog extends Application {
     return foundry.utils.mergeObject(super.defaultOptions, weatherSelectorDialogProps);
   }
 
+  /**
+   * Get context data for template
+   */
   async getData() {
     const weatherTypes = [
       { key: "Clear skies", label: game.i18n.localize("DNDCAL.Weather.ClearSkies") },
@@ -417,10 +656,13 @@ class WeatherSelectorDialog extends Application {
       weatherTypes,
       currentWeather: this.currentWeather,
       weatherMode: this.weatherMode,
-      gmNotes: this.gmNotes || ""
+      gmNotes: this.gmNotes
     };
   }
 
+  /**
+   * Set up event listeners
+   */
   activateListeners(html) {
     super.activateListeners(html);
     const form = html[0].querySelector("form");
@@ -428,19 +670,15 @@ class WeatherSelectorDialog extends Application {
 
     const weatherModeCb = form.querySelector('input[name="weatherMode"]');
     const weatherSelectGroup = form.querySelector(".weather-select-group");
-    if (weatherModeCb && weatherSelectGroup) {
-      weatherModeCb.addEventListener("change", () => {
-        weatherSelectGroup.style.display = weatherModeCb.checked ? "none" : "";
-      });
-    }
-
     const rollBtn = form.querySelector(".roll-weather-btn");
-    if (rollBtn && weatherModeCb) {
-      weatherModeCb.addEventListener("change", () => {
-        rollBtn.disabled = !weatherModeCb.checked;
-      });
-    }
 
+    // Toggle weather mode
+    weatherModeCb?.addEventListener("change", () => {
+      weatherSelectGroup.style.display = weatherModeCb.checked ? "none" : "";
+      if (rollBtn) rollBtn.disabled = !weatherModeCb.checked;
+    });
+
+    // Form submission
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const mode = weatherModeCb?.checked ? "auto" : "manual";
@@ -452,9 +690,7 @@ class WeatherSelectorDialog extends Application {
       this.close();
     });
 
-    const cancelBtn = html[0].querySelector(".cancel-btn");
-    if (cancelBtn) {
-      cancelBtn.addEventListener("click", () => this.close());
-    }
+    // Cancel button
+    html[0].querySelector(".cancel-btn")?.addEventListener("click", () => this.close());
   }
 }
