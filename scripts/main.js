@@ -3,7 +3,7 @@ import { CalendarDebug } from "./calendar-debug.js";
 import { CalendarHUD } from "./calendar-hud.js";
 import { CalendarConfig } from "./calendar-config.js";
 import { CalendarPermissions } from "./calendar-permissions.js";
-import { MultiCalendar } from "./multi-calendar.js";
+import { CalendarIntegration } from "./calendar-integration-service.js";
 
 Handlebars.registerHelper("eq", (a, b) => a === b);
 Handlebars.registerHelper("and", (...args) => {
@@ -20,14 +20,25 @@ async function init() {
   CalendarDebug.init();
   CalendarDebug.master("MODULE STARTUP - v1.1.3");
 
-  // Initialize multi-calendar system first
-  await MultiCalendar.initialize();
-  CalendarDebug.trackInit("MultiCalendar", true);
+  // Initialize Calendar Integration Service (non-blocking)
+  await CalendarIntegration.initialize();
+  CalendarDebug.trackInit("CalendarIntegration", true);
 
+  // Expose API globally for other modules
+  window.CalendarIntegration = CalendarIntegration;
+  window.CalendarAPI = {
+    getCurrentDate: (id) => CalendarIntegration.getCurrentDate(id),
+    getTime: (id) => CalendarIntegration.getTime(id),
+    advanceTime: (id, mins) => CalendarIntegration.advanceTime(id, mins),
+    syncWithWorldTime: () => CalendarIntegration.syncWithWorldTime(),
+    getAllCalendars: () => CalendarIntegration.getAllCalendars(),
+    switchCalendar: (id) => CalendarIntegration.switchCalendar(id)
+  };
+
+  // Initialize UI (HUD and Config) - Keep existing dnd5e calendar
   hud = new CalendarHUD();
   config = new CalendarConfig();
   window.DnD5eCalendarConfig = config;
-  window.MultiCalendar = MultiCalendar;
 
   registerSettings();
   CalendarDebug.trackInit("registerSettings", true);

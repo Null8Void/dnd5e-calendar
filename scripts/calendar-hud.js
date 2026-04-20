@@ -63,9 +63,9 @@ export class CalendarHUD extends Application {
    * @returns {Promise<Object>} Context data for template
    */
   async _prepareContext() {
-    // Check if MultiCalendar is available and use it
-    if (window.MultiCalendar && window.MultiCalendar.getActiveCalendar) {
-      return await this._prepareFromMultiCalendar();
+    // Use CalendarIntegrationService if available
+    if (window.CalendarIntegration && window.CalendarIntegration.getCurrentDate) {
+      return await this._prepareFromCalendarIntegration();
     }
     
     // Fallback to DnD5eCalendar integration
@@ -147,32 +147,33 @@ export class CalendarHUD extends Application {
   }
 
   /**
-   * Prepare context from MultiCalendar system
-   * Handles Primary + Secondary calendar display
+   * Prepare context from CalendarIntegrationService
+   * Uses API for cross-calendar support
    */
-  async _prepareFromMultiCalendar() {
-    const mc = window.MultiCalendar;
-    const cal = mc.getActiveCalendar();
+  async _prepareFromCalendarIntegration() {
+    const ci = window.CalendarIntegration;
     const settings = await CalendarData.loadSettings();
     
-    if (!cal) {
-      return this._getDefaultData();
-    }
+    // Get active calendar
+    const allCals = ci.getAllCalendars();
+    const activeCal = allCals.find(c => c.isActive) || allCals[0];
     
-    // Get date/time
-    const date = mc.getDate();
-    const time = mc.getTime();
+    const date = ci.getCurrentDate(activeCal?.id);
+    const time = ci.getTime(activeCal?.id);
     
-    // Calculate day of week
-    const dayOfWeek = CalendarUtils.getDayOfWeek(date.day, date.month, date.year, cal);
+    // Get day of week
+    const cal = activeCal?.id === "secondary" ? ci.getSecondaryCalendar() : null;
+    const dayOfWeek = cal 
+      ? CalendarUtils.getDayOfWeek(date.day, date.month, date.year, cal)
+      : null;
     
-    // Get managers
-    const moonPhase = mc.moonManager?.getPhase() || { name: "Unknown", key: "new" };
-    const weather = mc.weatherManager?.getWeather() || "Clear skies";
-    const weatherIcon = mc.weatherManager?.getWeatherIcon() || "fa-cloud";
-    const season = mc.seasonManager?.getCurrentSeason() || "spring";
-    const seasonName = mc.seasonManager?.getCurrentSeasonName() || "Spring";
-    const seasonIcon = mc.seasonManager?.getCurrentSeasonIcon() || "fa-leaf";
+    // Managers from DnD5e integration
+    const moonPhase = DnD5eCalendar?.moonManager?.getPhase() || { name: "Unknown", key: "new" };
+    const weather = DnD5eCalendar?.weatherManager?.getWeather() || "Clear skies";
+    const weatherIcon = DnD5eCalendar?.weatherManager?.getWeatherIcon() || "fa-cloud";
+    const season = DnD5eCalendar?.seasonManager?.getCurrentSeason() || "spring";
+    const seasonName = DnD5eCalendar?.seasonManager?.getCurrentSeasonName() || "Spring";
+    const seasonIcon = DnD5eCalendar?.seasonManager?.getCurrentSeasonIcon() || "fa-leaf";
     
     // Day/night cycle
     const isDay = time.hour >= 6 && time.hour < 18;
@@ -184,14 +185,8 @@ export class CalendarHUD extends Application {
     const showIcon = settings?.enableIconToggle ?? false;
     
     // Format strings
-    const formattedDate = mc.getFormattedDate() || `${date.month + 1}/${date.day}/${date.year}`;
-    const formattedTime = mc.getFormattedTime() || `${time.hour}:${time.minute}`;
-    
-    // Get all calendars for selector
-    const calendars = mc.getAllCalendars();
-    
-    // Get holidays
-    const currentHoliday = mc.holidayManager?.getHolidayOnDate(date.day, date.month, date.year, mc.activeCalendarId);
+    const formattedDate = `${date.month + 1}/${date.day}/${date.year}`;
+    const formattedTime = `${time.hour}:${time.minute}`;
     
     return {
       formattedDate,
@@ -210,14 +205,14 @@ export class CalendarHUD extends Application {
       progress,
       showGradient,
       showIcon,
-      calendars,
-      activeCalendarId: mc.activeCalendarId,
+      calendars: allCals,
+      activeCalendarId: activeCal?.id,
       canEdit: CalendarPermissions.canEdit(),
-      calendarsCount: calendars.length,
-      currentHoliday: currentHoliday ? currentHoliday.name : null,
-      hasHoliday: !!currentHoliday,
-      isHoliday: !!currentHoliday,
-      holidays: currentHoliday ? [currentHoliday] : []
+      calendarsCount: allCals.length,
+      currentHoliday: null,
+      hasHoliday: false,
+      isHoliday: false,
+      holidays: []
     };
   }
 
@@ -330,14 +325,14 @@ export class CalendarHUD extends Application {
       }
     });
 
-    // Calendar selector change - Use MultiCalendar if available
+    // Calendar selector change - Use CalendarIntegration if available
     el.querySelector(".dnd5e-calendar-selector")?.addEventListener("change", async (e) => {
       e.preventDefault();
       const calendarId = e.currentTarget.value;
       
-      // Use MultiCalendar if available
-      if (window.MultiCalendar && window.MultiCalendar.switchCalendar) {
-        await window.MultiCalendar.switchCalendar(calendarId);
+      // Use CalendarIntegration if available
+      if (window.CalendarIntegration && window.CalendarIntegration.switchCalendar) {
+        await window.CalendarIntegration.switchCalendar(calendarId);
         await this.render();
         return;
       }
@@ -440,19 +435,19 @@ export class CalendarHUD extends Application {
 
   /**
    * Switch between calendars
-   * Uses MultiCalendar if available, otherwise dnd5e system
+   * Uses CalendarIntegration if available, otherwise dnd5e system
    * @param {string} calendarId - Calendar identifier
    */
   async switchCalendar(calendarId) {
-    // Use MultiCalendar if available
-    if (window.MultiCalendar && window.MultiCalendar.switchCalendar) {
-      await window.MultiCalendar.switchCalendar(calendarId);
+    // Use CalendarIntegration if available
+    if (window.CalendarIntegration && window.CalendarIntegration.switchCalendar) {
+      await window.CalendarIntegration.switchCalendar(calendarId);
       await this.render();
       ui.notifications.info(`Switched to ${calendarId} calendar`);
       return;
     }
     
-    // Fallback to dnd5e system
+    // Fallback to dnd5e system (no custom switching)
     ui.notifications.warn("Calendar switching is handled by dnd5e system settings");
   }
 
